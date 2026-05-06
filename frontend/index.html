@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>MLV PG Services Pvt Ltd – Premium Student PG Near Acharya Institute</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="css/styles.css"/>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <a class="logo" href="#" onclick="showPage('home')">
+      <div class="logo-icon">MLV</div>
+      <div class="logo-text">
+        <div class="brand">MLV PG Services</div>
+        <div class="sub">Pvt Ltd</div>
+      </div>
+    </a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#" onclick="showPage('home')">Home</a></li>
+      <li><a href="#" onclick="showPage('home');scrollTo('about')">About Us</a></li>
+      <li><a href="#" onclick="showPage('home');scrollTo('facilities')">Facilities</a></li>
+      <li><a href="#" onclick="showPage('home');scrollTo('rooms')">Rooms</a></li>
+      <li><a href="#" onclick="showPage('home');scrollTo('gallery')">Gallery</a></li>
+      <li><a href="#" onclick="showPage('home');scrollTo('testimonials')">Testimonials</a></li>
+      <li><a href="#" onclick="showPage('home');scrollTo('contact')">Contact</a></li>
+    </ul>
+    <button class="nav-cta" onclick="openPopup()">Book Now</button>
+    <button class="mobile-menu" onclick="toggleMobileMenu()"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<!-- HOME PAGE -->
+<div class="page active" id="page-home">
+<!-- HERO -->
+<section class="hero" id="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-content">
+    <div>
+      <div class="hero-badge">🏛️ Opposite Acharya Institute of Technology</div>
+      <h1>Premium Student PG<br>Near <span>Acharya Institute</span></h1>
+      <p class="hero-sub">Unlimited Food | Safe Environment | Parent-Like Care<br>Your home away from home in Bangalore.</p>
+      <div class="hero-pills">
+        <div class="pill">🍽️ Unlimited Hygienic Food</div>
+        <div class="pill">⚡ 24/7 Electricity</div>
+        <div class="pill">👨‍👩‍👧 Parent-Like Support</div>
+      </div>
+      <div class="hero-btns">
+        <button class="btn-primary" onclick="openPopup()">Pre-Reserve Now</button>
+        <button class="btn-outline" onclick="scrollTo('contact')">Book a Visit</button>
+        <a class="btn-wa" href="https://wa.me/919876543210" target="_blank">💬 WhatsApp</a>
+      </div>
+      <div class="hero-stats">
+        <div class="stat"><div class="num">500+</div><div class="lbl">Students Stayed</div></div>
+        <div class="stat"><div class="num">4.9/5</div><div class="lbl">Average Rating</div></div>
+        <div class="stat"><div class="num">5+</div><div class="lbl">States Represented</div></div>
+      </div>
+    </div>
+    <div class="hero-img">
+      <div class="hero-img-main">
+        <img src="https://images.unsplash.com/photo-1555854877-bab0e564b8d5?w=800&q=80" alt="MLV PG Building"/>
+      </div>
+      <div class="hero-float">
+        <div class="rating">4.9/5</div>
+        <div class="stars">★★★★★</div>
+        <div class="trust">Trusted by 500+ students</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about" style="padding:90px 5%">
+  <div class="container">
+    <div class="about-grid">
+      <div class="about-img">
+        <img src="https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=700&q=80" alt="MLV PG About"/>
+        <div class="about-badge"><span class="num">10+</span><span class="txt">Years of Excellence</span></div>
+      </div>
+      <div>
+        <div class="section-tag">About Us</div>
+        <h2 class="section-title">More Than Just a PG,<br>We Are Your <span>Family</span> in Bangalore</h2>
+        <p class="section-sub">MLV PG SERVICES PVT LTD provides a safe, hygienic, and supportive environment for students from across India and abroad, located opposite Acharya Institute of Technology.</p>
+        <div class="about-values">
+          <div class="val-card"><div class="val-icon">🎯</div><h4>Our Mission</h4><p>Safe, comfortable, and nourishing home for students far from family.</p></div>
+          <div class="val-card"><div class="val-icon">👁️</div><h4>Our Vision</h4><p>To be the most trusted PG brand in Bangalore for students.</p></div>
+          <div class="val-card"><div class="val-icon">💛</div><h4>Our Value</h4><p>Care, safety, hygiene, respect and student satisfaction above all.</p></div>
+          <div class="val-card"><div class="val-icon">🤝</div><h4>Our Promise</h4><p>We treat every student like our own family — always.</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FACILITIES -->
+<section class="facilities-section" id="facilities">
+  <div class="container">
+    <div style="text-align:center">
+      <div class="section-tag" style="color:var(--gold)">Facilities</div>
+      <h2 class="section-title" style="color:var(--white)">Everything You Need,<br><span>All in One Place</span></h2>
+    </div>
+    <div class="fac-grid">
+      <div class="fac-card"><div class="fac-icon">🍽️</div><h4>Unlimited Food</h4><p>Breakfast, Lunch & Dinner — fresh, hygienic, unlimited quantity</p></div>
+      <div class="fac-card"><div class="fac-icon">⚡</div><h4>24/7 Electricity</h4><p>Uninterrupted power with backup generator for all rooms</p></div>
+      <div class="fac-card"><div class="fac-icon">📶</div><h4>High-Speed WiFi</h4><p>Blazing fast internet for study and entertainment</p></div>
+      <div class="fac-card"><div class="fac-icon">📹</div><h4>CCTV Security</h4><p>24/7 surveillance for complete safety and peace of mind</p></div>
+      <div class="fac-card"><div class="fac-icon">💧</div><h4>RO Water</h4><p>Pure drinking water available all day throughout the facility</p></div>
+      <div class="fac-card"><div class="fac-icon">🧺</div><h4>Laundry Service</h4><p>Convenient laundry facilities to save your precious time</p></div>
+      <div class="fac-card"><div class="fac-icon">🧹</div><h4>Housekeeping</h4><p>Daily cleaning and maintenance for a hygienic environment</p></div>
+      <div class="fac-card"><div class="fac-icon">👨‍👩‍👧</div><h4>Parent-Like Support</h4><p>Dedicated staff who care for you like their own family</p></div>
+    </div>
+    <div style="text-align:center;margin-top:50px;background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.2);border-radius:20px;padding:40px 30px;max-width:700px;margin-inline:auto">
+      <div class="section-tag" style="color:var(--gold)">Food Menu</div>
+      <h3 style="color:var(--white);font-size:26px;margin-bottom:12px">Unlimited Food,<br>Unlimited Happiness 🍛</h3>
+      <p style="color:rgba(255,255,255,.6);font-size:14px;line-height:1.8">Enjoy delicious, fresh and hygienic meals 3 times a day with unlimited quantity. North Indian, South Indian, and healthy home-cooked options available daily.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ROOMS -->
+<section id="rooms" style="padding:90px 5%">
+  <div class="container">
+    <div style="text-align:center;margin-bottom:10px">
+      <div class="section-tag">Rooms</div>
+      <h2 class="section-title">Choose Your <span>Comfort</span></h2>
+      <p class="section-sub" style="margin:0 auto">All rooms are fully furnished with WiFi and 24/7 Power Backup</p>
+    </div>
+    <div class="rooms-grid">
+      <div class="room-card">
+        <div class="room-img"><img src="https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=600&q=80" alt="Single Room"/></div>
+        <div class="room-body">
+          <div class="room-type">Single Sharing</div>
+          <h3>Private Room</h3>
+          <div class="room-price"><span class="amt">₹13,000</span><span class="per">/Month</span></div>
+          <ul class="room-feats">
+            <li>Personal Space & Privacy</li>
+            <li>Study Table & Chair</li>
+            <li>Wardrobe & Storage</li>
+            <li>Attached/Shared Bath</li>
+            <li>WiFi + Power Backup</li>
+          </ul>
+          <button class="room-book" onclick="openPopup()">Book Now</button>
+        </div>
+      </div>
+      <div class="room-card featured">
+        <div class="room-img"><img src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=600&q=80" alt="Double Room"/></div>
+        <div class="room-body">
+          <div class="room-badge">Most Popular</div>
+          <div class="room-type">Double Sharing</div>
+          <h3>Shared Room</h3>
+          <div class="room-price"><span class="amt">₹9,000</span><span class="per">/Month</span></div>
+          <ul class="room-feats">
+            <li>Comfortable Sharing Space</li>
+            <li>Study Table & Chair</li>
+            <li>Wardrobe & Storage</li>
+            <li>Shared Bathroom</li>
+            <li>WiFi + Power Backup</li>
+          </ul>
+          <button class="room-book" onclick="openPopup()">Book Now</button>
+        </div>
+      </div>
+      <div class="room-card">
+        <div class="room-img"><img src="https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=600&q=80" alt="Triple Room"/></div>
+        <div class="room-body">
+          <div class="room-type">Triple Sharing</div>
+          <h3>Budget Room</h3>
+          <div class="room-price"><span class="amt">₹7,000</span><span class="per">/Month</span></div>
+          <ul class="room-feats">
+            <li>Spacious 3-Person Room</li>
+            <li>Study Table & Chair</li>
+            <li>Wardrobe & Storage</li>
+            <li>Shared Bathroom</li>
+            <li>WiFi + Power Backup</li>
+          </ul>
+          <button class="room-book" onclick="openPopup()">Book Now</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="testi-section" id="testimonials">
+  <div class="container">
+    <div style="text-align:center">
+      <div class="section-tag">Testimonials</div>
+      <h2 class="section-title">What Our <span>Students Say</span></h2>
+    </div>
+    <div class="testi-grid">
+      <div class="testi-card">
+        <div class="testi-quote">"</div>
+        <p class="testi-text">The food quality is amazing and the staff treats us like family. Best PG experience in Bangalore! Highly recommend to all students from outside.</p>
+        <div class="testi-author">
+          <div class="testi-avatar">RS</div>
+          <div class="testi-author-info">
+            <div class="name">Rahul Sharma</div>
+            <div class="college">Acharya Institute</div>
+            <div class="testi-stars">★★★★★</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card">
+        <div class="testi-quote">"</div>
+        <p class="testi-text">Safe, clean and comfortable place to stay. The location is perfect — just walking distance from college. Staff is very supportive and caring.</p>
+        <div class="testi-author">
+          <div class="testi-avatar">SR</div>
+          <div class="testi-author-info">
+            <div class="name">Sneha Reddy</div>
+            <div class="college">Acharya Institute</div>
+            <div class="testi-stars">★★★★★</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card">
+        <div class="testi-quote">"</div>
+        <p class="testi-text">Unlimited food, 24/7 electricity and great location. Everything is perfect here. Coming from UP, this feels exactly like home away from home.</p>
+        <div class="testi-author">
+          <div class="testi-avatar">AN</div>
+          <div class="testi-author-info">
+            <div class="name">Arjun Nair</div>
+            <div class="college">Acharya Institute</div>
+            <div class="testi-stars">★★★★★</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- GALLERY -->
+<section id="gallery" style="padding:90px 5%">
+  <div class="container">
+    <div style="text-align:center;margin-bottom:36px">
+      <div class="section-tag">Gallery</div>
+      <h2 class="section-title">Life at <span>MLV PG</span></h2>
+    </div>
+    <div class="gallery-filters">
+      <button class="gf-btn active" onclick="filterGallery('all',this)">All</button>
+      <button class="gf-btn" onclick="filterGallery('rooms',this)">Rooms</button>
+      <button class="gf-btn" onclick="filterGallery('dining',this)">Dining</button>
+      <button class="gf-btn" onclick="filterGallery('building',this)">Building</button>
+    </div>
+    <div class="gallery-grid" id="galleryGrid">
+      <div class="gallery-item" data-cat="building"><img src="https://images.unsplash.com/photo-1555854877-bab0e564b8d5?w=600&q=80" alt=""/><div class="overlay"><span>Building Exterior</span></div></div>
+      <div class="gallery-item" data-cat="rooms"><img src="https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=600&q=80" alt=""/><div class="overlay"><span>Single Room</span></div></div>
+      <div class="gallery-item" data-cat="dining"><img src="https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=600&q=80" alt=""/><div class="overlay"><span>Dining Area</span></div></div>
+      <div class="gallery-item" data-cat="rooms"><img src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=600&q=80" alt=""/><div class="overlay"><span>Double Room</span></div></div>
+      <div class="gallery-item" data-cat="dining"><img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=600&q=80" alt=""/><div class="overlay"><span>Food Spread</span></div></div>
+      <div class="gallery-item" data-cat="building"><img src="https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=600&q=80" alt=""/><div class="overlay"><span>Common Area</span></div></div>
+    </div>
+    <div style="text-align:center;margin-top:30px">
+      <button class="btn-primary" onclick="showToast('Full gallery coming soon! Follow us on Instagram @mlvpgservices 📸','success')">View Full Gallery</button>
+    </div>
+  </div>
+</section>
+
+<!-- LOCATION -->
+<section class="location-section" id="location">
+  <div class="container">
+    <div class="location-grid">
+      <div>
+        <div class="section-tag" style="color:var(--gold)">Location</div>
+        <h2 class="section-title" style="color:var(--white)">Prime Location,<br><span>Maximum Convenience</span></h2>
+        <div class="location-features">
+          <div class="loc-feat"><div class="ic">🏛️</div><div class="info"><h4>Opposite Acharya Institute of Technology</h4><p>Literally across the road from your college</p></div></div>
+          <div class="loc-feat"><div class="ic">🚶</div><div class="info"><h4>Walking Distance from College</h4><p>Save time and commute cost every single day</p></div></div>
+          <div class="loc-feat"><div class="ic">🚌</div><div class="info"><h4>Easy Access to Transportation</h4><p>BMTC bus stop, auto and cab readily available</p></div></div>
+          <div class="loc-feat"><div class="ic">🏪</div><div class="info"><h4>Close to Markets, ATM, Pharmacy</h4><p>All daily needs within 5-minute walking distance</p></div></div>
+        </div>
+        <div style="display:flex;gap:24px;margin-top:28px">
+          <div style="text-align:center;padding:16px 24px;background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.2);border-radius:12px;flex:1">
+            <div style="font-size:24px;font-weight:700;color:var(--gold);font-family:'Playfair Display',serif">0 min</div>
+            <div style="font-size:12px;color:rgba(255,255,255,.6);margin-top:4px">From Acharya</div>
+          </div>
+          <div style="text-align:center;padding:16px 24px;background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.2);border-radius:12px;flex:1">
+            <div style="font-size:24px;font-weight:700;color:var(--gold);font-family:'Playfair Display',serif">5+</div>
+            <div style="font-size:12px;color:rgba(255,255,255,.6);margin-top:4px">States Represented</div>
+          </div>
+          <div style="text-align:center;padding:16px 24px;background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.2);border-radius:12px;flex:1">
+            <div style="font-size:24px;font-weight:700;color:var(--gold);font-family:'Playfair Display',serif">24/7</div>
+            <div style="font-size:12px;color:rgba(255,255,255,.6);margin-top:4px">Security</div>
+          </div>
+        </div>
+      </div>
+      <div class="map-wrapper">
+        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3887.4857786074944!2d77.50455331482321!3d13.057386390793!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bae3d7e94cf4f95%3A0x4e8e2fc57cdf2be1!2sAcharya%20Institute%20of%20Technology!5e0!3m2!1sen!2sin!4v1620000000000!5m2!1sen!2sin" allowfullscreen="" loading="lazy"></iframe>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact" style="padding:90px 5%">
+  <div class="container">
+    <div class="contact-grid">
+      <div>
+        <div class="section-tag">Contact Us</div>
+        <h2 class="section-title">We're Here to<br><span>Help You</span></h2>
+        <p class="section-sub">Have questions or want to book your stay? Get in touch with us today.</p>
+        <div class="contact-info">
+          <div class="contact-card"><div class="cc-icon">📞</div><div class="cc-info"><div class="label">Call Us</div><div class="value">+91 98765 43210</div></div></div>
+          <div class="contact-card"><div class="cc-icon">💬</div><div class="cc-info"><div class="label">WhatsApp</div><div class="value">+91 98765 43210</div></div></div>
+          <div class="contact-card"><div class="cc-icon">✉️</div><div class="cc-info"><div class="label">Email Us</div><div class="value">info@mlvpg.com</div></div></div>
+          <div class="contact-card"><div class="cc-icon">📍</div><div class="cc-info"><div class="label">Visit Us</div><div class="value">Opp. Acharya Institute, Bengaluru, Karnataka</div></div></div>
+        </div>
+      </div>
+      <div class="contact-form">
+        <h3 style="font-size:22px;color:var(--navy);margin-bottom:6px">Send a Message</h3>
+        <p style="font-size:14px;color:var(--muted);margin-bottom:24px">We'll get back to you within 24 hours</p>
+        <div class="form-row">
+          <div class="form-group"><label>Your Name</label><input type="text" id="cName" placeholder="Full Name"/></div>
+          <div class="form-group"><label>Mobile Number</label><input type="tel" id="cPhone" placeholder="+91 XXXXX XXXXX"/></div>
+        </div>
+        <div class="form-group"><label>Email Address</label><input type="email" id="cEmail" placeholder="your@email.com"/></div>
+        <div class="form-group"><label>Message</label><textarea id="cMsg" rows="4" placeholder="Tell us about your requirements..."></textarea></div>
+        <button class="form-submit" onclick="submitContact()">Send Message</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="faq-section" id="faq">
+  <div class="container">
+    <div style="text-align:center">
+      <div class="section-tag">FAQ</div>
+      <h2 class="section-title">Frequently Asked <span>Questions</span></h2>
+    </div>
+    <div class="faq-list">
+      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)"><span>Is food included in the monthly rent?</span><span class="faq-arrow">+</span></div><div class="faq-a"><p>Yes! All plans include unlimited breakfast, lunch, and dinner. We serve fresh, hygienic, home-cooked meals prepared daily by our dedicated kitchen staff.</p></div></div>
+      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)"><span>Are both boys and girls accommodated?</span><span class="faq-arrow">+</span></div><div class="faq-a"><p>Yes, we have separate wings for boys and girls with dedicated staff, ensuring complete safety and privacy for all residents.</p></div></div>
+      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)"><span>What is the distance from Acharya Institute of Technology?</span><span class="faq-arrow">+</span></div><div class="faq-a"><p>MLV PG is located directly opposite Acharya Institute of Technology — just a 2-minute walk from the college main gate. No transport needed!</p></div></div>
+      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)"><span>What is the minimum stay duration?</span><span class="faq-arrow">+</span></div><div class="faq-a"><p>The minimum stay is 3 months. However, we offer flexible options for students. Contact us to discuss your specific requirements.</p></div></div>
+      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)"><span>Is there 24/7 security at the PG?</span><span class="faq-arrow">+</span></div><div class="faq-a"><p>Absolutely. We have CCTV cameras installed throughout the premises, a security guard on duty 24/7, and a biometric entry system for residents only.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <a class="logo" href="#" style="margin-bottom:16px">
+        <div class="logo-icon">MLV</div>
+        <div class="logo-text">
+          <div class="brand" style="color:white">MLV PG Services</div>
+          <div class="sub">Your Home Away From Home</div>
+        </div>
+      </a>
+      <p>Premium PG accommodation with unlimited food, 24/7 care, and a safe environment near Acharya Institute of Technology, Bangalore.</p>
+      <div class="footer-social">
+        <a class="social-link" href="#">f</a>
+        <a class="social-link" href="#">in</a>
+        <a class="social-link" href="#">📷</a>
+        <a class="social-link" href="#">▶</a>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h4>Quick Links</h4>
+      <ul>
+        <li><a href="#" onclick="scrollTo('hero')">Home</a></li>
+        <li><a href="#" onclick="scrollTo('about')">About Us</a></li>
+        <li><a href="#" onclick="scrollTo('facilities')">Facilities</a></li>
+        <li><a href="#" onclick="scrollTo('rooms')">Rooms</a></li>
+        <li><a href="#" onclick="scrollTo('gallery')">Gallery</a></li>
+        <li><a href="#" onclick="scrollTo('contact')">Contact</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Our Facilities</h4>
+      <ul>
+        <li><a href="#">Unlimited Food</a></li>
+        <li><a href="#">24/7 Electricity</a></li>
+        <li><a href="#">High-Speed WiFi</a></li>
+        <li><a href="#">Laundry</a></li>
+        <li><a href="#">CCTV Security</a></li>
+        <li><a href="#">Housekeeping</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Contact Info</h4>
+      <ul>
+        <li><a href="#">📍 Opp. Acharya Institute, Bengaluru</a></li>
+        <li><a href="#">📞 +91 98765 43210</a></li>
+        <li><a href="#">✉️ info@mlvpg.com</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2024 MLV PG SERVICES PVT LTD. All rights reserved.</span>
+    <div style="display:flex;gap:20px">
+      <a href="#">Privacy Policy</a>
+      <a href="#">Terms & Conditions</a>
+    </div>
+  </div>
+</footer>
+</div><!-- end home page -->
+
+<!-- ADMIN PAGE -->
+<div class="page" id="page-admin" style="background:#f0f4f8;min-height:100vh;padding-top:70px">
+  <div class="admin-section">
+    <div class="admin-header">
+      <div>
+        <div style="font-size:12px;color:var(--muted);font-weight:600;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px">Dashboard</div>
+        <h2>MLV PG Admin Panel</h2>
+      </div>
+      <div style="display:flex;gap:12px;align-items:center">
+        <button class="export-btn" onclick="exportCSV()">⬇ Export CSV</button>
+        <button style="padding:9px 20px;border:1.5px solid var(--border);border-radius:8px;background:var(--white);color:var(--navy);font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif" onclick="showPage('home')">← Back to Site</button>
+      </div>
+    </div>
+    <div class="admin-metrics">
+      <div class="metric gold"><div class="label">Total Leads</div><div class="value" id="mLeads">0</div><div class="delta">↑ Live data</div></div>
+      <div class="metric"><div class="label">Total Bookings</div><div class="value" id="mBookings">128</div><div class="delta" style="color:#22c55e">↑ Active</div></div>
+      <div class="metric"><div class="label">Active Residents</div><div class="value" id="mResidents">98</div><div class="delta" style="color:#22c55e">Currently staying</div></div>
+      <div class="metric"><div class="label">Pending Follow-ups</div><div class="value" id="mPending">0</div><div class="delta" style="color:#f59e0b">Needs action</div></div>
+    </div>
+    <div class="admin-table-wrap">
+      <div class="admin-table-header">
+        <h3>Recent Leads</h3>
+        <input class="admin-search" type="text" id="adminSearch" placeholder="Search by name, phone, college..." oninput="filterTable()"/>
+      </div>
+      <div style="overflow-x:auto">
+        <table id="adminTable">
+          <thead><tr><th>#</th><th>Name</th><th>Phone</th><th>Email</th><th>College</th><th>Room Pref.</th><th>Check-in</th><th>Status</th><th>Action</th></tr></thead>
+          <tbody id="adminTbody">
+            <tr><td colspan="9" style="text-align:center;color:var(--muted);padding:40px">No leads yet. Data will appear here after students submit the registration form.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PRE-REGISTRATION POPUP -->
+<div class="popup-overlay" id="popupOverlay" onclick="closePopupOuter(event)">
+  <div class="popup" id="popupBox">
+    <button class="popup-close" onclick="closePopup()">✕</button>
+    <div id="popupContent">
+      <div class="popup-header">
+        <div class="tag">🎓 Pre-Register Now</div>
+        <h2>Start Your Journey with MLV PG</h2>
+        <p>Fill in your details and we'll reach out to confirm your booking</p>
+      </div>
+      <div class="popup-grid">
+        <div><label>Full Name *</label><input type="text" id="pName" placeholder="Your full name"/></div>
+        <div><label>Phone Number *</label><input type="tel" id="pPhone" placeholder="+91 XXXXX XXXXX"/></div>
+        <div><label>Email Address</label><input type="email" id="pEmail" placeholder="your@email.com"/></div>
+        <div><label>Gender *</label><select id="pGender"><option value="">Select Gender</option><option>Male</option><option>Female</option><option>Other</option></select></div>
+        <div><label>College Name *</label><input type="text" id="pCollege" placeholder="e.g. Acharya Institute"/></div>
+        <div><label>Course</label><input type="text" id="pCourse" placeholder="e.g. B.E. CSE, MBA..."/></div>
+        <div><label>Room Preference</label><select id="pRoom"><option value="">Select Preference</option><option>Single Sharing (₹13,000)</option><option>Double Sharing (₹9,000)</option><option>Triple Sharing (₹7,000)</option></select></div>
+        <div><label>Check-in Date</label><input type="date" id="pCheckin"/></div>
+        <div><label>Parent Contact Number</label><input type="tel" id="pParent" placeholder="Parent's phone"/></div>
+        <div><label>Food Preference</label><select id="pFood"><option value="">Select Preference</option><option>Vegetarian</option><option>Non-Vegetarian</option><option>Vegan</option></select></div>
+        <div class="pg-full"><label>Additional Notes</label><textarea id="pNotes" rows="3" placeholder="Any specific requirements or questions..."></textarea></div>
+        <div class="pg-full" style="display:flex;align-items:center;gap:10px"><input type="checkbox" id="pTerms" style="width:18px;height:18px;accent-color:var(--gold)"/><label style="font-size:13px;color:var(--muted);cursor:pointer">I agree to the <a href="#" style="color:var(--gold)">Terms & Conditions</a> and consent to being contacted by MLV PG Services</label></div>
+      </div>
+      <button class="popup-submit" onclick="submitRegistration()">Submit Registration</button>
+      <p class="popup-terms">🔒 Your information is secure and will not be shared with third parties</p>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- FLOATING WA -->
+<a class="wa-float" href="https://wa.me/919876543210?text=Hi%20MLV%20PG%2C%20I%27m%20interested%20in%20booking%20a%20room" target="_blank" title="Chat on WhatsApp">💬</a>
+
+<!-- SCRIPTS -->
+<script src="js/config.js"></script>
+<script src="js/api.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/admin.js"></script>
+</body>
+</html>

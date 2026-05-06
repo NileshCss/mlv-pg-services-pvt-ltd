@@ -1,0 +1,66 @@
+# Backend
+backend/node_modules/
+backend/.env
+backend/.env.local
+backend/.env.*.local
+backend/dist/
+backend/build/
+backend/*.log
+backend/npm-debug.log*
+backend/yarn-debug.log*
+backend/yarn-error.log*
+backend/pids/
+backend/*.pid
+backend/*.seed
+backend/.DS_Store
+backend/db/
+
+# Frontend
+frontend/node_modules/
+frontend/.env
+frontend/dist/
+frontend/build/
+frontend/*.log
+frontend/.DS_Store
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*.sublime-project
+*.sublime-workspace
+*.code-workspace
+
+# OS
+.DS_Store
+Thumbs.db
+*.tmp
+
+# Project
+uploads/
+temp/
+logs/
+.env.local
+*.pem
+*.key
+*.crt
+
+# Testing
+coverage/
+.nyc_output/
+
+# Database
+*.sqlite
+*.sqlite3
+dump.rdb
+
+# Misc
+.history/
+.eslintcache
+.cache/
+node_modules
+
+node_modules/
+.env
+
