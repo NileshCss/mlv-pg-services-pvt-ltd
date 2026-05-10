@@ -104,6 +104,18 @@ export const FACILITIES = [
 // Gender options
 export const GENDERS = ['Male', 'Female', 'Other']
 
+// Nationality options
+export const NATIONALITIES = [
+  'Indian',
+  'Nepali',
+  'Bhutanese',
+  'Sri Lankan',
+  'Bangladeshi',
+  'Afghan',
+  'Pakistani',
+  'Other',
+]
+
 // Room preferences
 export const ROOM_PREFERENCES = ['Single Sharing', 'Double Sharing', 'Triple Sharing', 'No Preference']
 

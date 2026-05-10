@@ -3,7 +3,7 @@
 import React from 'react'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
-import { Star } from 'lucide-react'
+import { Quote, Star } from 'lucide-react'
 
 const testimonials = [
   {
@@ -21,7 +21,7 @@ const testimonials = [
     college: 'Acharya Institute',
     course: 'B.Tech ECE',
     rating: 5,
-    text: 'Safe environment, hygienic food, and helpful staff. My parents are so relieved knowing I\'m in such a caring place. Best decision ever!',
+    text: "Safe environment, hygienic food, and helpful staff. My parents are so relieved knowing I'm in such a caring place. Best decision ever!",
     image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&q=80',
   },
   {
@@ -39,49 +39,65 @@ const testimonials = [
     college: 'Acharya Institute',
     course: 'B.Tech Mech',
     rating: 5,
-    text: 'As an international student, I was worried about adjusting. But the MLV PG family made everything so easy. Truly home away from home!',
-    image: 'https://images.unsplash.com/photo-1517070213202-75cf588b3e7d?w=150&q=80',
+    text: "As an international student, I was worried about adjusting. But the MLV PG family made everything so easy. Truly home away from home!",
+    image: 'https://images.unsplash.com/photo-1529068755536-a5ade0dcb4e8?w=150&q=80',
   },
 ]
 
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.12 },
+  },
+}
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 28 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.65, ease: [0.25, 0.46, 0.45, 0.94] },
+  },
+}
+
 const TestimonialsSection: React.FC = () => {
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-      },
-    },
-  }
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.6 },
-    },
-  }
-
   return (
-    <section id="testimonials" className="py-20 md:py-28">
+    <section id="testimonials" className="py-24 md:py-32 relative overflow-hidden">
+      {/* Background */}
+      <div className="absolute inset-0 -z-10">
+        <div
+          className="absolute inset-0 opacity-20"
+          style={{
+            background: 'radial-gradient(ellipse 80% 50% at 30% 50%, rgba(13,27,133,0.3) 0%, transparent 70%)',
+          }}
+        />
+      </div>
+
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <motion.div
-          className="text-center mb-16"
-          initial={{ opacity: 0, y: 20 }}
+          className="text-center mb-16 md:mb-20"
+          initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.65 }}
         >
-          <div className="inline-block px-3 py-1 rounded-full bg-secondary-500/10 border border-secondary-500/30 mb-4">
-            <span className="text-xs font-semibold text-secondary-400">Testimonials</span>
-          </div>
-          <h2 className="text-4xl md:text-5xl font-bold mb-4">
-            What Students<br />
+          <span className="section-badge mb-5 inline-block">✦ Testimonials</span>
+          <h2 className="font-bold text-white mb-5">
+            What Our Students{' '}
             <span className="gradient-text">Say About Us</span>
           </h2>
+          {/* Summary bar */}
+          <div className="inline-flex items-center gap-4 mt-2 px-6 py-3 rounded-full glass-gold">
+            <div className="flex gap-0.5">
+              {Array.from({ length: 5 }).map((_, i) => (
+                <Star key={i} size={16} className="fill-yellow-400 text-yellow-400" />
+              ))}
+            </div>
+            <span className="text-sm font-bold text-white">4.9 / 5</span>
+            <span className="text-sm text-gray-400">from 500+ students</span>
+          </div>
         </motion.div>
 
         {/* Testimonials Grid */}
@@ -90,45 +106,74 @@ const TestimonialsSection: React.FC = () => {
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true }}
+          viewport={{ once: true, margin: '-80px' }}
         >
           {testimonials.map((testimonial, idx) => (
             <motion.div
-              key={idx}
-              className="p-6 rounded-2xl bg-gray-900 border border-gray-800 hover:border-secondary-500/30 transition-all duration-300"
+              key={testimonial.id}
+              className="group relative p-7 rounded-2xl overflow-hidden"
+              style={{
+                background: 'rgba(255,255,255,0.03)',
+                border: '1px solid rgba(255,255,255,0.07)',
+                transition: 'all 0.35s cubic-bezier(0.34,1.56,0.64,1)',
+              }}
               variants={itemVariants}
-              whileHover={{ y: -5 }}
+              whileHover={{ y: -6 }}
             >
-              {/* Rating */}
+              {/* Hover border glow */}
+              <div
+                className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-400"
+                style={{ boxShadow: 'inset 0 0 0 1px rgba(201,168,76,0.2)' }}
+              />
+
+              {/* Quote icon */}
+              <div
+                className="w-10 h-10 rounded-xl flex items-center justify-center mb-5 flex-shrink-0"
+                style={{ background: 'rgba(201,168,76,0.1)' }}
+              >
+                <Quote size={18} style={{ color: '#c9a84c' }} />
+              </div>
+
+              {/* Stars */}
               <div className="flex gap-1 mb-4">
                 {Array.from({ length: testimonial.rating }).map((_, i) => (
-                  <Star
-                    key={i}
-                    size={16}
-                    className="fill-secondary-500 text-secondary-500"
-                  />
+                  <Star key={i} size={14} className="fill-yellow-400 text-yellow-400" />
                 ))}
               </div>
 
               {/* Text */}
-              <p className="text-gray-300 leading-relaxed mb-6 italic">
+              <p className="text-gray-300 leading-relaxed mb-7 text-[15px] italic">
                 "{testimonial.text}"
               </p>
 
               {/* Author */}
-              <div className="flex items-center gap-4 pt-4 border-t border-gray-800">
-                <Image
-                  src={testimonial.image}
-                  alt={testimonial.name}
-                  width={48}
-                  height={48}
-                  className="w-12 h-12 rounded-full object-cover"
-                />
+              <div
+                className="flex items-center gap-4 pt-5"
+                style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}
+              >
+                <div className="relative w-12 h-12 rounded-full overflow-hidden flex-shrink-0 ring-2 ring-secondary-500/30">
+                  <Image
+                    src={testimonial.image}
+                    alt={testimonial.name}
+                    fill
+                    className="object-cover"
+                  />
+                </div>
                 <div>
-                  <div className="font-bold text-gray-50">{testimonial.name}</div>
-                  <div className="text-sm text-gray-400">
-                    {testimonial.course} • {testimonial.college}
+                  <div className="font-bold text-white text-sm">{testimonial.name}</div>
+                  <div className="text-xs text-gray-500 mt-0.5">
+                    {testimonial.course} · {testimonial.college}
                   </div>
+                </div>
+
+                {/* Verified badge */}
+                <div className="ml-auto">
+                  <span
+                    className="text-[10px] font-semibold px-2 py-1 rounded-full"
+                    style={{ background: 'rgba(201,168,76,0.1)', color: '#c9a84c', border: '1px solid rgba(201,168,76,0.2)' }}
+                  >
+                    ✓ Verified
+                  </span>
                 </div>
               </div>
             </motion.div>

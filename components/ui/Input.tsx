@@ -1,55 +1,57 @@
 import React from 'react'
 import { cn } from '@/lib/utils/helpers'
-import { cva, type VariantProps } from 'class-variance-authority'
 
-const inputVariants = cva(
-  'w-full rounded-lg border border-gray-700 bg-gray-900 px-4 py-2 text-gray-50 placeholder:text-gray-500 transition-all duration-300 focus:border-secondary-500 focus:outline-none focus:ring-1 focus:ring-secondary-500 disabled:cursor-not-allowed disabled:opacity-50',
-  {
-    variants: {
-      size: {
-        sm: 'py-1 text-sm',
-        md: 'py-3 text-base',
-        lg: 'py-4 text-lg',
-      },
-    },
-    defaultVariants: {
-      size: 'md',
-    },
-  }
-)
-
-interface InputProps
-  extends React.InputHTMLAttributes<HTMLInputElement>,
-    VariantProps<typeof inputVariants> {
+interface InputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'size'> {
   label?: string
   error?: string
   helperText?: string
+  size?: 'sm' | 'md' | 'lg'
+}
+
+const sizeMap = {
+  sm: 'h-8 text-sm px-3',
+  md: 'h-11 text-sm px-4',
+  lg: 'h-12 text-base px-4',
 }
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ className, size, label, error, helperText, ...props }, ref) => (
-    <div className="w-full">
+  ({ className, size = 'md', label, error, helperText, type = 'text', ...props }, ref) => (
+    <div className="w-full space-y-1.5">
       {label && (
-        <label className="mb-2 block text-sm font-medium text-gray-100">
+        <label className="block text-sm font-medium" style={{ color: '#d1d5db' }}>
           {label}
         </label>
       )}
       <input
-        className={cn(
-          inputVariants({ size, className }),
-          error && 'border-red-500 focus:ring-red-500 focus:border-red-500'
-        )}
+        type={type}
         ref={ref}
+        className={cn(
+          'w-full rounded-xl font-medium text-white placeholder:text-gray-600 transition-all duration-300',
+          'disabled:cursor-not-allowed disabled:opacity-50',
+          'focus:outline-none',
+          sizeMap[size],
+          error
+            ? 'border border-red-500/70 bg-red-950/20 focus:border-red-400 focus:ring-2 focus:ring-red-500/20'
+            : 'border border-white/8 bg-white/5 hover:border-white/12 focus:border-secondary-500/60 focus:ring-2 focus:ring-secondary-500/20',
+          className
+        )}
+        style={{
+          background: error ? 'rgba(127,29,29,0.12)' : 'rgba(255,255,255,0.05)',
+        }}
         {...props}
       />
-      {error && <p className="mt-1 text-sm text-red-400">{error}</p>}
+      {error && (
+        <p className="text-xs font-medium" style={{ color: '#f87171' }}>
+          {error}
+        </p>
+      )}
       {helperText && !error && (
-        <p className="mt-1 text-sm text-gray-400">{helperText}</p>
+        <p className="text-xs text-gray-500">{helperText}</p>
       )}
     </div>
   )
 )
 Input.displayName = 'Input'
 
-export { Input, inputVariants }
+export { Input }
 export type { InputProps }

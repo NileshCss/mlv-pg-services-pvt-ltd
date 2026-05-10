@@ -1,206 +1,327 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
-import { BarChart3, Users, FileText, LogOut, Menu, X } from 'lucide-react'
-import { Button } from '@/components/ui/Button'
-import axios from 'axios'
+import { BarChart3, Users, Home, Clock, RefreshCw } from 'lucide-react'
+import { DashboardLayout } from '@/components/admin/layout/DashboardLayout'
+import { StatCard } from '@/components/admin/dashboard/StatCard'
+import { RegistrationsChart } from '@/components/admin/dashboard/RegistrationsChart'
+import { BookingStatusChart } from '@/components/admin/dashboard/BookingStatusChart'
+import { createClient } from '@/lib/supabase/client'
+import { useDashboardStore } from '@/store/dashboardStore'
 
 interface DashboardStats {
-  totalLeads: number
-  newLeads: number
-  convertedLeads: number
-  totalMessages: number
+  totalRegistrations: number
+  totalBookings: number
+  activeResidents: number
+  pendingFollowups: number
+}
+
+interface RecentRegistration {
+  id: string
+  full_name: string
+  phone: string
+  college_name: string
+  check_in_date: string | null
+  status: string
+  created_at: string
+}
+
+const STATUS_BADGE: Record<string, string> = {
+  new:       'bg-blue-500/20 text-blue-400',
+  contacted: 'bg-purple-500/20 text-purple-400',
+  confirmed: 'bg-green-500/20 text-green-400',
+  rejected:  'bg-red-500/20 text-red-400',
 }
 
 export default function AdminDashboardPage() {
-  const router = useRouter()
-  const [isAuthorized, setIsAuthorized] = useState(false)
+  const supabase = createClient()
   const [stats, setStats] = useState<DashboardStats>({
-    totalLeads: 0,
-    newLeads: 0,
-    convertedLeads: 0,
-    totalMessages: 0,
+    totalRegistrations: 0,
+    totalBookings: 0,
+    activeResidents: 0,
+    pendingFollowups: 0,
   })
+  const [recentRegs, setRecentRegs] = useState<RecentRegistration[]>([])
+  const [monthlyData, setMonthlyData] = useState<{ month: string; registrations: number; bookings: number }[]>([])
+  const [statusData, setStatusData] = useState<{ name: string; value: number; color: string }[]>([])
   const [loading, setLoading] = useState(true)
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const [registrations, setRegistrations] = useState([])
+  const { setStats: setStoreStats, setLoadingStats } = useDashboardStore()
 
-  useEffect(() => {
-    const token = localStorage.getItem('adminToken')
-    if (!token) {
-      router.push('/admin/login')
-      return
-    }
-
-    setIsAuthorized(true)
-    fetchDashboardData()
-  }, [router])
-
-  const fetchDashboardData = async () => {
+  const fetchDashboardStats = async () => {
     try {
-      const [regRes, contactRes] = await Promise.all([
-        axios.get('/api/registrations'),
-        axios.get('/api/contact'),
+      setLoadingStats(true)
+      setLoading(true)
+
+      // ── Fetch all registration data ──
+      const [
+        { count: registrationsCount },
+        { count: pendingCount },
+        { data: allRegs },
+        { data: recentData },
+      ] = await Promise.all([
+        supabase.from('pre_registrations').select('id', { count: 'exact', head: true }),
+        supabase.from('pre_registrations').select('id', { count: 'exact', head: true }).eq('status', 'new'),
+        supabase.from('pre_registrations').select('status, created_at'),
+        supabase.from('pre_registrations')
+          .select('id, full_name, phone, college_name, check_in_date, status, created_at')
+          .order('created_at', { ascending: false })
+          .limit(5),
       ])
 
-      const registrationsData = regRes.data.data || []
-      const contactsData = contactRes.data.data || []
+      // ── Try fetching bookings (table may not exist) ──
+      let bookingsCount = 0
+      let activeResidents = 0
+      try {
+        const { count: bc } = await supabase.from('bookings').select('id', { count: 'exact', head: true })
+        bookingsCount = bc ?? 0
+        const { count: ac } = await supabase.from('bookings').select('id', { count: 'exact', head: true }).eq('status', 'checked_in')
+        activeResidents = ac ?? 0
+      } catch {
+        // bookings table doesn't exist yet — that's fine
+        console.log('[Dashboard] bookings table not found, showing 0')
+      }
 
-      setStats({
-        totalLeads: registrationsData.length,
-        newLeads: registrationsData.filter((r: any) => r.status === 'new').length,
-        convertedLeads: registrationsData.filter((r: any) => r.status === 'confirmed').length,
-        totalMessages: contactsData.length,
+      const newStats = {
+        totalRegistrations: registrationsCount ?? 0,
+        totalBookings: bookingsCount,
+        activeResidents: activeResidents,
+        pendingFollowups: pendingCount ?? 0,
+      }
+
+      setStats(newStats)
+      setRecentRegs(recentData ?? [])
+
+      // ── Build monthly chart from real registrations data ──
+      const months = Array.from({ length: 6 }, (_, i) => {
+        const d = new Date()
+        d.setMonth(d.getMonth() - (5 - i))
+        return {
+          label: d.toLocaleString('en-IN', { month: 'short' }),
+          year: d.getFullYear(),
+          m: d.getMonth(),
+        }
       })
 
-      setRegistrations(registrationsData.slice(0, 5))
+      const realMonthlyData = months.map(({ label, year, m }) => ({
+        month: label,
+        registrations: (allRegs ?? []).filter(r => {
+          const d = new Date(r.created_at)
+          return d.getMonth() === m && d.getFullYear() === year
+        }).length,
+        bookings: 0, // will populate once bookings table exists
+      }))
+      setMonthlyData(realMonthlyData)
+
+      // ── Build registration status pie chart from real data ──
+      const statusCounts: Record<string, number> = {}
+      ;(allRegs ?? []).forEach(r => {
+        statusCounts[r.status] = (statusCounts[r.status] ?? 0) + 1
+      })
+      const STATUS_COLORS: Record<string, string> = {
+        new: '#3B82F6',
+        contacted: '#8B5CF6',
+        confirmed: '#10B981',
+        rejected: '#EF4444',
+      }
+      const realStatusData = Object.entries(statusCounts).map(([name, value]) => ({
+        name: name.charAt(0).toUpperCase() + name.slice(1),
+        value,
+        color: STATUS_COLORS[name] ?? '#8892AA',
+      }))
+      setStatusData(realStatusData)
+
+      setStoreStats({
+        ...newStats,
+        monthlyTrend: 0,
+        bookingTrend: 0,
+        residenceTrend: 0,
+        followupTrend: 0,
+      })
     } catch (error) {
       console.error('Failed to fetch dashboard data:', error)
     } finally {
       setLoading(false)
+      setLoadingStats(false)
     }
   }
 
-  const handleLogout = () => {
-    localStorage.removeItem('adminToken')
-    router.push('/admin/login')
-  }
-
-  if (!isAuthorized || loading) {
-    return (
-      <div className="min-h-screen bg-dark-900 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-secondary-500"></div>
-      </div>
-    )
-  }
+  useEffect(() => {
+    fetchDashboardStats()
+  }, [])
 
   return (
-    <div className="min-h-screen bg-dark-900">
-      {/* Sidebar */}
-      <div className={`fixed left-0 top-0 h-full w-64 bg-gray-900 border-r border-gray-800 p-6 transition-transform duration-300 ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 z-40`}>
-        <div className="flex items-center gap-2 mb-12">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-secondary-500 text-dark-900 font-bold">
-            MLV
-          </div>
+    <DashboardLayout>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="space-y-8"
+      >
+        {/* Page Header */}
+        <div className="flex items-start justify-between">
           <div>
-            <div className="text-sm font-bold text-gray-50">MLV</div>
-            <div className="text-xs text-gray-400">Admin</div>
+            <h1 className="text-4xl font-bold text-white mb-2">Dashboard</h1>
+            <p className="text-gray-400">Welcome back! Here's your PG management overview.</p>
           </div>
-        </div>
-
-        <nav className="space-y-2">
-          {[
-            { icon: BarChart3, label: 'Dashboard', href: '#' },
-            { icon: Users, label: 'Pre-Registrations', href: '#registrations' },
-            { icon: FileText, label: 'Messages', href: '#messages' },
-          ].map((item, idx) => (
-            <button
-              key={idx}
-              className="w-full flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors text-gray-300 hover:text-secondary-400"
-            >
-              <item.icon size={20} />
-              <span>{item.label}</span>
-            </button>
-          ))}
-        </nav>
-
-        <button
-          onClick={handleLogout}
-          className="absolute bottom-6 left-6 right-6 flex items-center gap-3 px-4 py-2 rounded-lg bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-colors font-medium"
-        >
-          <LogOut size={20} />
-          Logout
-        </button>
-      </div>
-
-      {/* Main Content */}
-      <div className="ml-0 md:ml-64">
-        {/* Header */}
-        <div className="bg-gray-900 border-b border-gray-800 p-6 flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-gray-50">Dashboard</h1>
           <button
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden p-2 rounded-lg hover:bg-gray-800"
+            onClick={fetchDashboardStats}
+            className="p-2.5 rounded-lg bg-white/5 border border-amber-500/20 text-gray-400 hover:text-amber-400 hover:border-amber-500/40 transition-all"
+            title="Refresh"
           >
-            {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            <RefreshCw size={18} />
           </button>
         </div>
 
-        {/* Content */}
-        <div className="p-6 space-y-6">
-          {/* Stats Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {[
-              { label: 'Total Leads', value: stats.totalLeads, icon: '👥' },
-              { label: 'New Leads', value: stats.newLeads, icon: '🆕' },
-              { label: 'Converted', value: stats.convertedLeads, icon: '✅' },
-              { label: 'Messages', value: stats.totalMessages, icon: '💬' },
-            ].map((stat, idx) => (
-              <motion.div
-                key={idx}
-                className="p-6 rounded-xl bg-gray-900 border border-gray-800"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: idx * 0.1 }}
-              >
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-gray-400 text-sm">{stat.label}</p>
-                    <p className="text-3xl font-bold text-gray-50 mt-2">{stat.value}</p>
-                  </div>
-                  <span className="text-4xl">{stat.icon}</span>
-                </div>
-              </motion.div>
-            ))}
+        {/* Stat Cards Row (4 cards) */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <StatCard
+            title="Total Registrations"
+            value={stats.totalRegistrations}
+            trend={0}
+            icon={BarChart3}
+            color="gold"
+            suffix=""
+          />
+          <StatCard
+            title="Total Bookings"
+            value={stats.totalBookings}
+            trend={0}
+            icon={Users}
+            color="blue"
+            suffix=""
+          />
+          <StatCard
+            title="Active Residents"
+            value={stats.activeResidents}
+            trend={0}
+            icon={Home}
+            color="green"
+            suffix=""
+          />
+          <StatCard
+            title="Pending Follow Ups"
+            value={stats.pendingFollowups}
+            trend={0}
+            icon={Clock}
+            color="red"
+            suffix=""
+          />
+        </div>
+
+        {/* Charts Section — Real Data */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <RegistrationsChart data={monthlyData} />
+          <BookingStatusChart data={statusData.length > 0 ? statusData : [{ name: 'No Data', value: 1, color: '#4A5568' }]} />
+        </div>
+
+        {/* Recent Registrations — Real Data */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+          className="rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 overflow-hidden"
+        >
+          <div className="px-6 py-5 border-b border-white/8 flex items-center justify-between">
+            <div>
+              <h3 className="text-lg font-semibold text-white">Recent Registrations</h3>
+              <p className="text-xs text-gray-500 mt-0.5">Latest student enquiries from the website</p>
+            </div>
+            <a
+              href="/admin/registrations"
+              className="text-xs text-amber-400 hover:text-amber-300 transition-colors"
+            >
+              View all →
+            </a>
           </div>
 
-          {/* Recent Registrations */}
-          <motion.div
-            className="p-6 rounded-xl bg-gray-900 border border-gray-800"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-          >
-            <h2 className="text-lg font-bold text-gray-50 mb-4">Recent Pre-Registrations</h2>
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b border-gray-800">
-                    <th className="px-4 py-3 text-left text-gray-400">Name</th>
-                    <th className="px-4 py-3 text-left text-gray-400">Email</th>
-                    <th className="px-4 py-3 text-left text-gray-400">Phone</th>
-                    <th className="px-4 py-3 text-left text-gray-400">Status</th>
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b border-white/5">
+                  {['Name', 'Phone', 'College', 'Check-in', 'Status', 'Registered'].map(h => (
+                    <th key={h} className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                      {h}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {loading ? (
+                  <tr>
+                    <td colSpan={6} className="px-6 py-10 text-center">
+                      <div className="flex items-center justify-center gap-2 text-gray-500">
+                        <div className="w-4 h-4 border-2 border-gray-700 border-t-amber-500 rounded-full animate-spin" />
+                        Loading...
+                      </div>
+                    </td>
                   </tr>
-                </thead>
-                <tbody>
-                  {registrations.map((reg: any, idx) => (
-                    <tr key={idx} className="border-b border-gray-800 hover:bg-gray-800/50">
-                      <td className="px-4 py-3">{reg.full_name}</td>
-                      <td className="px-4 py-3 text-gray-400">{reg.email}</td>
-                      <td className="px-4 py-3 text-gray-400">{reg.phone}</td>
-                      <td className="px-4 py-3">
-                        <span className="px-3 py-1 rounded-full bg-secondary-500/20 text-secondary-400 text-xs font-semibold">
-                          {reg.status}
+                ) : recentRegs.length === 0 ? (
+                  <tr>
+                    <td colSpan={6} className="px-6 py-10 text-center text-gray-600 text-sm">
+                      No registrations yet — new student submissions will appear here.
+                    </td>
+                  </tr>
+                ) : (
+                  recentRegs.map(reg => (
+                    <tr key={reg.id} className="border-b border-white/5 hover:bg-white/[0.02] transition-colors">
+                      <td className="px-6 py-4 text-sm text-white font-medium">{reg.full_name}</td>
+                      <td className="px-6 py-4 text-sm text-gray-400 font-mono">{reg.phone}</td>
+                      <td className="px-6 py-4 text-sm text-gray-400">{reg.college_name || '—'}</td>
+                      <td className="px-6 py-4 text-sm text-gray-500">
+                        {reg.check_in_date
+                          ? new Date(reg.check_in_date).toLocaleDateString('en-IN', {
+                              day: '2-digit', month: 'short', year: 'numeric'
+                            })
+                          : '—'}
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className={`px-3 py-1 rounded-full text-xs font-semibold ${STATUS_BADGE[reg.status] ?? STATUS_BADGE['new']}`}>
+                          {reg.status.charAt(0).toUpperCase() + reg.status.slice(1)}
                         </span>
                       </td>
+                      <td className="px-6 py-4 text-sm text-gray-600">
+                        {new Date(reg.created_at).toLocaleDateString('en-IN', {
+                          day: '2-digit', month: 'short', year: 'numeric'
+                        })}
+                      </td>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </motion.div>
-        </div>
-      </div>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </motion.div>
 
-      {/* Mobile Menu Close */}
-      {mobileMenuOpen && (
-        <div
-          className="fixed inset-0 bg-black/50 md:hidden z-30"
-          onClick={() => setMobileMenuOpen(false)}
-        />
-      )}
-    </div>
+        {/* Quick Actions */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.4 }}
+          className="rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 p-6"
+        >
+          <h3 className="text-lg font-semibold text-white mb-4">Quick Actions</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {[
+              { label: 'View Registrations', icon: '📋', href: '/admin/registrations' },
+              { label: 'Manage Bookings', icon: '📅', href: '/admin/bookings' },
+              { label: 'Update Rooms', icon: '🏠', href: '/admin/rooms' },
+              { label: 'View Gallery', icon: '🖼️', href: '/admin/gallery' },
+            ].map((action, idx) => (
+              <a
+                key={idx}
+                href={action.href}
+                className="p-4 rounded-lg border border-amber-500/20 hover:border-amber-500/40 hover:bg-amber-500/5 transition-all duration-200 text-center group"
+              >
+                <div className="text-2xl mb-2">{action.icon}</div>
+                <p className="text-sm text-gray-400 group-hover:text-amber-400 transition-colors">
+                  {action.label}
+                </p>
+              </a>
+            ))}
+          </div>
+        </motion.div>
+      </motion.div>
+    </DashboardLayout>
   )
 }

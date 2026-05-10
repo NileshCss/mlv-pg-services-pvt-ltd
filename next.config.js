@@ -1,7 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  swcMinify: true,
   images: {
     remotePatterns: [
       {
@@ -21,12 +20,12 @@ const nextConfig = {
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
     formats: ['image/avif', 'image/webp'],
   },
-  optimizeFonts: true,
   experimental: {
     optimizePackageImports: [
       'lucide-react',
       '@supabase/supabase-js',
     ],
+    allowedDevOrigins: ['localhost:3000', '192.168.137.1:3000'],
   },
 };
 

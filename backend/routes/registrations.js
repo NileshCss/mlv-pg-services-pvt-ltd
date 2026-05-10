@@ -1,24 +1,19 @@
 // ===== REGISTRATIONS ROUTES =====
 const express = require('express');
 const router = express.Router();
-const registrationController = require('../controllers/registrationController');
+const c = require('../controllers/registrationController');
 
-// Create registration
-router.post('/', registrationController.createRegistration);
-
-// Get all registrations
-router.get('/', registrationController.getAllRegistrations);
-
-// Get registration by ID
-router.get('/:id', registrationController.getRegistrationById);
-
-// Update registration
-router.patch('/:id', registrationController.updateRegistration);
-
-// Delete registration
-router.delete('/:id', registrationController.deleteRegistration);
+// NOTE: Static paths must come BEFORE /:id to avoid Express treating
+// "export" as an :id parameter.
 
 // Export as CSV
-router.get('/export/csv', registrationController.exportAsCSV);
+router.get('/export/csv', c.exportAsCSV);
+
+// CRUD
+router.post('/',    c.createRegistration);
+router.get('/',     c.getAllRegistrations);
+router.get('/:id',  c.getRegistrationById);
+router.patch('/:id', c.updateRegistration);
+router.delete('/:id', c.deleteRegistration);
 
 module.exports = router;

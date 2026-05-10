@@ -9,6 +9,7 @@ import { HeroSection } from '@/components/sections/HeroSection'
 import { AboutSection } from '@/components/sections/AboutSection'
 import { FacilitiesSection } from '@/components/sections/FacilitiesSection'
 import { RoomsSection } from '@/components/sections/RoomsSection'
+import FoodMenuSection from '@/components/food/FoodMenuSection'
 import { TestimonialsSection } from '@/components/sections/TestimonialsSection'
 import { GallerySection } from '@/components/sections/GallerySection'
 import { FAQSection } from '@/components/sections/FAQSection'
@@ -19,11 +20,11 @@ export default function Home() {
   const [popupShowTime, setPopupShowTime] = useState(false)
 
   useEffect(() => {
-    // Show popup after 3 seconds
+    // Show popup after 10 seconds
     const timer = setTimeout(() => {
       setPopupShowTime(true)
       setPopupOpen(true)
-    }, 3000)
+    }, 10000)
 
     return () => clearTimeout(timer)
   }, [])
@@ -45,6 +46,7 @@ export default function Home() {
         <AboutSection />
         <FacilitiesSection />
         <RoomsSection onBookClick={() => setPopupOpen(true)} />
+        <FoodMenuSection />
         <TestimonialsSection />
         <GallerySection />
         <FAQSection />
