@@ -61,13 +61,45 @@ CREATE POLICY "gallery_delete_admin"
 GRANT SELECT ON gallery TO anon;
 GRANT ALL   ON gallery TO authenticated;
 
--- ── 6. Verify ─────────────────────────────────────────────────────────
-SELECT 'Gallery table created successfully ✅' AS result;
+-- ── 6. Storage Bucket ────────────────────────────────────────────────
+-- Creates the "gallery" public bucket (safe to re-run, uses ON CONFLICT)
+INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+VALUES (
+  'gallery',
+  'gallery',
+  true,
+  5242880,  -- 5 MB max per file
+  ARRAY['image/jpeg','image/png','image/webp','image/gif']
+)
+ON CONFLICT (id) DO UPDATE SET
+  public = true,
+  file_size_limit = 5242880;
 
--- ─────────────────────────────────────────────────────────────────────
--- STORAGE BUCKET (run separately if needed via Supabase Dashboard)
--- Go to: Storage → New Bucket → Name: "gallery" → Public: ON
--- OR run:
--- INSERT INTO storage.buckets (id, name, public) VALUES ('gallery', 'gallery', true)
--- ON CONFLICT (id) DO NOTHING;
--- ─────────────────────────────────────────────────────────────────────
+-- Storage RLS: allow authenticated users to upload
+CREATE POLICY "storage_gallery_upload"
+  ON storage.objects FOR INSERT
+  TO authenticated
+  WITH CHECK (bucket_id = 'gallery');
+
+-- Storage RLS: allow authenticated users to update/delete
+CREATE POLICY "storage_gallery_update"
+  ON storage.objects FOR UPDATE
+  TO authenticated
+  USING (bucket_id = 'gallery');
+
+CREATE POLICY "storage_gallery_delete"
+  ON storage.objects FOR DELETE
+  TO authenticated
+  USING (bucket_id = 'gallery');
+
+-- Storage RLS: allow public to read (view images)
+CREATE POLICY "storage_gallery_public_read"
+  ON storage.objects FOR SELECT
+  TO anon, authenticated
+  USING (bucket_id = 'gallery');
+
+-- ── 7. Verify ─────────────────────────────────────────────────────────
+SELECT
+  'Setup complete ✅' AS result,
+  (SELECT COUNT(*) FROM storage.buckets WHERE id = 'gallery') AS bucket_created,
+  (SELECT COUNT(*) FROM information_schema.tables WHERE table_name = 'gallery') AS table_created;

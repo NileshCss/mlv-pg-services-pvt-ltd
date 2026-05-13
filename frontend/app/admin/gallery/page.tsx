@@ -163,7 +163,17 @@ export default function GalleryPage() {
         .from('gallery')
         .upload(storagePath, compressedFile)
 
-      if (error) throw error
+      if (error) {
+        // Bucket not created yet
+        if (error.message?.toLowerCase().includes('bucket not found') || (error as any)?.statusCode === 404) {
+          toast.error(
+            '⚠️ Storage bucket missing! Go to Supabase → SQL Editor and re-run backend/db/gallery_schema.sql',
+            { duration: 8000 }
+          )
+          return
+        }
+        throw error
+      }
 
       // Get public URL
       const {
