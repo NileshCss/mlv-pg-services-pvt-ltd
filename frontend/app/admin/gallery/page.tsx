@@ -80,17 +80,22 @@ export default function GalleryPage() {
     try {
       setLoading(true)
       setIsMockData(false)
-      
-      let query = supabase
+
+      const { data, error } = await supabase
         .from('gallery')
         .select('*')
         .order('sort_order', { ascending: true })
 
-      const { data, error } = await query
+      // Table not found — any of these codes/messages mean the table doesn't exist yet
+      const notFound =
+        error?.code === '42P01' ||
+        error?.message?.toLowerCase().includes('does not exist') ||
+        error?.message?.toLowerCase().includes('could not find') ||
+        error?.message?.toLowerCase().includes('relation') ||
+        error?.message?.toLowerCase().includes('undefined')
 
-      // Check if table doesn't exist
-      if (error?.message?.includes('Could not find the table')) {
-        console.warn('Gallery table not found, using mock data')
+      if (notFound) {
+        console.warn('Gallery table not found in Supabase. Run gallery_schema.sql to set it up.')
         setImages(MOCK_GALLERY)
         setIsMockData(true)
         return
@@ -98,11 +103,22 @@ export default function GalleryPage() {
 
       if (error) throw error
       setImages(data || [])
-    } catch (error) {
-      console.error('Failed to fetch images:', error)
-      // Fallback to mock data on any error
-      setImages(MOCK_GALLERY)
-      setIsMockData(true)
+    } catch (error: any) {
+      const msg = error?.message || ''
+      const notFound =
+        msg.includes('does not exist') ||
+        msg.includes('could not find') ||
+        msg.includes('relation') ||
+        msg.includes('42P01')
+
+      if (notFound) {
+        setImages(MOCK_GALLERY)
+        setIsMockData(true)
+      } else {
+        console.error('Failed to fetch gallery images:', error)
+        toast.error('Failed to load gallery')
+        setImages([])
+      }
     } finally {
       setLoading(false)
     }
@@ -119,7 +135,10 @@ export default function GalleryPage() {
 
   const compressAndUploadImage = async (file: File, category: string) => {
     if (isMockData) {
-      toast.info('Using mock data - upload disabled. Set up gallery table in Supabase.')
+      toast.error(
+        'Gallery table not set up yet. Run backend/db/gallery_schema.sql in your Supabase SQL Editor, then refresh.',
+        { duration: 6000 }
+      )
       return
     }
 
@@ -262,13 +281,33 @@ export default function GalleryPage() {
         transition={{ duration: 0.5 }}
         className="space-y-6"
       >
-        {/* Mock Data Banner */}
+        {/* Mock Data / Setup Banner */}
         {isMockData && (
-          <div className="p-4 rounded-lg bg-blue-500/20 border border-blue-500/40 text-blue-300 text-sm flex items-start gap-3">
-            <div className="flex-shrink-0 mt-0.5">ℹ️</div>
+          <div style={{
+            padding: '14px 16px',
+            borderRadius: '12px',
+            background: 'rgba(239,68,68,0.08)',
+            border: '1px solid rgba(239,68,68,0.25)',
+            display: 'flex',
+            gap: '12px',
+            alignItems: 'flex-start',
+          }}>
+            <span style={{ fontSize: '18px', flexShrink: 0 }}>⚠️</span>
             <div>
-              <p className="font-medium">Using Sample Data</p>
-              <p className="text-xs mt-1 opacity-90">Gallery table not found in Supabase. Showing sample images. Set up the gallery table to enable uploads and database operations.</p>
+              <p style={{ fontWeight: 700, color: '#fca5a5', margin: '0 0 4px', fontSize: '14px' }}>
+                Gallery table not found in Supabase
+              </p>
+              <p style={{ color: '#9ca3af', margin: 0, fontSize: '13px', lineHeight: 1.5 }}>
+                Showing sample images. To enable uploads:{' '}
+                <strong style={{ color: '#fbbf24' }}>Supabase Dashboard → SQL Editor</strong>
+                {' → '}run the file{' '}
+                <code style={{ background: 'rgba(255,255,255,0.1)', padding: '1px 6px', borderRadius: '4px', fontSize: '12px' }}>
+                  backend/db/gallery_schema.sql
+                </code>
+                {' '}then create a{' '}
+                <strong style={{ color: '#fbbf24' }}>"gallery" Storage bucket</strong>{' '}
+                (public).
+              </p>
             </div>
           </div>
         )}
