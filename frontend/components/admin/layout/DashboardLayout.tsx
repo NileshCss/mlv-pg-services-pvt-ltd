@@ -43,16 +43,37 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
   }
 
   return (
-    <div className="flex h-screen bg-[#0A0E1A]">
-      {/* Sidebar */}
+    <div style={{ display: 'flex', minHeight: '100vh', background: '#0A0E1A', overflow: 'hidden' }}>
+      {/* Sidebar (renders its own fixed positioning) */}
       <Sidebar />
 
-      {/* Main Content */}
-      <main className="flex-1 md:ml-64 overflow-y-auto pt-16 md:pt-0">
-        <div className="min-h-screen p-4 md:p-8 max-w-7xl mx-auto">
+      {/* Main Content — margin shifts per breakpoint to avoid sidebar overlap */}
+      <main
+        style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden' }}
+        className="dashboard-main"
+      >
+        <div style={{ minHeight: '100vh', padding: '32px' }} className="dashboard-content">
           {children}
         </div>
       </main>
+
+      <style>{`
+        /* Mobile: no left margin — hamburger adds top padding */
+        @media (max-width: 767px) {
+          .dashboard-main { margin-left: 0 !important; }
+          .dashboard-content { padding: 70px 16px 24px !important; }
+        }
+        /* Tablet: match icon-only sidebar width (64px) */
+        @media (min-width: 768px) and (max-width: 1023px) {
+          .dashboard-main { margin-left: 64px !important; }
+          .dashboard-content { padding: 24px !important; }
+        }
+        /* Desktop: match full sidebar width (250px) */
+        @media (min-width: 1024px) {
+          .dashboard-main { margin-left: 250px !important; }
+          .dashboard-content { padding: 32px !important; }
+        }
+      `}</style>
     </div>
   )
 }
