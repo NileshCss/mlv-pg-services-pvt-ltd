@@ -58,7 +58,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
       </main>
 
       <style>{`
-        /* Mobile: no left margin — hamburger adds top padding */
+        /* Mobile: no left margin */
         @media (max-width: 767px) {
           .dashboard-main { margin-left: 0 !important; }
           .dashboard-content { padding: 70px 16px 24px !important; }
@@ -68,10 +68,10 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
           .dashboard-main { margin-left: 64px !important; }
           .dashboard-content { padding: 24px !important; }
         }
-        /* Desktop: match full sidebar width (250px) */
+        /* Desktop: sidebar is overlay, no margin needed — add top padding for hamburger */
         @media (min-width: 1024px) {
-          .dashboard-main { margin-left: 250px !important; }
-          .dashboard-content { padding: 32px !important; }
+          .dashboard-main { margin-left: 0 !important; }
+          .dashboard-content { padding: 64px 32px 32px !important; }
         }
       `}</style>
     </div>

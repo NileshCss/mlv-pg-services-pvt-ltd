@@ -187,6 +187,7 @@ export const Sidebar: React.FC = () => {
   const supabase = createClient()
   const {
     mobileOpen, closeMobileSidebar, toggleMobileSidebar,
+    desktopOpen, closeDesktopSidebar, toggleDesktopSidebar,
     tabletCollapsed, toggleTabletCollapsed,
   } = useUIStore()
   const { logout } = useAuthStore()
@@ -197,9 +198,10 @@ export const Sidebar: React.FC = () => {
     router.push('/admin/login')
   }
 
-  // Close mobile sidebar on route change
+  // Close all sidebars on route change
   useEffect(() => {
     closeMobileSidebar()
+    closeDesktopSidebar()
   }, [pathname])
 
   const sidebarStyle: React.CSSProperties = {
@@ -302,11 +304,12 @@ export const Sidebar: React.FC = () => {
             }}
             className="mobile-drawer"
           >
-            {/* Close button inside drawer */}
-            <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '12px 12px 0' }}>
+            {/* Close button — LEFT side */}
+            <div style={{ display: 'flex', justifyContent: 'flex-start', padding: '12px 12px 0' }}>
               <button
                 onClick={closeMobileSidebar}
-                style={{ background: 'none', border: 'none', color: '#9ca3af', cursor: 'pointer', padding: '4px' }}
+                style={{ background: 'rgba(255,255,255,0.07)', border: 'none', color: '#9ca3af', cursor: 'pointer', padding: '6px', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                aria-label="Close menu"
               >
                 <X size={20} />
               </button>
@@ -454,55 +457,130 @@ export const Sidebar: React.FC = () => {
       </aside>
 
       {/* ══════════════════════════════════════════
-          DESKTOP (1024px+): Always expanded sidebar
+          DESKTOP (1024px+): Hamburger + Drawer (hidden by default)
       ══════════════════════════════════════════ */}
-      <aside
+
+      {/* Desktop Hamburger — top-left of content area */}
+      <button
+        onClick={toggleDesktopSidebar}
+        aria-label="Open menu"
         style={{
-          ...sidebarStyle,
           position: 'fixed',
-          left: 0, top: 0,
-          width: 250,
-          zIndex: 40,
+          top: '20px',
+          left: '20px',
+          zIndex: 50,
+          padding: '8px',
+          borderRadius: '8px',
+          background: 'rgba(255,255,255,0.08)',
+          border: '1px solid rgba(255,255,255,0.1)',
+          color: '#fff',
+          cursor: 'pointer',
           display: 'none',
         }}
-        className="desktop-sidebar"
+        className="desktop-hamburger"
       >
-        <Logo collapsed={false} />
-        <nav style={{ flex: 1, overflowY: 'auto', padding: '16px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-          {navItems.map((item) => (
-            <NavItem
-              key={item.href}
-              item={item}
-              isActive={pathname === item.href}
-              collapsed={false}
-            />
-          ))}
-        </nav>
-        <LogoutBtn collapsed={false} onLogout={handleLogout} />
-      </aside>
+        <Menu size={20} />
+      </button>
+
+      {/* Desktop Backdrop */}
+      <AnimatePresence>
+        {desktopOpen && (
+          <motion.div
+            key="desktop-backdrop"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            onClick={closeDesktopSidebar}
+            style={{
+              position: 'fixed', inset: 0,
+              background: 'rgba(0,0,0,0.5)',
+              zIndex: 45,
+              display: 'none',
+            }}
+            className="desktop-backdrop"
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Desktop Drawer */}
+      <AnimatePresence>
+        {desktopOpen && (
+          <motion.aside
+            key="desktop-drawer"
+            initial={{ x: -260 }}
+            animate={{ x: 0 }}
+            exit={{ x: -260 }}
+            transition={{ type: 'tween', duration: 0.25 }}
+            style={{
+              ...sidebarStyle,
+              position: 'fixed',
+              left: 0, top: 0,
+              width: 260,
+              zIndex: 46,
+              display: 'none',
+            }}
+            className="desktop-drawer"
+          >
+            {/* Close button — LEFT side */}
+            <div style={{ display: 'flex', justifyContent: 'flex-start', padding: '12px 12px 0' }}>
+              <button
+                onClick={closeDesktopSidebar}
+                style={{
+                  background: 'rgba(255,255,255,0.07)', border: 'none', color: '#9ca3af',
+                  cursor: 'pointer', padding: '6px', borderRadius: '8px',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                }}
+                aria-label="Close menu"
+              >
+                <X size={20} />
+              </button>
+            </div>
+            <Logo collapsed={false} />
+            <nav style={{ flex: 1, overflowY: 'auto', padding: '16px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+              {navItems.map((item) => (
+                <NavItem
+                  key={item.href}
+                  item={item}
+                  isActive={pathname === item.href}
+                  collapsed={false}
+                  onClick={closeDesktopSidebar}
+                />
+              ))}
+            </nav>
+            <LogoutBtn collapsed={false} onLogout={handleLogout} />
+          </motion.aside>
+        )}
+      </AnimatePresence>
 
       {/* ── Global responsive display rules ── */}
       <style>{`
         @media (max-width: 767px) {
-          .mobile-hamburger  { display: block !important; }
-          .mobile-backdrop   { display: block !important; }
-          .mobile-drawer     { display: flex !important; }
-          .tablet-sidebar    { display: none !important; }
-          .desktop-sidebar   { display: none !important; }
+          .mobile-hamburger   { display: block !important; }
+          .mobile-backdrop    { display: block !important; }
+          .mobile-drawer      { display: flex !important; }
+          .tablet-sidebar     { display: none !important; }
+          .desktop-hamburger  { display: none !important; }
+          .desktop-backdrop   { display: none !important; }
+          .desktop-drawer     { display: none !important; }
         }
         @media (min-width: 768px) and (max-width: 1023px) {
-          .mobile-hamburger  { display: none !important; }
-          .mobile-backdrop   { display: none !important; }
-          .mobile-drawer     { display: none !important; }
-          .tablet-sidebar    { display: flex !important; }
-          .desktop-sidebar   { display: none !important; }
+          .mobile-hamburger   { display: none !important; }
+          .mobile-backdrop    { display: none !important; }
+          .mobile-drawer      { display: none !important; }
+          .tablet-sidebar     { display: flex !important; }
+          .desktop-hamburger  { display: none !important; }
+          .desktop-backdrop   { display: none !important; }
+          .desktop-drawer     { display: none !important; }
         }
         @media (min-width: 1024px) {
-          .mobile-hamburger  { display: none !important; }
-          .mobile-backdrop   { display: none !important; }
-          .mobile-drawer     { display: none !important; }
-          .tablet-sidebar    { display: none !important; }
-          .desktop-sidebar   { display: flex !important; }
+          .mobile-hamburger   { display: none !important; }
+          .mobile-backdrop    { display: none !important; }
+          .mobile-drawer      { display: none !important; }
+          .tablet-sidebar     { display: none !important; }
+          .desktop-hamburger  { display: block !important; }
+          .desktop-backdrop   { display: block !important; }
+          .desktop-drawer     { display: flex !important; }
         }
       `}</style>
     </>
