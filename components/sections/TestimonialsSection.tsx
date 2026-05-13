@@ -121,7 +121,7 @@ const TestimonialCard = memo(({ testimonial, index }: any) => (
 ))
 TestimonialCard.displayName = 'TestimonialCard'
 
-const TestimonialsSection: React.FC = () => {
+function TestimonialsSection() {
   return (
     <section id="testimonials" className="py-24 md:py-32 relative overflow-hidden">
       {/* Background */}
@@ -177,4 +177,6 @@ const TestimonialsSection: React.FC = () => {
   )
 }
 
-export { TestimonialsSection: memo(TestimonialsSection) }
+// Export as memoized component to prevent unnecessary re-renders
+const MemoizedTestimonialsSection = memo(TestimonialsSection)
+export { MemoizedTestimonialsSection as TestimonialsSection }

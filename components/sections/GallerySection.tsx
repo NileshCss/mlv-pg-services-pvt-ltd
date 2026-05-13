@@ -223,4 +223,6 @@ const GallerySection = () => {
   )
 }
 
-export { GallerySection: memo(GallerySection) }
+// Export as memoized component to prevent unnecessary re-renders
+const MemoizedGallerySection = memo(GallerySection)
+export { MemoizedGallerySection as GallerySection }
