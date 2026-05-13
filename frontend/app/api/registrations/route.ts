@@ -6,20 +6,20 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
     
-    // Validate service key exists
-    if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
-      console.error('Missing SUPABASE_SERVICE_ROLE_KEY environment variable')
-      return NextResponse.json(
-        { error: 'Server configuration error' },
-        { status: 500 }
-      )
-    }
+    // Try to get service key (checking both common names)
+    const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_KEY
 
-    // Use service client to bypass RLS for inserting anonymous forms
-    const supabase = createServiceClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY
-    )
+    let supabase
+    if (serviceKey) {
+      // Use service client to bypass RLS for inserting anonymous forms
+      supabase = createServiceClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        serviceKey
+      )
+    } else {
+      console.warn('Missing service key, falling back to anon client')
+      supabase = await createServerClient()
+    }
 
     // Validate required fields
     const required = [
