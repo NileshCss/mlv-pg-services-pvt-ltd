@@ -1,5 +1,5 @@
 -- MLV PG Services — Gallery Table & Storage Setup
--- Run this in your Supabase SQL Editor
+-- Safe to re-run multiple times (all statements are idempotent)
 
 -- ── 1. Create gallery table ────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS gallery (
@@ -35,6 +35,13 @@ CREATE TRIGGER trg_gallery_updated_at
 -- ── 4. Row Level Security ─────────────────────────────────────────────
 ALTER TABLE gallery ENABLE ROW LEVEL SECURITY;
 
+-- Drop existing policies first (safe to re-run)
+DROP POLICY IF EXISTS "gallery_select_public" ON gallery;
+DROP POLICY IF EXISTS "gallery_select_admin"  ON gallery;
+DROP POLICY IF EXISTS "gallery_insert_admin"  ON gallery;
+DROP POLICY IF EXISTS "gallery_update_admin"  ON gallery;
+DROP POLICY IF EXISTS "gallery_delete_admin"  ON gallery;
+
 -- Public can SELECT active images
 CREATE POLICY "gallery_select_public"
   ON gallery FOR SELECT
@@ -62,37 +69,44 @@ GRANT SELECT ON gallery TO anon;
 GRANT ALL   ON gallery TO authenticated;
 
 -- ── 6. Storage Bucket ────────────────────────────────────────────────
--- Creates the "gallery" public bucket (safe to re-run, uses ON CONFLICT)
+-- Creates the "gallery" public bucket (safe to re-run)
 INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
 VALUES (
   'gallery',
   'gallery',
   true,
-  5242880,  -- 5 MB max per file
+  5242880,
   ARRAY['image/jpeg','image/png','image/webp','image/gif']
 )
 ON CONFLICT (id) DO UPDATE SET
   public = true,
   file_size_limit = 5242880;
 
--- Storage RLS: allow authenticated users to upload
+-- Drop existing storage policies first (safe to re-run)
+DROP POLICY IF EXISTS "storage_gallery_upload"      ON storage.objects;
+DROP POLICY IF EXISTS "storage_gallery_update"      ON storage.objects;
+DROP POLICY IF EXISTS "storage_gallery_delete"      ON storage.objects;
+DROP POLICY IF EXISTS "storage_gallery_public_read" ON storage.objects;
+
+-- Storage RLS: authenticated users can upload
 CREATE POLICY "storage_gallery_upload"
   ON storage.objects FOR INSERT
   TO authenticated
   WITH CHECK (bucket_id = 'gallery');
 
--- Storage RLS: allow authenticated users to update/delete
+-- Storage RLS: authenticated users can update
 CREATE POLICY "storage_gallery_update"
   ON storage.objects FOR UPDATE
   TO authenticated
   USING (bucket_id = 'gallery');
 
+-- Storage RLS: authenticated users can delete
 CREATE POLICY "storage_gallery_delete"
   ON storage.objects FOR DELETE
   TO authenticated
   USING (bucket_id = 'gallery');
 
--- Storage RLS: allow public to read (view images)
+-- Storage RLS: public can read/view images
 CREATE POLICY "storage_gallery_public_read"
   ON storage.objects FOR SELECT
   TO anon, authenticated
