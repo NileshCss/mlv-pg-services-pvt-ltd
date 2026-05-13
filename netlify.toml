@@ -1,6 +1,6 @@
 [build]
   # Next.js 15 build command
-  command = "npm ci && npm run build"
+  command = "npm ci --include=dev && npm run build"
   # Functions directory for Netlify functions (if used)
   functions = "netlify/functions"
   # Publish directory - points to Next.js build output
