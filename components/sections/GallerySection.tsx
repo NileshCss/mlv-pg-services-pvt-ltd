@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, memo } from 'react'
 import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ZoomIn, X } from 'lucide-react'
@@ -63,11 +63,42 @@ const itemVariants = {
   visible: {
     opacity: 1,
     scale: 1,
-    transition: { duration: 0.55, ease: [0.25, 0.46, 0.45, 0.94] },
+    transition: { duration: 0.55, ease: [0.25, 0.46, 0.45, 0.94] as any },
   },
 }
 
-const GallerySection: React.FC = () => {
+// Memoized gallery item component
+const GalleryItem = memo(({ gallery, index, onSelect }: any) => (
+  <motion.div
+    className="relative rounded-3xl overflow-hidden group cursor-pointer h-64"
+    style={{
+      background: 'rgba(255,255,255,0.03)',
+      border: '1px solid rgba(255,255,255,0.06)',
+      transition: 'all 0.4s cubic-bezier(0.34,1.56,0.64,1)',
+    }}
+    variants={itemVariants}
+    whileHover={{ y: -8 }}
+    onClick={() => onSelect(gallery)}
+  >
+    <Image
+      src={gallery.image}
+      alt={gallery.title}
+      fill
+      className="object-cover transition-transform duration-500 group-hover:scale-110"
+      loading="lazy"
+      placeholder="blur"
+      blurDataURL="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300'%3E%3Crect fill='%23111827' width='400' height='300'/%3E%3C/svg%3E"
+    />
+    <div className="absolute inset-0 img-overlay" />
+    <div className="absolute inset-0 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+      <ZoomIn size={32} className="text-white mb-2" />
+      <p className="text-white font-semibold">{gallery.count} photos</p>
+    </div>
+  </motion.div>
+))
+GalleryItem.displayName = 'GalleryItem'
+
+const GallerySection = () => {
   const [selected, setSelected] = useState<(typeof galleries)[0] | null>(null)
 
   return (
@@ -192,4 +223,4 @@ const GallerySection: React.FC = () => {
   )
 }
 
-export { GallerySection }
+export { GallerySection: memo(GallerySection) }

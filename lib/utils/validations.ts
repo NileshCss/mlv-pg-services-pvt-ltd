@@ -7,8 +7,8 @@ export const PreRegistrationSchema = z.object({
     .regex(/^[0-9]{10}$/, 'Phone must be 10 digits')
     .min(10, 'Phone must be 10 digits'),
   email: z.string().email('Invalid email address'),
-  gender: z.enum(['Indian', 'Nepali', 'Bhutanese', 'Sri Lankan', 'Bangladeshi', 'Afghan', 'Pakistani', 'Other'], {
-    errorMap: () => ({ message: 'Please select a nationality' }),
+  gender: z.enum(['Male', 'Female', 'Other'], {
+    errorMap: () => ({ message: 'Please select a gender' }),
   }),
   college_name: z.string().min(2, 'College name is required'),
   course: z.string().min(2, 'Course name is required'),

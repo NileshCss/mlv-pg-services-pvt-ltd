@@ -22,7 +22,7 @@ const container = {
 
 const item = {
   hidden: { opacity: 0, y: 24 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.65, ease: [0.25, 0.46, 0.45, 0.94] } },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.65, ease: [0.25, 0.46, 0.45, 0.94] as any } },
 }
 
 const HeroSection: React.FC<HeroSectionProps> = ({ onBookClick, onContactClick }) => {
@@ -36,26 +36,36 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onBookClick, onContactClick }
         {/* Deep dark base */}
         <div className="absolute inset-0" style={{ background: 'linear-gradient(160deg, #0a0f1e 0%, #0d1b40 50%, #0a0f1e 100%)' }} />
 
-        {/* Ambient orbs */}
+        {/* Ambient orbs - GPU accelerated with will-change */}
         <div
-          className="absolute -top-32 right-0 w-[600px] h-[600px] rounded-full opacity-20 blur-3xl"
-          style={{ background: 'radial-gradient(circle, rgba(201,168,76,0.4) 0%, transparent 70%)' }}
+          className="absolute -top-32 right-0 w-[600px] h-[600px] rounded-full opacity-20 blur-xl"
+          style={{ 
+            background: 'radial-gradient(circle, rgba(201,168,76,0.4) 0%, transparent 70%)',
+            willChange: 'transform',
+          }}
         />
         <div
-          className="absolute bottom-0 -left-24 w-[500px] h-[500px] rounded-full opacity-15 blur-3xl"
-          style={{ background: 'radial-gradient(circle, rgba(13,27,133,0.5) 0%, transparent 70%)' }}
+          className="absolute bottom-0 -left-24 w-[500px] h-[500px] rounded-full opacity-15 blur-xl"
+          style={{ 
+            background: 'radial-gradient(circle, rgba(13,27,133,0.5) 0%, transparent 70%)',
+            willChange: 'transform',
+          }}
         />
         <div
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[900px] rounded-full opacity-5 blur-3xl"
-          style={{ background: 'radial-gradient(circle, rgba(201,168,76,0.3) 0%, transparent 70%)' }}
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[900px] rounded-full opacity-5 blur-xl"
+          style={{ 
+            background: 'radial-gradient(circle, rgba(201,168,76,0.3) 0%, transparent 70%)',
+            willChange: 'transform',
+          }}
         />
 
-        {/* Subtle grid */}
+        {/* Subtle grid - made static to reduce re-paints */}
         <div
-          className="absolute inset-0 opacity-[0.025]"
+          className="absolute inset-0 opacity-[0.025] pointer-events-none"
           style={{
             backgroundImage: 'linear-gradient(rgba(201,168,76,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(201,168,76,0.5) 1px, transparent 1px)',
             backgroundSize: '60px 60px',
+            willChange: 'auto',
           }}
         />
       </div>
@@ -178,7 +188,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onBookClick, onContactClick }
             className="hidden lg:block relative"
             initial={{ opacity: 0, x: 60, scale: 0.97 }}
             animate={{ opacity: 1, x: 0, scale: 1 }}
-            transition={{ duration: 0.9, delay: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
+            transition={{ duration: 0.9, delay: 0.3, ease: [0.25, 0.46, 0.45, 0.94] as any }}
           >
             {/* Decorative ring */}
             <div

@@ -167,9 +167,9 @@ const PreRegistrationForm: React.FC<PreRegistrationFormProps> = ({ open, onOpenC
                 error={errors.email?.message}
               />
               <Select
-                label="Nationality / Country"
+                label="Gender"
                 {...register('gender')}
-                options={NATIONALITIES.map(n => ({ value: n, label: n }))}
+                options={GENDERS.map(g => ({ value: g, label: g }))}
                 error={errors.gender?.message}
               />
             </div>

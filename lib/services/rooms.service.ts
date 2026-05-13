@@ -29,9 +29,6 @@ export async function fetchRooms(filter: FilterType, building: string) {
     case 'non-ac':
       query = query.eq('is_ac', false)
       break
-    case 'available':
-      query = query.lt('occupied_beds', supabase.raw('total_beds')).eq('maintenance_status', false)
-      break
     case 'maintenance':
       query = query.eq('maintenance_status', true)
       break
@@ -42,7 +39,21 @@ export async function fetchRooms(filter: FilterType, building: string) {
     query = query.eq('building_name', building)
   }
 
-  return query
+  const { data, error } = await query
+
+  if (error) {
+    return { data: null, error }
+  }
+
+  let filteredData = data as Room[]
+
+  if (filter === 'available') {
+    filteredData = filteredData.filter(
+      (room) => room.occupied_beds < room.total_beds && !room.maintenance_status
+    )
+  }
+
+  return { data: filteredData, error: null }
 }
 
 export async function fetchBuildings() {

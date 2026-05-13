@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import React, { memo } from 'react'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
 import { Quote, Star } from 'lucide-react'
@@ -57,9 +57,69 @@ const itemVariants = {
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.65, ease: [0.25, 0.46, 0.45, 0.94] },
+    transition: { duration: 0.65, ease: [0.25, 0.46, 0.45, 0.94] as any },
   },
 }
+
+// Memoized testimonial card to prevent unnecessary re-renders
+const TestimonialCard = memo(({ testimonial, index }: any) => (
+  <motion.div
+    className="group relative p-7 rounded-2xl overflow-hidden"
+    style={{
+      background: 'rgba(255,255,255,0.03)',
+      border: '1px solid rgba(255,255,255,0.07)',
+      transition: 'all 0.35s cubic-bezier(0.34,1.56,0.64,1)',
+    }}
+    variants={itemVariants}
+    whileHover={{ y: -6 }}
+  >
+    {/* Hover border glow */}
+    <div
+      className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-400"
+      style={{ boxShadow: 'inset 0 0 0 1px rgba(201,168,76,0.2)' }}
+    />
+
+    {/* Quote icon */}
+    <div
+      className="w-10 h-10 rounded-xl flex items-center justify-center mb-5 flex-shrink-0"
+      style={{ background: 'rgba(201,168,76,0.1)' }}
+    >
+      <Quote size={18} style={{ color: '#c9a84c' }} />
+    </div>
+
+    {/* Stars */}
+    <div className="flex gap-1 mb-4">
+      {Array.from({ length: testimonial.rating }).map((_, i) => (
+        <Star key={i} size={14} className="fill-yellow-400 text-yellow-400" />
+      ))}
+    </div>
+
+    {/* Text */}
+    <p className="text-gray-300 leading-relaxed mb-7 text-[15px] italic">
+      "{testimonial.text}"
+    </p>
+
+    {/* Author */}
+    <div className="flex items-center gap-3">
+      <div className="relative w-10 h-10 rounded-full overflow-hidden flex-shrink-0">
+        <Image
+          src={testimonial.image}
+          alt={testimonial.name}
+          fill
+          className="object-cover"
+          loading="lazy"
+        />
+      </div>
+      <div className="min-w-0">
+        <p className="text-sm font-semibold text-white truncate">{testimonial.name}</p>
+        <p className="text-xs text-gray-500 truncate">
+          {testimonial.course} • {testimonial.college}
+        </p>
+      </div>
+    </div>
+  </motion.div>
+))
+TestimonialCard.displayName = 'TestimonialCard'
 
 const TestimonialsSection: React.FC = () => {
   return (
@@ -109,74 +169,7 @@ const TestimonialsSection: React.FC = () => {
           viewport={{ once: true, margin: '-80px' }}
         >
           {testimonials.map((testimonial, idx) => (
-            <motion.div
-              key={testimonial.id}
-              className="group relative p-7 rounded-2xl overflow-hidden"
-              style={{
-                background: 'rgba(255,255,255,0.03)',
-                border: '1px solid rgba(255,255,255,0.07)',
-                transition: 'all 0.35s cubic-bezier(0.34,1.56,0.64,1)',
-              }}
-              variants={itemVariants}
-              whileHover={{ y: -6 }}
-            >
-              {/* Hover border glow */}
-              <div
-                className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-400"
-                style={{ boxShadow: 'inset 0 0 0 1px rgba(201,168,76,0.2)' }}
-              />
-
-              {/* Quote icon */}
-              <div
-                className="w-10 h-10 rounded-xl flex items-center justify-center mb-5 flex-shrink-0"
-                style={{ background: 'rgba(201,168,76,0.1)' }}
-              >
-                <Quote size={18} style={{ color: '#c9a84c' }} />
-              </div>
-
-              {/* Stars */}
-              <div className="flex gap-1 mb-4">
-                {Array.from({ length: testimonial.rating }).map((_, i) => (
-                  <Star key={i} size={14} className="fill-yellow-400 text-yellow-400" />
-                ))}
-              </div>
-
-              {/* Text */}
-              <p className="text-gray-300 leading-relaxed mb-7 text-[15px] italic">
-                "{testimonial.text}"
-              </p>
-
-              {/* Author */}
-              <div
-                className="flex items-center gap-4 pt-5"
-                style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}
-              >
-                <div className="relative w-12 h-12 rounded-full overflow-hidden flex-shrink-0 ring-2 ring-secondary-500/30">
-                  <Image
-                    src={testimonial.image}
-                    alt={testimonial.name}
-                    fill
-                    className="object-cover"
-                  />
-                </div>
-                <div>
-                  <div className="font-bold text-white text-sm">{testimonial.name}</div>
-                  <div className="text-xs text-gray-500 mt-0.5">
-                    {testimonial.course} · {testimonial.college}
-                  </div>
-                </div>
-
-                {/* Verified badge */}
-                <div className="ml-auto">
-                  <span
-                    className="text-[10px] font-semibold px-2 py-1 rounded-full"
-                    style={{ background: 'rgba(201,168,76,0.1)', color: '#c9a84c', border: '1px solid rgba(201,168,76,0.2)' }}
-                  >
-                    ✓ Verified
-                  </span>
-                </div>
-              </div>
-            </motion.div>
+            <TestimonialCard key={testimonial.id} testimonial={testimonial} index={idx} />
           ))}
         </motion.div>
       </div>
@@ -184,4 +177,4 @@ const TestimonialsSection: React.FC = () => {
   )
 }
 
-export { TestimonialsSection }
+export { TestimonialsSection: memo(TestimonialsSection) }

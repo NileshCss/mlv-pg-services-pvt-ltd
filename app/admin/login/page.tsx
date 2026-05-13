@@ -8,6 +8,9 @@ import { createClient } from '@/lib/supabase/client'
 import { useAuthStore } from '@/store/authStore'
 import { toast } from 'sonner'
 
+// NOTE: This is the primary admin login page using Supabase authentication.
+// Do not use app/(auth)/login for admin access as it uses hardcoded credentials.
+
 export default function AdminLoginPage() {
   const router = useRouter()
   const supabase = createClient()

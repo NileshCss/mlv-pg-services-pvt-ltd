@@ -64,3 +64,6 @@ node_modules
 node_modules/
 .env
 
+
+.next/
+tsconfig.tsbuildinfo

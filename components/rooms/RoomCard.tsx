@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, memo } from 'react'
 import Image from 'next/image'
 import { Edit2, Trash2, Zap, MoreVertical, BedDouble, Building2 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -14,7 +14,7 @@ interface RoomCardProps {
   onRefetch: () => void
 }
 
-export function RoomCard({ room, onEdit, onRefetch }: RoomCardProps) {
+const RoomCard = memo(function RoomCardComponent({ room, onEdit, onRefetch }: RoomCardProps) {
   const [showMenu, setShowMenu] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
 
@@ -218,4 +218,7 @@ export function RoomCard({ room, onEdit, onRefetch }: RoomCardProps) {
       </div>
     </motion.div>
   )
-}
+})
+
+RoomCard.displayName = 'RoomCard'
+export { RoomCard }

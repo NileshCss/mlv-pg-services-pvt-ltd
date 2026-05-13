@@ -15,8 +15,7 @@ export function useRooms(filter: FilterType = 'all', building: string = 'all') {
       setIsLoading(true)
       setError(null)
 
-      const query = await fetchRooms(filter, building)
-      const { data, error: err } = await query
+      const { data, error: err } = await fetchRooms(filter, building)
 
       if (err) {
         setError('Failed to fetch rooms')
@@ -32,22 +31,23 @@ export function useRooms(filter: FilterType = 'all', building: string = 'all') {
     }
   }, [filter, building])
 
-  const fetchBuildingsList = useCallback(async () => {
-    try {
-      const data = await fetchBuildings()
-      setBuildings(data)
-    } catch (err) {
-      setBuildings([])
+  // Fetch buildings only once on mount
+  useEffect(() => {
+    const fetchBuildingsList = async () => {
+      try {
+        const data = await fetchBuildings()
+        setBuildings(data)
+      } catch (err) {
+        console.error('Failed to fetch buildings:', err)
+        setBuildings([])
+      }
     }
+    fetchBuildingsList()
   }, [])
 
   useEffect(() => {
     refetch()
   }, [refetch])
-
-  useEffect(() => {
-    fetchBuildingsList()
-  }, [fetchBuildingsList])
 
   return { rooms, buildings, isLoading, error, refetch }
 }

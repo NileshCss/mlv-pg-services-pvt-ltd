@@ -8,7 +8,12 @@ import { Alert } from '@/components/ui/Alert'
 import { motion } from 'framer-motion'
 import { LogIn, Loader } from 'lucide-react'
 
-export default function AdminLoginPage() {
+/**
+ * WARNING: This login page uses hardcoded credentials and should NOT be used for admin authentication.
+ * Use /admin/login instead, which uses Supabase authentication.
+ * This page is for demonstration purposes only and is a security risk.
+ */
+export default function DemoLoginPage() {
   const router = useRouter()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')

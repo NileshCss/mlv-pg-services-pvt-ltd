@@ -7,12 +7,14 @@ const playfair = Playfair_Display({
   subsets: ['latin'],
   variable: '--font-playfair',
   weight: ['400', '600', '700'],
+  display: 'swap', // Prevent FOUT
 })
 
 const dmSans = DM_Sans({
   subsets: ['latin'],
   variable: '--font-dm-sans',
   weight: ['300', '400', '500', '600'],
+  display: 'swap', // Prevent FOUT
 })
 
 export const metadata: Metadata = {

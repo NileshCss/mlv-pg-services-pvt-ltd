@@ -35,7 +35,7 @@ function TableRow({ item, idx }: { item: FoodMenuItem; idx: number }) {
       initial={{ opacity: 0, x: -10 }}
       whileInView={{ opacity: 1, x: 0 }}
       viewport={{ once: true }}
-      transition={{ delay: idx * 0.06 }}
+      transition={{ delay: idx * 0.03 }}
       style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}
       onMouseEnter={e => (e.currentTarget.style.background = 'rgba(251,191,36,0.04)')}
       onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}

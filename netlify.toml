@@ -1,0 +1,66 @@
+[build]
+  # Next.js 15 build command
+  command = "npm run build"
+  # Functions and static files directory
+  functions = "netlify/functions"
+  publish = ".next"
+
+[dev]
+  # Development server configuration
+  command = "npm run dev"
+  port = 3000
+
+[[redirects]]
+  # Redirect all routes to Next.js for proper client-side routing
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Cache headers for optimized performance
+[[headers]]
+  for = "/_next/static/*"
+  [headers.values]
+    # Cache Next.js static assets for 1 year (immutable)
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/images/*"
+  [headers.values]
+    # Cache images for 1 year
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/api/*"
+  [headers.values]
+    # API responses cached for 1 hour
+    Cache-Control = "public, max-age=3600, s-maxage=3600"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    # Security headers
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "SAMEORIGIN"
+    X-XSS-Protection = "1; mode=block"
+    # Allow Supabase authentication
+    Access-Control-Allow-Origin = "*"
+    Access-Control-Allow-Methods = "GET, POST, PUT, DELETE, OPTIONS"
+    Access-Control-Allow-Headers = "Content-Type, Authorization"
+
+# Environment variables for Netlify deployment
+[context.production]
+  # Set environment variables in Netlify dashboard instead
+  # Use these as reference:
+  # NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+  # NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+  # SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+  [context.production.environment]
+    NODE_ENV = "production"
+
+[context.deploy-preview]
+  [context.deploy-preview.environment]
+    NODE_ENV = "development"
+
+[context.branch-deploy]
+  [context.branch-deploy.environment]
+    NODE_ENV = "development"

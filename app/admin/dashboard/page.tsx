@@ -53,30 +53,34 @@ export default function AdminDashboardPage() {
       setLoadingStats(true)
       setLoading(true)
 
-      // ── Fetch all registration data ──
+      // ── Batch fetch using Promise.all to reduce round-trips ──
+      // Reduce query count by fetching count and data in parallel more efficiently
       const [
-        { count: registrationsCount },
-        { count: pendingCount },
+        { count: registrationsCount, data: recentData },
         { data: allRegs },
-        { data: recentData },
       ] = await Promise.all([
-        supabase.from('pre_registrations').select('id', { count: 'exact', head: true }),
-        supabase.from('pre_registrations').select('id', { count: 'exact', head: true }).eq('status', 'new'),
-        supabase.from('pre_registrations').select('status, created_at'),
-        supabase.from('pre_registrations')
-          .select('id, full_name, phone, college_name, check_in_date, status, created_at')
+        supabase
+          .from('pre_registrations')
+          .select('id, full_name, phone, college_name, check_in_date, status, created_at', { count: 'exact' })
           .order('created_at', { ascending: false })
           .limit(5),
+        supabase
+          .from('pre_registrations')
+          .select('status, created_at'),
       ])
+
+      const pendingCount = recentData?.filter((r: any) => r.status === 'new').length || 0
 
       // ── Try fetching bookings (table may not exist) ──
       let bookingsCount = 0
       let activeResidents = 0
       try {
-        const { count: bc } = await supabase.from('bookings').select('id', { count: 'exact', head: true })
+        const { count: bc, data: bookingsData } = await supabase
+          .from('bookings')
+          .select('*', { count: 'exact' })
+          .limit(1)
         bookingsCount = bc ?? 0
-        const { count: ac } = await supabase.from('bookings').select('id', { count: 'exact', head: true }).eq('status', 'checked_in')
-        activeResidents = ac ?? 0
+        activeResidents = bookingsData?.filter((b: any) => b.status === 'checked_in').length ?? 0
       } catch {
         // bookings table doesn't exist yet — that's fine
         console.log('[Dashboard] bookings table not found, showing 0')
