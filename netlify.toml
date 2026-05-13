@@ -4,7 +4,7 @@
   # Functions directory for Netlify functions (if used)
   functions = "netlify/functions"
   # Publish directory - points to Next.js build output
-  publish = ".next"
+  publish = "frontend/.next"
   # Node version
   environment = { NODE_VERSION = "20.x" }
 
