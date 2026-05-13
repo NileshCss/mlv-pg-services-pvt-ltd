@@ -1,9 +1,11 @@
 [build]
   # Next.js 15 build command
-  command = "npm run build"
+  command = "npm ci && npm run build"
   # Functions and static files directory
   functions = "netlify/functions"
   publish = ".next"
+  # Ensure all dependencies installed
+  environment = { NODE_VERSION = "20.x" }
 
 [dev]
   # Development server configuration
