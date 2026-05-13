@@ -30,6 +30,7 @@ const nextConfig = {
   },
   
   experimental: {
+    typedRoutes: false,
     optimizePackageImports: [
       'lucide-react',
       '@supabase/supabase-js',

@@ -1,10 +1,11 @@
 [build]
   # Next.js 15 build command
   command = "npm ci && npm run build"
-  # Functions and static files directory
+  # Functions directory for Netlify functions (if used)
   functions = "netlify/functions"
+  # Publish directory - points to Next.js build output
   publish = ".next"
-  # Ensure all dependencies installed
+  # Node version
   environment = { NODE_VERSION = "20.x" }
 
 [dev]
@@ -12,42 +13,53 @@
   command = "npm run dev"
   port = 3000
 
+# ─────────────────────────────────────────────────────────
+# Redirects for Next.js client-side routing
+# ─────────────────────────────────────────────────────────
 [[redirects]]
-  # Redirect all routes to Next.js for proper client-side routing
+  # Catch all routes and let Next.js handle routing
   from = "/*"
   to = "/index.html"
   status = 200
+  force = false
 
-# Cache headers for optimized performance
+# ─────────────────────────────────────────────────────────
+# Cache Headers for Optimized Performance
+# ─────────────────────────────────────────────────────────
+
+# Cache Next.js static assets immutably
 [[headers]]
   for = "/_next/static/*"
   [headers.values]
-    # Cache Next.js static assets for 1 year (immutable)
     Cache-Control = "public, max-age=31536000, immutable"
 
+# Cache images immutably
 [[headers]]
   for = "/images/*"
   [headers.values]
-    # Cache images for 1 year
     Cache-Control = "public, max-age=31536000, immutable"
 
+# Cache API responses for 1 hour
 [[headers]]
   for = "/api/*"
   [headers.values]
-    # API responses cached for 1 hour
     Cache-Control = "public, max-age=3600, s-maxage=3600"
 
+# Default cache policy
 [[headers]]
   for = "/*"
   [headers.values]
-    # Security headers
+    Cache-Control = "public, max-age=3600"
+    # Security Headers
     X-Content-Type-Options = "nosniff"
     X-Frame-Options = "SAMEORIGIN"
     X-XSS-Protection = "1; mode=block"
-    # Allow Supabase authentication
+    # CORS for Supabase
     Access-Control-Allow-Origin = "*"
     Access-Control-Allow-Methods = "GET, POST, PUT, DELETE, OPTIONS"
     Access-Control-Allow-Headers = "Content-Type, Authorization"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
 
 # Environment variables for Netlify deployment
 [context.production]

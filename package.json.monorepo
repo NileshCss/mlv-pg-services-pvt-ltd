@@ -22,13 +22,11 @@
     "lint": "npm run lint:frontend && npm run lint:backend",
     "lint:frontend": "cd frontend && npm run lint",
     "lint:backend": "cd backend && npm run lint",
-    "format": "prettier --write \"**/*.{ts,tsx,js,md,json}\"",
     "install:all": "npm install && cd frontend && npm install && cd ../backend && npm install && cd ../shared && npm install",
     "clean": "rimraf frontend/node_modules backend/node_modules shared/node_modules frontend/.next backend/dist .turbo"
   },
   "devDependencies": {
     "concurrently": "^8.2.2",
-    "prettier": "^3.1.0",
     "rimraf": "^5.0.5"
   }
 }

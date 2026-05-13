@@ -11,6 +11,7 @@
     "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
+    "jsx": "react-jsx",
     "incremental": true,
     "noEmit": true,
     "strict": true,
@@ -18,7 +19,41 @@
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
-    "allowJs": true
+    "types": [
+      "next"
+    ],
+    "paths": {
+      "@/*": [
+        "./*"
+      ],
+      "@/components/*": [
+        "./components/*"
+      ],
+      "@/lib/*": [
+        "./lib/*"
+      ],
+      "@/hooks/*": [
+        "./hooks/*"
+      ],
+      "@/store/*": [
+        "./store/*"
+      ],
+      "@/types/*": [
+        "./types/*"
+      ],
+      "@/styles/*": [
+        "./styles/*"
+      ],
+      "@/shared/*": [
+        "../shared/*"
+      ]
+    },
+    "allowJs": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ]
   },
   "include": [
     "next-env.d.ts",
