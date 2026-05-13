@@ -114,7 +114,7 @@ const Footer: React.FC = () => {
             <ul className="space-y-4">
               <li>
                 <a
-                  href="tel:919876543210"
+                  href="tel:918809630649"
                   className="flex items-start gap-3 group"
                 >
                   <Phone size={15} className="text-secondary-600 mt-0.5 flex-shrink-0 group-hover:text-secondary-400 transition-colors" />

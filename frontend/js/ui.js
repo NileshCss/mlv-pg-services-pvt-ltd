@@ -83,7 +83,7 @@ async function submitRegistration() {
       <p>Thank you, <strong>${name}</strong>! Your pre-registration has been received.<br><br>
       Our team will contact you at <strong>${phone}</strong> within 24 hours to confirm your booking and guide you through the next steps.<br><br>
       You can also reach us directly on WhatsApp for faster response.</p>
-      <a href="https://wa.me/919876543210?text=Hi%2C%20I%20just%20registered%20-%20${encodeURIComponent(name)}" target="_blank" style="display:inline-block;background:#25D366;color:#fff;padding:12px 28px;border-radius:8px;text-decoration:none;font-weight:600;margin-top:20px">💬 Chat on WhatsApp</a>
+      <a href="https://wa.me/918809630649?text=Hi%2C%20I%20just%20registered%20-%20${encodeURIComponent(name)}" target="_blank" style="display:inline-block;background:#25D366;color:#fff;padding:12px 28px;border-radius:8px;text-decoration:none;font-weight:600;margin-top:20px">💬 Chat on WhatsApp</a>
     </div>`;
 
   btn.textContent = 'Submit Registration';

@@ -9,9 +9,9 @@ const contactInfo = [
   {
     icon: Phone,
     title: 'Phone',
-    content: '+91 98765 43210',
+    content: '+91 88096 30649',
     sub: 'Mon–Sun, 8 AM – 10 PM',
-    link: 'tel:919876543210',
+    link: 'tel:918809630649',
   },
   {
     icon: Mail,

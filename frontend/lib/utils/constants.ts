@@ -2,7 +2,7 @@
 export const SITE_NAME = 'MLV PG Services'
 export const SITE_DESCRIPTION = 'Premium Student PG Near Acharya Institute'
 export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
-export const WHATSAPP_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '919876543210'
+export const WHATSAPP_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '918809630649'
 
 // Colors
 export const COLORS = {
