@@ -104,17 +104,17 @@ const PreRegistrationForm: React.FC<PreRegistrationFormProps> = ({ open, onOpenC
           </p>
         </motion.div>
       ) : (
-        <div className="px-6 py-8">
+        <div className="px-4 sm:px-6 py-6 sm:py-8 w-full overflow-hidden">
           {/* Header with light golden background */}
           <div 
-            className="rounded-lg px-6 py-8 mb-8 text-center"
+            className="rounded-lg px-4 sm:px-6 py-6 sm:py-8 mb-6 sm:mb-8 text-center w-full"
             style={{ 
               background: 'linear-gradient(135deg, rgba(201, 168, 76, 0.12) 0%, rgba(201, 168, 76, 0.08) 100%)',
               backdropFilter: 'blur(10px)'
             }}
           >
             <div 
-              className="inline-block px-4 py-1.5 rounded-full text-xs font-bold mb-6 tracking-widest"
+              className="inline-block px-3 py-1.5 sm:px-4 rounded-full text-[10px] sm:text-xs font-bold mb-4 sm:mb-6 tracking-widest"
               style={{ 
                 background: 'rgba(201, 168, 76, 0.2)', 
                 color: '#c9a84c',
@@ -124,106 +124,127 @@ const PreRegistrationForm: React.FC<PreRegistrationFormProps> = ({ open, onOpenC
               🔒 ADMISSIONS OPEN 2025-26
             </div>
             <h2 
-              className="text-2xl md:text-3xl font-semibold mb-4"
+              className="font-semibold mb-3 sm:mb-4"
               style={{ 
                 color: '#c9a84c',
                 fontFamily: '"Georgia", serif',
                 letterSpacing: '0.01em',
-                fontWeight: 500
+                fontWeight: 500,
+                fontSize: 'clamp(1.25rem, 4vw, 1.875rem)'
               }}
             >
               Secure Your Room at MLV PG Services
             </h2>
-            <p className="text-gray-300 text-sm font-medium">
+            <p className="text-gray-300 text-xs sm:text-sm font-medium">
               Premium PG · Near Acharya College, Thammendhalli, Bengaluru · 400+ Students
             </p>
           </div>
 
           {/* Form */}
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 sm:space-y-5 w-full">
             {/* Row 1 */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Input
-                label="Full Name"
-                placeholder="Your full name"
-                {...register('full_name')}
-                error={errors.full_name?.message}
-              />
-              <Input
-                label="Mobile Number"
-                placeholder="+91 9876543210"
-                {...register('phone')}
-                error={errors.phone?.message}
-              />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
+              <div className="w-full">
+                <Input
+                  label="Full Name"
+                  placeholder="Your full name"
+                  {...register('full_name')}
+                  error={errors.full_name?.message}
+                />
+              </div>
+              <div className="w-full">
+                <Input
+                  label="Mobile Number"
+                  placeholder="+91 9876543210"
+                  {...register('phone')}
+                  error={errors.phone?.message}
+                />
+              </div>
             </div>
 
             {/* Row 2 */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Input
-                label="Email Address"
-                type="email"
-                placeholder="john@example.com"
-                {...register('email')}
-                error={errors.email?.message}
-              />
-              <Select
-                label="Gender"
-                {...register('gender')}
-                options={GENDERS.map(g => ({ value: g, label: g }))}
-                error={errors.gender?.message}
-              />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
+              <div className="w-full">
+                <Input
+                  label="Email Address"
+                  type="email"
+                  placeholder="john@example.com"
+                  {...register('email')}
+                  error={errors.email?.message}
+                />
+              </div>
+              <div className="w-full">
+                <Select
+                  label="Gender"
+                  {...register('gender')}
+                  options={GENDERS.map(g => ({ value: g, label: g }))}
+                  error={errors.gender?.message}
+                />
+              </div>
             </div>
 
             {/* Row 3 */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Input
-                label="College / University"
-                placeholder="Acharya Institute of Technology"
-                {...register('college_name')}
-                error={errors.college_name?.message}
-              />
-              <Input
-                label="Course"
-                placeholder="B.Tech CSE"
-                {...register('course')}
-                error={errors.course?.message}
-              />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
+              <div className="w-full">
+                <Input
+                  label="College / University"
+                  placeholder="Acharya Institute of Technology"
+                  {...register('college_name')}
+                  error={errors.college_name?.message}
+                />
+              </div>
+              <div className="w-full">
+                <Input
+                  label="Course"
+                  placeholder="B.Tech CSE"
+                  {...register('course')}
+                  error={errors.course?.message}
+                />
+              </div>
             </div>
 
             {/* Row 4 */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Input
-                label="Expected Join Date"
-                type="date"
-                {...register('check_in_date')}
-                error={errors.check_in_date?.message}
-              />
-              <Select
-                label="Preferred Room Type"
-                {...register('room_preference')}
-                options={ROOM_PREFERENCES.map(r => ({ value: r, label: r }))}
-                error={errors.room_preference?.message}
-              />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
+              <div className="w-full">
+                <Input
+                  label="Expected Join Date"
+                  type="date"
+                  {...register('check_in_date')}
+                  error={errors.check_in_date?.message}
+                />
+              </div>
+              <div className="w-full">
+                <Select
+                  label="Preferred Room Type"
+                  {...register('room_preference')}
+                  options={ROOM_PREFERENCES.map(r => ({ value: r, label: r }))}
+                  error={errors.room_preference?.message}
+                />
+              </div>
             </div>
 
             {/* Row 5 */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Input
-                label="Parent Contact Number"
-                placeholder="9876543211"
-                {...register('parent_contact')}
-                error={errors.parent_contact?.message}
-              />
-              <Select
-                label="Food Preference"
-                {...register('food_preference')}
-                options={FOOD_PREFERENCES.map(f => ({ value: f, label: f }))}
-                error={errors.food_preference?.message}
-              />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
+              <div className="w-full">
+                <Input
+                  label="Parent Contact Number"
+                  placeholder="9876543211"
+                  {...register('parent_contact')}
+                  error={errors.parent_contact?.message}
+                />
+              </div>
+              <div className="w-full">
+                <Select
+                  label="Food Preference"
+                  {...register('food_preference')}
+                  options={FOOD_PREFERENCES.map(f => ({ value: f, label: f }))}
+                  error={errors.food_preference?.message}
+                />
+              </div>
             </div>
 
             {/* Special Requirements */}
-            <div>
+            <div className="w-full">
               <label className="mb-2 block text-sm font-medium text-gray-100">
                 Special Requirements or Message
               </label>
@@ -236,6 +257,7 @@ const PreRegistrationForm: React.FC<PreRegistrationFormProps> = ({ open, onOpenC
                   borderColor: errors.additional_notes ? 'rgb(239, 68, 68)' : 'rgba(255,255,255,0.08)',
                   border: '1px solid rgba(255,255,255,0.08)',
                   background: errors.additional_notes ? 'rgba(127,29,29,0.12)' : 'rgba(255,255,255,0.05)',
+                  maxWidth: '100%',
                 }}
                 onFocus={(e) => {
                   e.currentTarget.style.borderColor = '#c9a84c'
@@ -249,15 +271,15 @@ const PreRegistrationForm: React.FC<PreRegistrationFormProps> = ({ open, onOpenC
             </div>
 
             {/* Divider */}
-            <div className="border-t border-white/10 my-2" />
+            <div className="border-t border-white/10 my-2 sm:my-4" />
 
             {/* Action Buttons */}
-            <div className="flex gap-3 pt-4">
+            <div className="flex flex-col sm:flex-row gap-3 pt-2 sm:pt-4 w-full">
               <Button
                 type="submit"
                 variant="secondary"
                 size="lg"
-                className="flex-1 font-semibold"
+                className="w-full sm:flex-1 font-semibold text-sm sm:text-base whitespace-nowrap"
                 disabled={isSubmitting}
               >
                 {isSubmitting ? 'Submitting...' : '🔒 Submit Pre-Registration'}
@@ -266,7 +288,7 @@ const PreRegistrationForm: React.FC<PreRegistrationFormProps> = ({ open, onOpenC
                 type="button"
                 variant="outline"
                 size="lg"
-                className="flex-1 font-semibold flex items-center justify-center gap-2"
+                className="w-full sm:flex-1 font-semibold flex items-center justify-center gap-2 text-sm sm:text-base whitespace-nowrap"
                 onClick={handleWhatsApp}
                 disabled={isSubmitting}
               >
@@ -276,7 +298,7 @@ const PreRegistrationForm: React.FC<PreRegistrationFormProps> = ({ open, onOpenC
             </div>
 
             {/* Info note */}
-            <p className="text-center text-xs text-gray-500 mt-4">
+            <p className="text-center text-[10px] sm:text-xs text-gray-500 mt-2 sm:mt-4 w-full">
               ⚡ Your info is secure & used only for admission purposes
             </p>
           </form>
