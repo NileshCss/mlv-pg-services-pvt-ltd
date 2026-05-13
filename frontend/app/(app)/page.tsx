@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react'
 import { Navbar } from '@/components/ui/Navbar'
+import { NoticeTicker } from '@/components/ui/NoticeTicker'
 import { Footer } from '@/components/ui/Footer'
 import { WhatsAppButton } from '@/components/ui/WhatsAppButton'
 import { PreRegistrationForm } from '@/components/forms/PreRegistrationForm'
@@ -36,7 +37,24 @@ export default function Home() {
 
   return (
     <>
+      {/* Navbar (fixed, z-50) */}
       <Navbar onBookClick={() => setPopupOpen(true)} />
+
+      {/* Notice Ticker — sits directly below navbar, full width, z-49 */}
+      <div
+        style={{
+          position: 'fixed',
+          top: '80px',   /* matches the navbar height (h-20 = 80px; shrinks to h-16 = 64px on scroll, but 80px is fine default) */
+          left: 0,
+          right: 0,
+          zIndex: 49,
+        }}
+      >
+        <NoticeTicker />
+      </div>
+
+      {/* Push content down so it doesn't sit under the fixed notice bar */}
+      <div style={{ paddingTop: '118px' }} />
 
       <main>
         <HeroSection
