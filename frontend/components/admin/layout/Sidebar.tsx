@@ -395,7 +395,7 @@ export const Sidebar: React.FC = () => {
             return (
               <Link key={item.href} href={item.href} style={{ display: 'block', position: 'relative' }}>
                 <div
-                  className="nav-item-inner"
+                  className={`nav-item-inner ${isActive ? '' : 'sidebar-nav-inactive'}`.trim()}
                   onMouseEnter={(e) => {
                     // only show tooltip when sidebar is icon-only
                     const sidebar = e.currentTarget.closest('.tablet-sidebar') as HTMLElement
@@ -417,7 +417,6 @@ export const Sidebar: React.FC = () => {
                     position: 'relative',
                     overflow: 'hidden',
                   }}
-                  className={isActive ? '' : 'sidebar-nav-inactive'}
                 >
                   <Icon size={20} style={{ flexShrink: 0 }} />
                   <span
