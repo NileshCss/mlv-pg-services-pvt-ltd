@@ -13,7 +13,7 @@ interface DashboardLayoutProps {
 export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
   const router = useRouter()
   const supabase = createClient()
-  const { user, setUser, setLoading, isLoading } = useAuthStore()
+  const { user, setUser, isLoading } = useAuthStore()
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -43,35 +43,47 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
   }
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', background: '#0A0E1A', overflow: 'hidden' }}>
-      {/* Sidebar (renders its own fixed positioning) */}
+    <div style={{ display: 'flex', minHeight: '100vh', background: '#0A0E1A' }}>
+      {/* Sidebar renders with its own fixed positioning */}
       <Sidebar />
 
-      {/* Main Content — margin shifts per breakpoint to avoid sidebar overlap */}
+      {/* Main Content — shifts right to avoid sidebar overlap */}
       <main
-        style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden' }}
+        style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', minWidth: 0 }}
         className="dashboard-main"
       >
-        <div style={{ minHeight: '100vh', padding: '32px' }} className="dashboard-content">
+        <div className="dashboard-content">
           {children}
         </div>
       </main>
 
       <style>{`
-        /* Mobile: no left margin */
+        /* ── Mobile (<768px): no sidebar space, top padding for hamburger ── */
         @media (max-width: 767px) {
-          .dashboard-main { margin-left: 0 !important; }
-          .dashboard-content { padding: 70px 16px 24px !important; }
+          .dashboard-main {
+            margin-left: 0 !important;
+          }
+          .dashboard-content {
+            padding: 72px 16px 32px 16px !important;
+          }
         }
-        /* Tablet: match icon-only sidebar width (64px) */
+        /* ── Tablet (768–1023px): leave room for 64px icon sidebar ── */
         @media (min-width: 768px) and (max-width: 1023px) {
-          .dashboard-main { margin-left: 64px !important; }
-          .dashboard-content { padding: 24px !important; }
+          .dashboard-main {
+            margin-left: 64px !important;
+          }
+          .dashboard-content {
+            padding: 28px 24px 32px 24px !important;
+          }
         }
-        /* Desktop: sidebar is overlay, no margin needed — add top padding for hamburger */
+        /* ── Desktop (1024px+): leave room for 260px always-visible sidebar ── */
         @media (min-width: 1024px) {
-          .dashboard-main { margin-left: 0 !important; }
-          .dashboard-content { padding: 64px 32px 32px !important; }
+          .dashboard-main {
+            margin-left: 260px !important;
+          }
+          .dashboard-content {
+            padding: 32px 36px 32px 36px !important;
+          }
         }
       `}</style>
     </div>
