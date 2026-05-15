@@ -195,7 +195,8 @@ export const Sidebar: React.FC = () => {
   const handleLogout = async () => {
     await supabase.auth.signOut()
     logout()
-    router.push('/admin/login')
+    // Force a full page refresh to the homepage to ensure public layout remounts properly
+    window.location.href = '/'
   }
 
   // Close all sidebars on route change
