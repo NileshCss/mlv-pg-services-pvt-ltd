@@ -1,18 +1,52 @@
 'use client'
 
-import React from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 
-const notices = [
-  '🏠 New rooms now available – Limited seats!',
-  '🍽️ Updated Food Menu for this month is live',
-  '📋 Pre-Registration open for 2026 batch',
-  '📞 Contact us: +91 8809630649',
-  '✅ WiFi upgraded to 1 Gbps across all floors',
+interface Notice {
+  id: string
+  text: string
+  emoji: string
+  is_active: boolean
+  order: number
+}
+
+const FALLBACK_NOTICES: Notice[] = [
+  { id: '1', text: 'New rooms now available – Limited seats!', emoji: '🏠', is_active: true, order: 1 },
+  { id: '2', text: 'Updated Food Menu for this month is live', emoji: '🍽️', is_active: true, order: 2 },
+  { id: '3', text: 'Pre-Registration open for 2026 batch', emoji: '📋', is_active: true, order: 3 },
+  { id: '4', text: 'Contact us: +91 8809630649', emoji: '📞', is_active: true, order: 4 },
+  { id: '5', text: 'WiFi upgraded to 1 Gbps across all floors', emoji: '✅', is_active: true, order: 5 },
 ]
 
-const noticeText = notices.join('   •   ')
+const REFRESH_INTERVAL = 5 * 60 * 1000 // 5 minutes
 
 export const NoticeTicker: React.FC = () => {
+  const [notices, setNotices] = useState<Notice[]>(FALLBACK_NOTICES)
+
+  const fetchNotices = useCallback(async () => {
+    try {
+      const res = await fetch('/api/notices', { cache: 'no-store' })
+      if (!res.ok) throw new Error('fetch failed')
+      const { data } = await res.json()
+      const active = (data as Notice[]).filter(n => n.is_active).sort((a, b) => a.order - b.order)
+      if (active.length > 0) setNotices(active)
+      // else keep current (fallback or previous valid data)
+    } catch {
+      // API failed — keep fallback/previous notices; do not crash
+    }
+  }, [])
+
+  // Fetch on mount and auto-refresh every 5 minutes
+  useEffect(() => {
+    fetchNotices()
+    const interval = setInterval(fetchNotices, REFRESH_INTERVAL)
+    return () => clearInterval(interval)
+  }, [fetchNotices])
+
+  if (notices.length === 0) return null
+
+  const noticeText = notices.map(n => `${n.emoji} ${n.text}`).join('   •   ')
+
   return (
     <div
       style={{
@@ -24,11 +58,10 @@ export const NoticeTicker: React.FC = () => {
         alignItems: 'center',
         overflow: 'hidden',
         position: 'relative',
-        zIndex: 49, // just below navbar (z-50)
         flexShrink: 0,
       }}
     >
-      {/* Fixed label */}
+      {/* Fixed "Notice:" label */}
       <div
         style={{
           flexShrink: 0,
@@ -48,7 +81,7 @@ export const NoticeTicker: React.FC = () => {
         </span>
       </div>
 
-      {/* Scrolling area */}
+      {/* Scrolling marquee */}
       <div
         style={{
           flex: 1,
@@ -69,16 +102,16 @@ export const NoticeTicker: React.FC = () => {
             gap: '80px',
           }}
           onMouseEnter={(e) => {
-            ;(e.currentTarget as HTMLElement).style.animationPlayState = 'paused'
+            (e.currentTarget as HTMLElement).style.animationPlayState = 'paused'
           }}
           onMouseLeave={(e) => {
-            ;(e.currentTarget as HTMLElement).style.animationPlayState = 'running'
+            (e.currentTarget as HTMLElement).style.animationPlayState = 'running'
           }}
         >
-          {/* Duplicate for seamless loop */}
           <span style={{ fontSize: '13px', fontWeight: 500, color: '#d1d5db', letterSpacing: '0.01em' }}>
             {noticeText}
           </span>
+          {/* Duplicate for seamless infinite loop */}
           <span
             style={{ fontSize: '13px', fontWeight: 500, color: '#d1d5db', letterSpacing: '0.01em' }}
             aria-hidden="true"
@@ -88,7 +121,6 @@ export const NoticeTicker: React.FC = () => {
         </div>
       </div>
 
-      {/* CSS keyframes via style tag */}
       <style>{`
         @keyframes noticeTicker {
           0%   { transform: translateX(0); }

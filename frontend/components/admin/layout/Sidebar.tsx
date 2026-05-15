@@ -17,6 +17,7 @@ import {
   LogOut,
   Menu,
   X,
+  Megaphone,
 } from 'lucide-react'
 import { useUIStore } from '@/store/uiStore'
 import { useAuthStore } from '@/store/authStore'
@@ -30,6 +31,7 @@ const navItems = [
   { label: 'Rooms',        icon: Home,            href: '/admin/rooms' },
   { label: 'Gallery',      icon: Image,           href: '/admin/gallery' },
   { label: 'Testimonials', icon: Star,            href: '/admin/testimonials' },
+  { label: 'Notice Board', icon: Megaphone,       href: '/admin/notice-board' },
   { label: 'Users',        icon: Users,           href: '/admin/users' },
   { label: 'Settings',     icon: Settings,        href: '/admin/settings' },
 ]
