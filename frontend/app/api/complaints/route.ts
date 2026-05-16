@@ -124,7 +124,7 @@ export async function POST(request: NextRequest) {
     const complaintId = generateComplaintId((count ?? 0) + 1)
 
     const now = new Date().toISOString()
-    const { data, error } = await client
+    const { error } = await client
       .from('complaints')
       .insert({
         complaint_id:  complaintId,
@@ -140,8 +140,6 @@ export async function POST(request: NextRequest) {
         created_at:    now,
         updated_at:    now,
       })
-      .select()
-      .single()
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
 
@@ -157,7 +155,7 @@ export async function POST(request: NextRequest) {
       createdAt:    now,
     }).catch(console.error)
 
-    return NextResponse.json({ data, complaintId }, { status: 201 })
+    return NextResponse.json({ complaintId }, { status: 201 })
   } catch (err) {
     console.error('[complaints POST]', err)
     return NextResponse.json({ error: 'Failed to submit complaint' }, { status: 500 })
