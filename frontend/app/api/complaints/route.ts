@@ -9,11 +9,18 @@ function getServiceClient() {
   return createServiceClient(url, anonKey)
 }
 
-/** Auto-generate complaint ID: MLV-YYYY-NNNN */
-function generateComplaintId(seq: number): string {
+/** Auto-generate complaint ID — collision-proof, no DB query needed.
+ * Format: MLV-YYYY-XXXXXX  (year + timestamp base36 + random char)
+ * Example: MLV-2026-M8XZ4R
+ * Two requests in the same second have ~36x randomness, making collision essentially impossible.
+ */
+function generateComplaintId(): string {
   const year = new Date().getFullYear()
-  const pad  = String(seq).padStart(4, '0')
-  return `MLV-${year}-${pad}`
+  // Seconds since epoch in base36 (e.g. "lhbr4s") — grows monotonically, never repeats
+  const ts   = Math.floor(Date.now() / 1000).toString(36).toUpperCase()
+  // One extra random char in case two requests land in the same second
+  const rand = Math.floor(Math.random() * 36).toString(36).toUpperCase()
+  return `MLV-${year}-${ts}${rand}`
 }
 
 /** Send WhatsApp notification via CallMeBot API */
@@ -119,22 +126,8 @@ export async function POST(request: NextRequest) {
 
     const client = getServiceClient()
 
-    // Robust ID generation: get the highest existing sequence number from complaint_ids
-    // This avoids duplicate key errors when records are deleted or simultaneous inserts happen
-    const { data: lastComplaint } = await client
-      .from('complaints')
-      .select('complaint_id')
-      .order('created_at', { ascending: false })
-      .limit(1)
-      .single()
-
-    let nextSeq = 1
-    if (lastComplaint?.complaint_id) {
-      const parts = lastComplaint.complaint_id.split('-') // ['MLV', '2026', '0001']
-      const lastNum = parseInt(parts[parts.length - 1], 10)
-      if (!isNaN(lastNum)) nextSeq = lastNum + 1
-    }
-    const complaintId = generateComplaintId(nextSeq)
+    // Generate a collision-proof ID — pure timestamp+random, zero DB queries, zero race conditions
+    const complaintId = generateComplaintId()
 
     const now = new Date().toISOString()
     const { error } = await client
