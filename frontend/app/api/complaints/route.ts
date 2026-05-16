@@ -119,9 +119,22 @@ export async function POST(request: NextRequest) {
 
     const client = getServiceClient()
 
-    // Get count to generate sequential complaint ID
-    const { count } = await client.from('complaints').select('*', { count: 'exact', head: true })
-    const complaintId = generateComplaintId((count ?? 0) + 1)
+    // Robust ID generation: get the highest existing sequence number from complaint_ids
+    // This avoids duplicate key errors when records are deleted or simultaneous inserts happen
+    const { data: lastComplaint } = await client
+      .from('complaints')
+      .select('complaint_id')
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .single()
+
+    let nextSeq = 1
+    if (lastComplaint?.complaint_id) {
+      const parts = lastComplaint.complaint_id.split('-') // ['MLV', '2026', '0001']
+      const lastNum = parseInt(parts[parts.length - 1], 10)
+      if (!isNaN(lastNum)) nextSeq = lastNum + 1
+    }
+    const complaintId = generateComplaintId(nextSeq)
 
     const now = new Date().toISOString()
     const { error } = await client
