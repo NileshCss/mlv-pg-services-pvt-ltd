@@ -18,6 +18,10 @@ const nextConfig = {
       },
       {
         protocol: 'https',
+        hostname: 'wgnbbxvbzjsmvmiutzgd.supabase.co',
+      },
+      {
+        protocol: 'https',
         hostname: 'www.google.com',
       },
     ],

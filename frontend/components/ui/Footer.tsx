@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react'
 import Link from 'next/link'
-import { Mail, Phone, MapPin, Instagram, Facebook, Youtube, MessageSquareWarning } from 'lucide-react'
+import { Mail, Phone, MapPin, Instagram, Facebook, Youtube, MessageSquare } from 'lucide-react'
 import { motion } from 'motion/react'
 import { WHATSAPP_NUMBER, SITE_NAME } from '@/lib/utils/constants'
 import { ComplaintFormModal } from '@/components/forms/ComplaintFormModal'
@@ -26,14 +26,15 @@ const Footer: React.FC = () => {
   ]
 
   return (
-    <footer
-      className="relative overflow-hidden pt-16 pb-8"
-      style={{
-        background: '#1A1A2E',
-        borderTop: '3px solid',
-        borderImage: 'linear-gradient(90deg, transparent, #C9A84C 30%, #E8C96B 50%, #C9A84C 70%, transparent) 1',
-      }}
-    >
+    <>
+      <footer
+        className="relative overflow-hidden pt-16 pb-8"
+        style={{
+          background: '#1A1A2E',
+          borderTop: '3px solid',
+          borderImage: 'linear-gradient(90deg, transparent, #C9A84C 30%, #E8C96B 50%, #C9A84C 70%, transparent) 1',
+        }}
+      >
       {/* Ambient orb */}
       <div
         className="absolute -top-32 left-1/2 -translate-x-1/2 w-[600px] h-[300px] rounded-full opacity-8 blur-3xl pointer-events-none"
@@ -257,7 +258,7 @@ const Footer: React.FC = () => {
               onMouseEnter={e => (e.currentTarget.style.background = 'rgba(231,76,60,0.25)')}
               onMouseLeave={e => (e.currentTarget.style.background = 'rgba(231,76,60,0.15)')}
             >
-              <MessageSquareWarning size={16} />
+              <MessageSquare size={16} />
               Raise a Complaint
             </button>
           </div>
@@ -300,7 +301,9 @@ const Footer: React.FC = () => {
     </footer>
 
     <ComplaintFormModal open={complaintOpen} onOpenChange={setComplaintOpen} />
+    </>
   )
 }
 
 export { Footer }
+

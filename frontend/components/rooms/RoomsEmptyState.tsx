@@ -28,3 +28,4 @@ export function RoomsEmptyState({ filter, onAddRoom }: RoomsEmptyStateProps) {
     </div>
   )
 }
+

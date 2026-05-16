@@ -429,3 +429,4 @@ export function RoomFormPanel({ mode, room, buildings, onClose, onSuccess }: Roo
     </>
   )
 }
+

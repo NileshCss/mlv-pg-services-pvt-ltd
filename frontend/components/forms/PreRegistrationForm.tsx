@@ -145,16 +145,14 @@ const PreRegistrationForm: React.FC<PreRegistrationFormProps> = ({ open, onOpenC
             {/* Row 1 */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
               <div className="w-full">
-                <Input
-                  label="Full Name"
+                <Input theme="dark" label="Full Name"
                   placeholder="Your full name"
                   {...register('full_name')}
                   error={errors.full_name?.message}
                 />
               </div>
               <div className="w-full">
-                <Input
-                  label="Mobile Number"
+                <Input theme="dark" label="Mobile Number"
                   placeholder="+91 9876543210"
                   {...register('phone')}
                   error={errors.phone?.message}
@@ -165,8 +163,7 @@ const PreRegistrationForm: React.FC<PreRegistrationFormProps> = ({ open, onOpenC
             {/* Row 2 */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
               <div className="w-full">
-                <Input
-                  label="Email Address"
+                <Input theme="dark" label="Email Address"
                   type="email"
                   placeholder="john@example.com"
                   {...register('email')}
@@ -186,16 +183,14 @@ const PreRegistrationForm: React.FC<PreRegistrationFormProps> = ({ open, onOpenC
             {/* Row 3 */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
               <div className="w-full">
-                <Input
-                  label="College / University"
+                <Input theme="dark" label="College / University"
                   placeholder="Acharya Institute of Technology"
                   {...register('college_name')}
                   error={errors.college_name?.message}
                 />
               </div>
               <div className="w-full">
-                <Input
-                  label="Course"
+                <Input theme="dark" label="Course"
                   placeholder="B.Tech CSE"
                   {...register('course')}
                   error={errors.course?.message}
@@ -206,8 +201,7 @@ const PreRegistrationForm: React.FC<PreRegistrationFormProps> = ({ open, onOpenC
             {/* Row 4 */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
               <div className="w-full">
-                <Input
-                  label="Expected Join Date"
+                <Input theme="dark" label="Expected Join Date"
                   type="date"
                   {...register('check_in_date')}
                   error={errors.check_in_date?.message}
@@ -226,8 +220,7 @@ const PreRegistrationForm: React.FC<PreRegistrationFormProps> = ({ open, onOpenC
             {/* Row 5 */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
               <div className="w-full">
-                <Input
-                  label="Parent Contact Number"
+                <Input theme="dark" label="Parent Contact Number"
                   placeholder="9876543211"
                   {...register('parent_contact')}
                   error={errors.parent_contact?.message}
@@ -310,3 +303,5 @@ const PreRegistrationForm: React.FC<PreRegistrationFormProps> = ({ open, onOpenC
 
 export { PreRegistrationForm }
 export default PreRegistrationForm
+
+

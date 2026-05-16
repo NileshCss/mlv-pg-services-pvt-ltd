@@ -94,3 +94,4 @@ export const RegistrationsChart: React.FC<RegistrationsChartProps> = ({ data }) 
     </motion.div>
   )
 }
+

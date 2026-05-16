@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react'
 import { motion } from 'motion/react'
-import { Mail, Phone, MapPin, Clock, ExternalLink, MessageSquareWarning } from 'lucide-react'
+import { Mail, Phone, MapPin, Clock, ExternalLink, MessageSquare } from 'lucide-react'
 import { ContactForm } from '@/components/forms/ContactForm'
 import { ComplaintFormModal } from '@/components/forms/ComplaintFormModal'
 
@@ -59,6 +59,7 @@ const ContactSection: React.FC = () => {
   const [complaintOpen, setComplaintOpen] = useState(false)
 
   return (
+    <>
     <section
       id="contact"
       className="relative overflow-hidden"
@@ -233,7 +234,7 @@ const ContactSection: React.FC = () => {
                   className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
                   style={{ background: 'rgba(231,76,60,0.1)', border: '1px solid rgba(231,76,60,0.25)' }}
                 >
-                  <MessageSquareWarning size={20} style={{ color: '#E74C3C' }} />
+                  <MessageSquare size={20} style={{ color: '#E74C3C' }} />
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="text-xs font-semibold uppercase tracking-wider mb-0.5" style={{ color: '#E74C3C', fontFamily: 'Poppins, sans-serif' }}>
@@ -249,7 +250,7 @@ const ContactSection: React.FC = () => {
               </button>
             </motion.div>
 
-            {/* Map */}}
+            {/* Map */}
             <motion.div
               className="rounded-2xl overflow-hidden"
               style={{ height: '240px', border: '1px solid #EBEBF0', boxShadow: '0 2px 12px rgba(0,0,0,0.05)' }}
@@ -272,9 +273,11 @@ const ContactSection: React.FC = () => {
     </section>
 
     <ComplaintFormModal open={complaintOpen} onOpenChange={setComplaintOpen} />
+    </>
   )
 }
 
 export { ContactSection }
+
 
 

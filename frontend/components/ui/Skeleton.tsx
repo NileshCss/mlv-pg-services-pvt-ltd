@@ -19,3 +19,4 @@ const Skeleton: React.FC<SkeletonProps> = ({ className, count = 1, ...props }) =
 Skeleton.displayName = 'Skeleton'
 
 export { Skeleton }
+

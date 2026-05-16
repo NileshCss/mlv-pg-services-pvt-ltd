@@ -376,3 +376,4 @@ const Navbar: React.FC<NavbarProps> = ({ onBookClick }) => {
 }
 
 export { Navbar }
+

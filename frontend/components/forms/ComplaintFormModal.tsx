@@ -29,7 +29,9 @@ const URGENCY_OPTIONS = [
 const INPUT_STYLE: React.CSSProperties = {
   width: '100%',
   padding: '10px 14px',
-  border: '1px solid #EBEBF0',
+  borderWidth: '1px',
+  borderStyle: 'solid',
+  borderColor: '#EBEBF0',
   borderRadius: '8px',
   fontSize: '14px',
   color: '#1A1A2E',
@@ -412,3 +414,4 @@ export const ComplaintFormModal: React.FC<ComplaintFormModalProps> = ({ open, on
     </>
   )
 }
+

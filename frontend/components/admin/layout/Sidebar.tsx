@@ -18,7 +18,7 @@ import {
   Menu,
   X,
   Megaphone,
-  MessageSquareWarning,
+  MessageSquare,
 } from 'lucide-react'
 import { useUIStore } from '@/store/uiStore'
 import { useAuthStore } from '@/store/authStore'
@@ -33,7 +33,7 @@ const navItems = [
   { label: 'Gallery',      icon: Image,               href: '/admin/gallery' },
   { label: 'Testimonials', icon: Star,                href: '/admin/testimonials' },
   { label: 'Notice Board', icon: Megaphone,           href: '/admin/notice-board' },
-  { label: 'Complaints',   icon: MessageSquareWarning,href: '/admin/complaints', badge: true },
+  { label: 'Complaints',   icon: MessageSquare,href: '/admin/complaints', badge: true },
   { label: 'Users',        icon: Users,               href: '/admin/users' },
   { label: 'Settings',     icon: Settings,            href: '/admin/settings' },
 ]
@@ -554,3 +554,4 @@ export const Sidebar: React.FC = () => {
     </>
   )
 }
+

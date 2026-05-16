@@ -222,3 +222,4 @@ const RoomCard = memo(function RoomCardComponent({ room, onEdit, onRefetch }: Ro
 
 RoomCard.displayName = 'RoomCard'
 export { RoomCard }
+

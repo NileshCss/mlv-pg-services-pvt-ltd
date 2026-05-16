@@ -167,7 +167,7 @@ const DetailModal: React.FC<{
               {(Object.entries(STATUS_CONFIG) as [string, typeof STATUS_CONFIG['pending']][]).map(([key, cfg]) => (
                 <button
                   key={key}
-                  onClick={() => setStatus(key)}
+                  onClick={() => setStatus(key as any)}
                   style={{
                     flex: 1, padding: '9px 6px', borderRadius: '8px', border: 'none', cursor: 'pointer',
                     fontSize: '12px', fontWeight: 700, transition: 'all 0.2s',
@@ -227,13 +227,7 @@ export default function AdminComplaintsPage() {
   const fetchComplaints = useCallback(async () => {
     setLoading(true)
     try {
-      const params = new URLSearchParams()
-      if (filterStatus   !== 'all')             params.set('status',   filterStatus)
-      if (filterCategory !== 'All Categories')  params.set('category', filterCategory)
-      if (filterUrgency  !== 'all')             params.set('urgency',  filterUrgency)
-      if (search.trim())                        params.set('search',   search.trim())
-
-      const res  = await fetch(`/api/complaints?${params}`)
+      const res  = await fetch(`/api/complaints?_t=${Date.now()}`)
       const json = await res.json()
       setComplaints(json.data || [])
     } catch (e) {
@@ -241,7 +235,7 @@ export default function AdminComplaintsPage() {
     } finally {
       setLoading(false)
     }
-  }, [filterStatus, filterCategory, filterUrgency, search])
+  }, [])
 
   useEffect(() => { fetchComplaints() }, [fetchComplaints])
 
@@ -260,7 +254,7 @@ export default function AdminComplaintsPage() {
     fetchComplaints()
   }
 
-  // Stats
+  // Stats based on ALL complaints
   const total      = complaints.length
   const pending    = complaints.filter(c => c.status === 'pending').length
   const inProgress = complaints.filter(c => c.status === 'in-progress').length
@@ -272,6 +266,20 @@ export default function AdminComplaintsPage() {
     { label: 'In Progress', value: inProgress, icon: AlertTriangle, color: '#3498DB' },
     { label: 'Resolved',    value: resolved,   icon: CheckCircle,   color: '#2ECC71' },
   ]
+
+  // Filter complaints for the table
+  const filteredComplaints = complaints.filter(c => {
+    if (filterStatus !== 'all' && c.status !== filterStatus) return false
+    if (filterCategory !== 'All Categories' && c.category !== filterCategory) return false
+    if (filterUrgency !== 'all' && c.urgency !== filterUrgency) return false
+    if (search.trim()) {
+      const q = search.toLowerCase()
+      return c.student_name.toLowerCase().includes(q) ||
+             c.room_number.toLowerCase().includes(q) ||
+             c.complaint_id.toLowerCase().includes(q)
+    }
+    return true
+  })
 
   return (
     <DashboardLayout>
@@ -389,14 +397,14 @@ export default function AdminComplaintsPage() {
                       </div>
                     </td>
                   </tr>
-                ) : complaints.length === 0 ? (
+                ) : filteredComplaints.length === 0 ? (
                   <tr>
                     <td colSpan={8} className="px-6 py-12 text-center text-gray-600 text-sm">
                       No complaints found. Adjust your filters or wait for new submissions.
                     </td>
                   </tr>
                 ) : (
-                  complaints.map(c => {
+                  filteredComplaints.map(c => {
                     const urg = URGENCY_CONFIG[c.urgency]
                     const sta = STATUS_CONFIG[c.status]
                     return (
@@ -465,3 +473,4 @@ export default function AdminComplaintsPage() {
     </DashboardLayout>
   )
 }
+

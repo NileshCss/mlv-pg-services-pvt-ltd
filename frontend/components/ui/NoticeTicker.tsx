@@ -160,3 +160,4 @@ export const NoticeTicker: React.FC = () => {
     </div>
   )
 }
+

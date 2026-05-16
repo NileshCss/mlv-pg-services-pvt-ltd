@@ -65,3 +65,4 @@ export const BookingStatusChart: React.FC<BookingStatusChartProps> = ({ data }) 
     </motion.div>
   )
 }
+

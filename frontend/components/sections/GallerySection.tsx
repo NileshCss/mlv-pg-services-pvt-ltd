@@ -1,56 +1,53 @@
 'use client'
 
-import { useState, memo } from 'react'
-import Image from 'next/image'
+import { useState, useEffect, memo } from 'react'
 import { ZoomIn, X } from 'lucide-react'
+import { createClient } from '@/lib/supabase/client'
 
-const galleries = [
-  {
-    id: 1,
-    title: 'Common Areas',
-    image: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=700&q=80',
-    count: 12,
-    span: 'col-span-1 md:col-span-2 row-span-2',
-  },
-  {
-    id: 2,
-    title: 'Rooms',
-    image: 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=700&q=80',
-    count: 18,
-    span: 'col-span-1',
-  },
-  {
-    id: 3,
-    title: 'Dining Hall',
-    image: 'https://images.unsplash.com/photo-1552566626-52f8b828add9?w=700&q=80',
-    count: 8,
-    span: 'col-span-1',
-  },
-  {
-    id: 4,
-    title: 'Kitchen',
-    image: 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=700&q=80',
-    count: 10,
-    span: 'col-span-1',
-  },
-  {
-    id: 5,
-    title: 'Study Area',
-    image: 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=700&q=80',
-    count: 6,
-    span: 'col-span-1',
-  },
-  {
-    id: 6,
-    title: 'Recreation',
-    image: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=700&q=80',
-    count: 14,
-    span: 'col-span-1',
-  },
-]
+interface GalleryImage {
+  id: string
+  title: string
+  image_url: string
+  category: string
+  span?: string
+}
 
 const GallerySection = () => {
-  const [selected, setSelected] = useState<(typeof galleries)[0] | null>(null)
+  const [images, setImages] = useState<GalleryImage[]>([])
+  const [selected, setSelected] = useState<GalleryImage | null>(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchGallery = async () => {
+      try {
+        const supabase = createClient()
+        const { data, error } = await supabase
+          .from('gallery')
+          .select('*')
+          .eq('is_active', true)
+          .order('sort_order', { ascending: true })
+
+        if (error) {
+          console.error('Error fetching gallery:', error)
+          return
+        }
+
+        // Apply masonry spans dynamically
+        const formattedImages = (data || []).map((img: any, idx: number) => ({
+          ...img,
+          span: idx === 0 ? 'col-span-1 md:col-span-2 row-span-2' : 'col-span-1'
+        }))
+
+        setImages(formattedImages)
+      } catch (err) {
+        console.error('Failed to load gallery images', err)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchGallery()
+  }, [])
 
   return (
     <section
@@ -116,70 +113,79 @@ const GallerySection = () => {
         </div>
 
         {/* Masonry-style Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 auto-rows-[200px] gap-4">
-          {galleries.map((gallery, idx) => (
-            <div
-              key={gallery.id}
-              className={`gallery-item group relative rounded-2xl overflow-hidden cursor-pointer ${gallery.span}`}
-              style={{
-                animationDelay: `${idx * 0.07}s`,
-                boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
-                transition: 'all 0.3s ease',
-              }}
-              onClick={() => setSelected(gallery)}
-              onMouseEnter={e => {
-                (e.currentTarget as HTMLElement).style.transform = 'scale(1.02)'
-                ;(e.currentTarget as HTMLElement).style.boxShadow = '0 12px 40px rgba(0,0,0,0.14)'
-              }}
-              onMouseLeave={e => {
-                (e.currentTarget as HTMLElement).style.transform = 'scale(1)'
-                ;(e.currentTarget as HTMLElement).style.boxShadow = '0 4px 20px rgba(0,0,0,0.08)'
-              }}
-            >
-              <Image
-                src={gallery.image}
-                alt={gallery.title}
-                fill
-                className="object-cover transition-transform duration-700 group-hover:scale-110"
-              />
-
-              {/* Gold overlay on hover */}
+        {loading ? (
+          <div className="flex justify-center py-12">
+            <div className="w-8 h-8 border-4 border-[#EBEBF0] border-t-[#C9A84C] rounded-full animate-spin"></div>
+          </div>
+        ) : images.length === 0 ? (
+          <div className="text-center py-12 text-gray-400">
+            Check back soon for new gallery images!
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 md:grid-cols-4 auto-rows-[200px] gap-4">
+            {images.map((image, idx) => (
               <div
-                className="absolute inset-0 transition-opacity duration-400 opacity-0 group-hover:opacity-100"
+                key={image.id}
+                className={`gallery-item group relative rounded-2xl overflow-hidden cursor-pointer ${image.span}`}
                 style={{
-                  background: 'linear-gradient(to top, rgba(26,26,46,0.85) 0%, rgba(201,168,76,0.15) 50%, transparent 100%)',
+                  animationDelay: `${idx * 0.07}s`,
+                  boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
+                  transition: 'all 0.3s ease',
                 }}
-              />
-
-              {/* Info on hover */}
-              <div className="absolute inset-0 flex flex-col items-start justify-end p-5 opacity-0 group-hover:opacity-100 transition-all duration-400 translate-y-2 group-hover:translate-y-0">
-                <h3
-                  className="font-bold text-lg leading-tight mb-1 text-white"
-                  style={{ fontFamily: 'Playfair Display, serif' }}
-                >
-                  {gallery.title}
-                </h3>
-                <p
-                  className="text-sm font-medium"
-                  style={{ color: '#E8C96B' }}
-                >
-                  {gallery.count} photos
-                </p>
-              </div>
-
-              {/* Zoom icon */}
-              <div
-                className="absolute top-4 right-4 w-9 h-9 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 scale-75 group-hover:scale-100"
-                style={{
-                  background: 'rgba(255,255,255,0.9)',
-                  boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
+                onClick={() => setSelected(image)}
+                onMouseEnter={e => {
+                  (e.currentTarget as HTMLElement).style.transform = 'scale(1.02)'
+                  ;(e.currentTarget as HTMLElement).style.boxShadow = '0 12px 40px rgba(0,0,0,0.14)'
+                }}
+                onMouseLeave={e => {
+                  (e.currentTarget as HTMLElement).style.transform = 'scale(1)'
+                  ;(e.currentTarget as HTMLElement).style.boxShadow = '0 4px 20px rgba(0,0,0,0.08)'
                 }}
               >
-                <ZoomIn size={16} style={{ color: '#C9A84C' }} />
+                <img
+                  src={image.image_url}
+                  alt={image.title || 'Gallery image'}
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                />
+
+                {/* Gold overlay on hover */}
+                <div
+                  className="absolute inset-0 transition-opacity duration-400 opacity-0 group-hover:opacity-100"
+                  style={{
+                    background: 'linear-gradient(to top, rgba(26,26,46,0.85) 0%, rgba(201,168,76,0.15) 50%, transparent 100%)',
+                  }}
+                />
+
+                {/* Info on hover */}
+                <div className="absolute inset-0 flex flex-col items-start justify-end p-5 opacity-0 group-hover:opacity-100 transition-all duration-400 translate-y-2 group-hover:translate-y-0">
+                  <h3
+                    className="font-bold text-lg leading-tight mb-1 text-white"
+                    style={{ fontFamily: 'Playfair Display, serif' }}
+                  >
+                    {image.title || 'MLV PG Services'}
+                  </h3>
+                  <p
+                    className="text-sm font-medium capitalize"
+                    style={{ color: '#E8C96B' }}
+                  >
+                    {image.category}
+                  </p>
+                </div>
+
+                {/* Zoom icon */}
+                <div
+                  className="absolute top-4 right-4 w-9 h-9 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 scale-75 group-hover:scale-100"
+                  style={{
+                    background: 'rgba(255,255,255,0.9)',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
+                  }}
+                >
+                  <ZoomIn size={16} style={{ color: '#C9A84C' }} />
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Lightbox */}
@@ -195,11 +201,10 @@ const GallerySection = () => {
             onClick={(e) => e.stopPropagation()}
           >
             <div className="relative" style={{ aspectRatio: '16/10' }}>
-              <Image
-                src={selected.image}
-                alt={selected.title}
-                fill
-                className="object-cover"
+              <img
+                src={selected.image_url}
+                alt={selected.title || 'Gallery image'}
+                className="w-full h-full object-cover"
               />
             </div>
             <div
@@ -210,9 +215,11 @@ const GallerySection = () => {
                 className="font-bold text-xl text-white"
                 style={{ fontFamily: 'Playfair Display, serif' }}
               >
-                {selected.title}
+                {selected.title || 'MLV PG Services'}
               </h3>
-              <p style={{ color: '#E8C96B', fontSize: '14px' }}>{selected.count} photos</p>
+              <p style={{ color: '#E8C96B', fontSize: '14px', textTransform: 'capitalize' }}>
+                {selected.category}
+              </p>
             </div>
             <button
               className="absolute top-4 right-4 w-10 h-10 rounded-full flex items-center justify-center text-white transition-all hover:scale-110"
@@ -230,5 +237,6 @@ const GallerySection = () => {
 
 const MemoizedGallerySection = memo(GallerySection)
 export { MemoizedGallerySection as GallerySection }
+
 
 
