@@ -327,63 +327,143 @@ export default function AdminComplaintsPage() {
         </div>
 
         {/* Filters */}
-        <div className="rounded-2xl bg-white/5 border border-white/10 p-4 flex flex-wrap gap-3 items-center">
-          {/* Status Pills */}
-          <div className="flex gap-2 flex-wrap">
+        <div className="rounded-2xl bg-white/5 border border-white/10 p-4 space-y-3">
+          {/* Status Pills - scrollable row on mobile */}
+          <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
             {['all', 'pending', 'in-progress', 'resolved'].map(s => (
               <button
                 key={s}
                 onClick={() => setFilterStatus(s)}
-                className="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all"
+                className="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all flex-shrink-0"
                 style={{
                   background: filterStatus === s ? 'rgba(245,158,11,0.2)' : 'rgba(255,255,255,0.05)',
                   color:      filterStatus === s ? '#f59e0b' : '#9ca3af',
                   border:     filterStatus === s ? '1px solid rgba(245,158,11,0.4)' : '1px solid rgba(255,255,255,0.08)',
                 }}
               >
-                {s === 'all' ? 'All' : s.charAt(0).toUpperCase() + s.slice(1)}
+                {s === 'all' ? 'All' : s === 'in-progress' ? 'In-progress' : s.charAt(0).toUpperCase() + s.slice(1)}
               </button>
             ))}
           </div>
 
-          {/* Category Filter */}
-          <select
-            value={filterCategory}
-            onChange={e => setFilterCategory(e.target.value)}
-            className="text-xs rounded-lg px-3 py-1.5 outline-none"
-            style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.1)', color: '#9ca3af' }}
-          >
-            {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
-          </select>
+          {/* Second Row: Dropdowns + Search */}
+          <div className="flex flex-wrap gap-2 items-center">
+            {/* Category Filter */}
+            <select
+              value={filterCategory}
+              onChange={e => setFilterCategory(e.target.value)}
+              className="flex-1 min-w-[130px] text-xs rounded-lg px-3 py-2 outline-none"
+              style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.1)', color: '#9ca3af' }}
+            >
+              {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+            </select>
 
-          {/* Urgency Filter */}
-          <select
-            value={filterUrgency}
-            onChange={e => setFilterUrgency(e.target.value)}
-            className="text-xs rounded-lg px-3 py-1.5 outline-none"
-            style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.1)', color: '#9ca3af' }}
-          >
-            <option value="all">All Urgency</option>
-            <option value="high">🔴 High</option>
-            <option value="medium">🟡 Medium</option>
-            <option value="low">🟢 Low</option>
-          </select>
+            {/* Urgency Filter */}
+            <select
+              value={filterUrgency}
+              onChange={e => setFilterUrgency(e.target.value)}
+              className="flex-1 min-w-[110px] text-xs rounded-lg px-3 py-2 outline-none"
+              style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.1)', color: '#9ca3af' }}
+            >
+              <option value="all">All Urgency</option>
+              <option value="high">🔴 High</option>
+              <option value="medium">🟡 Medium</option>
+              <option value="low">🟢 Low</option>
+            </select>
 
-          {/* Search */}
-          <div className="ml-auto flex items-center gap-2 rounded-lg px-3 py-1.5" style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.1)' }}>
-            <Search size={14} style={{ color: '#6b7280' }} />
-            <input
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              onKeyDown={e => e.key === 'Enter' && fetchComplaints()}
-              placeholder="Search name, room, ID…"
-              className="bg-transparent outline-none text-xs text-gray-300 w-40 placeholder:text-gray-600"
-            />
+            {/* Search - full width on its own row on very small screens */}
+            <div className="flex items-center gap-2 rounded-lg px-3 py-2 flex-1 min-w-[160px]" style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.1)' }}>
+              <Search size={14} style={{ color: '#6b7280', flexShrink: 0 }} />
+              <input
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+                onKeyDown={e => e.key === 'Enter' && fetchComplaints()}
+                placeholder="Search name, room, ID…"
+                className="bg-transparent outline-none text-xs text-gray-300 w-full placeholder:text-gray-600"
+              />
+            </div>
           </div>
         </div>
 
-        {/* Table */}
-        <div className="rounded-2xl bg-white/5 border border-white/10 overflow-hidden">
+        {/* Mobile: Card List */}
+        <div className="block md:hidden space-y-3">
+          {loading ? (
+            <div className="rounded-2xl bg-white/5 border border-white/10 p-8 flex items-center justify-center gap-2 text-gray-500">
+              <div className="w-4 h-4 border-2 border-gray-700 border-t-amber-500 rounded-full animate-spin" />
+              Loading complaints…
+            </div>
+          ) : filteredComplaints.length === 0 ? (
+            <div className="rounded-2xl bg-white/5 border border-white/10 p-8 text-center text-gray-600 text-sm">
+              No complaints found. Adjust your filters or wait for new submissions.
+            </div>
+          ) : (
+            filteredComplaints.map(c => {
+              const urg = URGENCY_CONFIG[c.urgency]
+              const sta = STATUS_CONFIG[c.status]
+              return (
+                <div key={c.id} className="rounded-2xl bg-white/5 border border-white/10 p-4 space-y-3">
+                  {/* Top row: ID + status badge */}
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-mono font-bold text-amber-400">{c.complaint_id}</span>
+                    <span className="px-2 py-0.5 rounded-full text-xs font-semibold" style={{ background: sta.bg, color: sta.color }}>
+                      {sta.emoji} {sta.label}
+                    </span>
+                  </div>
+
+                  {/* Student info */}
+                  <div>
+                    <p className="text-sm font-semibold text-white">{c.student_name}</p>
+                    <p className="text-xs text-gray-500">Room {c.room_number} · {c.phone}</p>
+                  </div>
+
+                  {/* Category + Urgency */}
+                  <div className="flex flex-wrap gap-2">
+                    <span className="text-xs px-2 py-0.5 rounded-full bg-white/5 border border-white/10 text-gray-400">{c.category}</span>
+                    <span className="px-2 py-0.5 rounded-full text-xs font-semibold" style={{ background: urg.bg, color: urg.color }}>
+                      {urg.emoji} {urg.label}
+                    </span>
+                    <span className="text-xs text-gray-600 ml-auto">
+                      {new Date(c.created_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
+                    </span>
+                  </div>
+
+                  {/* Complaint preview */}
+                  <p className="text-xs text-gray-500 line-clamp-2">{c.details}</p>
+
+                  {/* Actions */}
+                  <div className="flex gap-2 pt-1">
+                    <button
+                      onClick={() => setSelected(c)}
+                      className="flex-1 py-2 rounded-lg text-xs font-semibold transition-all"
+                      style={{ background: 'rgba(245,158,11,0.1)', color: '#f59e0b', border: '1px solid rgba(245,158,11,0.2)' }}
+                    >
+                      <Eye size={12} className="inline mr-1" />View
+                    </button>
+                    {c.status !== 'resolved' && (
+                      <button
+                        onClick={() => handleUpdate(c.id, 'resolved', c.admin_notes || '')}
+                        className="flex-1 py-2 rounded-lg text-xs font-semibold transition-all"
+                        style={{ background: 'rgba(46,204,113,0.1)', color: '#2ECC71', border: '1px solid rgba(46,204,113,0.2)' }}
+                      >
+                        <CheckCircle size={12} className="inline mr-1" />Resolve
+                      </button>
+                    )}
+                    <button
+                      onClick={() => handleDelete(c.id)}
+                      className="p-2 rounded-lg transition-all"
+                      style={{ color: '#6b7280', border: '1px solid rgba(255,255,255,0.08)' }}
+                    >
+                      <Trash2 size={14} />
+                    </button>
+                  </div>
+                </div>
+              )
+            })
+          )}
+        </div>
+
+        {/* Desktop: Full Table */}
+        <div className="hidden md:block rounded-2xl bg-white/5 border border-white/10 overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
