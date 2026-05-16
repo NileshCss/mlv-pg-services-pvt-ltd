@@ -63,7 +63,6 @@ export async function POST(request: NextRequest) {
           status: body.status || 'new',
         },
       ])
-      .select()
 
     if (error) {
       console.error('Supabase error:', error)
