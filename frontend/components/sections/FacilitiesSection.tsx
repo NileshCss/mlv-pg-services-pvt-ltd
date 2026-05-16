@@ -23,37 +23,46 @@ const FacilitiesSection: React.FC = () => {
   }
 
   return (
-    <section id="facilities" className="py-24 md:py-32 relative overflow-hidden">
-      {/* Background */}
-      <div className="absolute inset-0 -z-10">
-        <div
-          className="absolute inset-0 opacity-40"
-          style={{
-            background: 'radial-gradient(ellipse 80% 50% at 50% -10%, rgba(13,27,133,0.3) 0%, transparent 70%)',
-          }}
-        />
-      </div>
+    <section
+      id="facilities"
+      className="relative overflow-hidden"
+      style={{
+        background: '#F8F6F1',
+        padding: 'clamp(40px, 5vw, 72px) 0',
+      }}
+    >
+      {/* Subtle gold ambient */}
+      <div
+        className="absolute -top-32 right-0 w-96 h-96 rounded-full opacity-20 blur-3xl pointer-events-none"
+        style={{ background: 'radial-gradient(circle, rgba(201,168,76,0.35) 0%, transparent 70%)' }}
+      />
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <motion.div
-          className="text-center mb-16 md:mb-20"
+          className="text-center mb-10 md:mb-12"
           initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
         >
           <span className="section-badge mb-5 inline-block">✦ Facilities</span>
-          <h2 className="font-bold text-white mb-5">
+          <h2
+            className="font-bold mb-5"
+            style={{ color: '#1A1A2E', fontFamily: 'Playfair Display, serif' }}
+          >
             Everything You Need,{' '}
             <span className="gradient-text">All in One Place</span>
           </h2>
-          <p className="text-gray-400 max-w-2xl mx-auto text-lg leading-relaxed">
+          <p
+            className="max-w-2xl mx-auto text-lg leading-relaxed"
+            style={{ color: '#4A4A6A' }}
+          >
             We've thought of everything so you can focus on what matters — your studies and your growth.
           </p>
         </motion.div>
 
-        {/* Facilities Grid */}
+        {/* Facilities Grid — 4-col desktop, 2-col tablet, 1-col mobile */}
         <motion.div
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5"
           variants={containerVariants}
@@ -66,49 +75,71 @@ const FacilitiesSection: React.FC = () => {
               key={idx}
               className="group relative p-6 rounded-2xl cursor-pointer overflow-hidden"
               style={{
-                background: 'rgba(255,255,255,0.03)',
-                border: '1px solid rgba(255,255,255,0.06)',
-                transition: 'all 0.4s cubic-bezier(0.34,1.56,0.64,1)',
+                background: '#FFFFFF',
+                border: '1px solid #EBEBF0',
+                boxShadow: '0 2px 16px rgba(0,0,0,0.06)',
+                transition: 'all 0.3s ease',
               }}
               variants={itemVariants}
-              whileHover={{ y: -10, scale: 1.02 }}
+              whileHover={{ y: -4 }}
+              onHoverStart={(e: any) => {
+                const el = e.currentTarget
+                if (el) {
+                  el.style.borderColor = 'rgba(201,168,76,0.4)'
+                  el.style.boxShadow = '0 12px 40px rgba(0,0,0,0.1)'
+                }
+              }}
+              onHoverEnd={(e: any) => {
+                const el = e.currentTarget
+                if (el) {
+                  el.style.borderColor = '#EBEBF0'
+                  el.style.boxShadow = '0 2px 16px rgba(0,0,0,0.06)'
+                }
+              }}
             >
-              {/* Hover glow */}
+              {/* Gold top accent bar on hover */}
               <div
-                className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                style={{ background: 'radial-gradient(circle at 50% 0%, rgba(201,168,76,0.12) 0%, transparent 70%)' }}
+                className="absolute top-0 left-0 right-0 h-0.5 rounded-t-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                style={{ background: 'linear-gradient(90deg, #C9A84C, #E8C96B)' }}
               />
 
-              {/* Border glow on hover */}
+              {/* Gold ambient on hover */}
               <div
-                className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                style={{ boxShadow: 'inset 0 0 0 1px rgba(201,168,76,0.25)' }}
+                className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-400"
+                style={{ background: 'radial-gradient(circle at 50% 0%, rgba(201,168,76,0.05) 0%, transparent 70%)' }}
               />
 
               {/* Icon */}
               <div
-                className="text-4xl mb-5 transition-transform duration-500 group-hover:scale-110 group-hover:-translate-y-1 inline-block"
-                style={{ filter: 'drop-shadow(0 4px 12px rgba(201,168,76,0.3))' }}
+                className="w-14 h-14 rounded-2xl flex items-center justify-center mb-5 transition-transform duration-300 group-hover:scale-110"
+                style={{
+                  background: 'rgba(201,168,76,0.08)',
+                  border: '1px solid rgba(201,168,76,0.2)',
+                }}
               >
-                {facility.icon}
+                <span
+                  className="text-2xl"
+                  style={{ filter: 'drop-shadow(0 2px 8px rgba(201,168,76,0.3))' }}
+                >
+                  {facility.icon}
+                </span>
               </div>
 
               <h3
-                className="text-base font-bold text-white mb-2 group-hover:text-secondary-400 transition-colors duration-300"
+                className="text-base font-bold mb-2 transition-colors duration-300"
+                style={{
+                  color: '#1A1A2E',
+                  fontFamily: 'Poppins, sans-serif',
+                }}
               >
                 {facility.title}
               </h3>
-              <p className="text-gray-500 text-sm leading-relaxed group-hover:text-gray-400 transition-colors duration-300">
+              <p
+                className="text-sm leading-relaxed"
+                style={{ color: '#8A8AA0' }}
+              >
                 {facility.description}
               </p>
-
-              {/* Corner accent */}
-              <div
-                className="absolute bottom-0 right-0 w-16 h-16 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                style={{
-                  background: 'radial-gradient(circle at 100% 100%, rgba(201,168,76,0.15) 0%, transparent 70%)',
-                }}
-              />
             </motion.div>
           ))}
         </motion.div>
@@ -117,8 +148,8 @@ const FacilitiesSection: React.FC = () => {
         <motion.div
           className="mt-14 rounded-3xl overflow-hidden relative"
           style={{
-            background: 'linear-gradient(135deg, rgba(201,168,76,0.12) 0%, rgba(13,27,133,0.12) 100%)',
-            border: '1px solid rgba(201,168,76,0.2)',
+            background: 'linear-gradient(135deg, rgba(201,168,76,0.1) 0%, rgba(245,230,192,0.15) 100%)',
+            border: '1px solid rgba(201,168,76,0.25)',
           }}
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -127,16 +158,22 @@ const FacilitiesSection: React.FC = () => {
         >
           {/* Decorative orb */}
           <div
-            className="absolute -right-16 -top-16 w-64 h-64 rounded-full opacity-30"
-            style={{ background: 'radial-gradient(circle, rgba(201,168,76,0.4) 0%, transparent 70%)' }}
+            className="absolute -right-16 -top-16 w-64 h-64 rounded-full opacity-40"
+            style={{ background: 'radial-gradient(circle, rgba(201,168,76,0.3) 0%, transparent 70%)' }}
           />
 
           <div className="relative z-10 px-8 md:px-16 py-10 md:py-12 text-center">
             <div className="text-5xl mb-4">🍛</div>
-            <h3 className="text-2xl md:text-3xl font-bold text-white mb-3">
+            <h3
+              className="text-2xl md:text-3xl font-bold mb-3"
+              style={{ color: '#1A1A2E', fontFamily: 'Playfair Display, serif' }}
+            >
               Unlimited Food, Unlimited Happiness
             </h3>
-            <p className="text-gray-400 max-w-xl mx-auto leading-relaxed">
+            <p
+              className="max-w-xl mx-auto leading-relaxed"
+              style={{ color: '#4A4A6A' }}
+            >
               Enjoy delicious, fresh & hygienic meals 3× a day with unlimited quantity.
               North Indian, South Indian, and healthy home-cooked options every day.
             </p>
@@ -144,8 +181,14 @@ const FacilitiesSection: React.FC = () => {
               {['🌅 Breakfast', '☀️ Lunch', '🌙 Dinner'].map((meal) => (
                 <span
                   key={meal}
-                  className="px-4 py-2 rounded-full text-sm font-semibold text-secondary-300"
-                  style={{ background: 'rgba(201,168,76,0.12)', border: '1px solid rgba(201,168,76,0.25)' }}
+                  className="px-5 py-2.5 rounded-full text-sm font-semibold"
+                  style={{
+                    background: '#FFFFFF',
+                    border: '1.5px solid rgba(201,168,76,0.35)',
+                    color: '#C9A84C',
+                    fontFamily: 'Poppins, sans-serif',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+                  }}
                 >
                   {meal}
                 </span>
@@ -159,3 +202,5 @@ const FacilitiesSection: React.FC = () => {
 }
 
 export { FacilitiesSection }
+
+

@@ -1,41 +1,59 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500&family=Great+Vibes&family=Cinzel:wght@400;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Inter:wght@300;400;500;600&family=Poppins:wght@400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* ─── CSS Custom Properties ─────────────────────────────────────── */
+/* ─── New MLV Design System ──────────────────────────────────────── */
 :root {
-  --primary: #0d1b85;
-  --secondary: #c9a84c;
-  --secondary-light: #dcc9a0;
-  --dark: #0a0f1e;
-  --dark-surface: #111827;
-  --white: #ffffff;
-  --light: #f9fafb;
-  --gray: #6b7280;
-  --gray-400: #9ca3af;
-  --gray-600: #4b5563;
-  --gray-700: #374151;
-  --gray-800: #1f2937;
+  /* ── Core Palette ─────────────────────────────────────────────── */
+  --primary-bg:      #FFFFFF;
+  --secondary-bg:    #F8F6F1;
+  --card-bg:         #FFFFFF;
+  --primary-gold:    #C9A84C;
+  --gold-light:      #F5E6C0;
+  --gold-gradient:   linear-gradient(135deg, #C9A84C, #E8C96B);
+  --dark-text:       #1A1A2E;
+  --body-text:       #4A4A6A;
+  --muted-text:      #8A8AA0;
+  --success-green:   #2ECC71;
+  --border:          #EBEBF0;
+  --shadow:          rgba(0, 0, 0, 0.08);
 
-  /* ── MLV Design System tokens ──────────────────────────────── */
-  --bg-primary: #071120;
-  --bg-secondary: #0B1D34;
-  --bg-tertiary: #101827;
-  --gold-primary: #FBBF24;
-  --gold-highlight: #D4AF37;
-  --gold-soft: #F5C76B;
-  --text-primary: #FFFFFF;
-  --text-secondary: #E5E7EB;
-  --text-body: #D1D5DB;
-  --text-muted: #9CA3AF;
-  --glass-bg: rgba(255, 255, 255, 0.04);
-  --glass-border: rgba(251, 191, 36, 0.2);
+  /* ── Dark section (Testimonials, Footer) ──────────────────────── */
+  --dark-section:    #1A1A2E;
+  --dark-surface:    #242440;
 
-  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  --shadow-gold: 0 0 40px rgba(201, 168, 76, 0.15);
-  --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.3);
+  /* ── Typography ───────────────────────────────────────────────── */
+  --font-heading:    'Playfair Display', Georgia, serif;
+  --font-body:       'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-accent:     'Poppins', sans-serif;
+
+  --h1: clamp(36px, 5vw, 64px);
+  --h2: clamp(28px, 3.5vw, 44px);
+  --h3: clamp(18px, 2vw, 24px);
+  --body: clamp(14px, 1.5vw, 16px);
+
+  /* ── Spacing ──────────────────────────────────────────────────── */
+  --section-py: clamp(60px, 8vw, 120px);
+  --max-w:      1280px;
+
+  /* ── Shadows & Borders ────────────────────────────────────────── */
+  --card-shadow:  0 4px 24px rgba(0, 0, 0, 0.08);
+  --card-shadow-hover: 0 12px 40px rgba(0, 0, 0, 0.14);
+  --gold-shadow:  0 4px 20px rgba(201, 168, 76, 0.25);
+  --border-r-card: 16px;
+  --border-r-pill: 999px;
+  --border-r-input: 8px;
+
+  --transition: all 0.3s ease;
+
+  /* ── Legacy aliases (keep for admin dashboard compat) ─────────── */
+  --secondary:        #C9A84C;
+  --secondary-light:  #E8C96B;
+  --dark:             #1A1A2E;
+  --light:            #F8F6F1;
+  --gray:             #8A8AA0;
 }
 
 /* ─── Base Reset ─────────────────────────────────────────────────── */
@@ -53,13 +71,14 @@ html {
 }
 
 body {
-  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-  background-color: var(--dark);
-  color: var(--light);
+  font-family: var(--font-body);
+  background-color: var(--primary-bg);
+  color: var(--dark-text);
   line-height: 1.6;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  font-size: var(--body);
 }
 
 /* ─── Typography ─────────────────────────────────────────────────── */
@@ -69,19 +88,20 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: 'Playfair Display', serif;
+  font-family: var(--font-heading);
   font-weight: 700;
   line-height: 1.15;
   letter-spacing: -0.01em;
+  color: var(--dark-text);
 }
 
-h1 { font-size: clamp(2.25rem, 7vw, 4.5rem); }
-h2 { font-size: clamp(1.875rem, 5vw, 3.25rem); }
-h3 { font-size: clamp(1.375rem, 3vw, 2rem); }
+h1 { font-size: var(--h1); }
+h2 { font-size: var(--h2); }
+h3 { font-size: var(--h3); }
 
 p {
-  color: rgba(249, 250, 251, 0.7);
-  font-size: 1rem;
+  color: var(--body-text);
+  font-size: var(--body);
   line-height: 1.8;
 }
 
@@ -94,7 +114,7 @@ a {
 button {
   cursor: pointer;
   border: none;
-  font-family: inherit;
+  font-family: var(--font-accent);
   transition: var(--transition);
 }
 
@@ -110,22 +130,22 @@ video {
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--dark);
+  background: var(--secondary-bg);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(to bottom, var(--secondary), #a67f15);
+  background: linear-gradient(to bottom, var(--primary-gold), #a67f15);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--secondary-light);
+  background: var(--primary-gold);
 }
 
 /* ─── Text Selection ─────────────────────────────────────────────── */
 ::selection {
-  background-color: rgba(201, 168, 76, 0.3);
-  color: var(--white);
+  background-color: rgba(201, 168, 76, 0.25);
+  color: var(--dark-text);
 }
 
 /* ─── Keyframe Animations ────────────────────────────────────────── */
@@ -151,7 +171,7 @@ video {
 
 @keyframes float {
   0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-16px); }
+  50% { transform: translateY(-12px); }
 }
 
 @keyframes pulse {
@@ -184,7 +204,7 @@ video {
 
 /* ─── Layout Utilities ───────────────────────────────────────────── */
 .container {
-  max-width: 1280px;
+  max-width: var(--max-w);
   margin: 0 auto;
   padding: 0 1.25rem;
 }
@@ -197,11 +217,11 @@ video {
   .container { padding: 0 2rem; }
 }
 
-/* ─── Design System ──────────────────────────────────────────────── */
+/* ─── Design System Utilities ────────────────────────────────────── */
 
-/* Gradient Text */
+/* Gold Gradient Text */
 .gradient-text {
-  background: linear-gradient(135deg, #c9a84c 0%, #dcc9a0 45%, #c9a84c 100%);
+  background: linear-gradient(135deg, #C9A84C 0%, #E8C96B 45%, #C9A84C 100%);
   background-size: 200% auto;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -209,76 +229,134 @@ video {
   animation: gradientShift 4s ease infinite;
 }
 
-/* Gradient Background */
+/* Gold gradient background */
 .gradient-bg {
-  background: linear-gradient(135deg, rgba(201, 168, 76, 0.08) 0%, rgba(13, 27, 133, 0.08) 100%);
+  background: linear-gradient(135deg, rgba(201, 168, 76, 0.06) 0%, rgba(245, 230, 192, 0.1) 100%);
 }
 
-/* Gold Glow */
-.gold-glow {
-  box-shadow: var(--shadow-gold);
+/* Card Base — white with soft shadow */
+.card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--border-r-card);
+  box-shadow: var(--card-shadow);
+  transition: var(--transition);
 }
 
-/* Glassmorphism */
-.glass-effect {
-  background: rgba(255, 255, 255, 0.04);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+.card:hover {
+  box-shadow: var(--card-shadow-hover);
 }
 
-.glass-dark {
-  background: rgba(0, 0, 0, 0.35);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+/* Gold Card Lift */
+.card-hover {
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
 }
 
-/* Glassmorphism card — MLV design system */
-.glass-card {
-  background: var(--glass-bg);
-  border: 1px solid var(--glass-border);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-radius: 16px;
-}
-
-.glass-gold {
-  background: rgba(201, 168, 76, 0.07);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(201, 168, 76, 0.2);
-}
-
-/* Gold gradient text utility */
-.gold-gradient-text {
-  background: linear-gradient(135deg, #FBBF24, #D4AF37);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+.card-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--card-shadow-hover);
+  border-color: rgba(201, 168, 76, 0.35);
 }
 
 /* Gold CTA button */
 .gold-btn {
-  background: linear-gradient(135deg, #FBBF24, #D4AF37);
-  color: #071120;
-  font-weight: 600;
+  background: var(--gold-gradient);
+  color: var(--dark-text);
+  font-family: var(--font-accent);
+  font-weight: 700;
+  border-radius: var(--border-r-pill);
+  box-shadow: var(--gold-shadow);
+  transition: var(--transition);
+}
+
+.gold-btn:hover {
+  box-shadow: 0 6px 28px rgba(201, 168, 76, 0.4);
+  transform: translateY(-1px);
+}
+
+/* Section Badge — pill shaped gold outline */
+.section-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.3rem 0.875rem;
+  border-radius: var(--border-r-pill);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  background: rgba(201, 168, 76, 0.08);
+  border: 1px solid rgba(201, 168, 76, 0.35);
+  color: var(--primary-gold);
+  font-family: var(--font-accent);
 }
 
 /* Section Divider */
 .section-divider {
   width: 60px;
   height: 3px;
-  background: linear-gradient(90deg, var(--secondary), transparent);
+  background: var(--gold-gradient);
   border-radius: 2px;
 }
 
-/* Skeleton Loader */
+/* Skeleton Loader — light theme */
 .skeleton {
-  background: linear-gradient(90deg, #1f2937 25%, #374151 50%, #1f2937 75%);
+  background: linear-gradient(90deg, #F0EEE8 25%, #E8E5DC 50%, #F0EEE8 75%);
   background-size: 1000px 100%;
   animation: shimmer 2s infinite;
   border-radius: 6px;
+}
+
+/* Glass effect for dark sections */
+.glass-dark {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+/* Glass Gold — used in testimonials */
+.glass-gold {
+  background: rgba(201, 168, 76, 0.1);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(201, 168, 76, 0.25);
+}
+
+/* Legacy glass (kept for admin compat) */
+.glass-effect {
+  background: rgba(255, 255, 255, 0.07);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(201, 168, 76, 0.2);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 16px;
+}
+
+/* Image overlay — light version */
+.img-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(26, 26, 46, 0.7) 0%, rgba(26, 26, 46, 0.1) 60%, transparent 100%);
+}
+
+/* Gold glow */
+.gold-glow {
+  box-shadow: var(--gold-shadow);
+}
+
+/* Gold gradient text utility */
+.gold-gradient-text {
+  background: linear-gradient(135deg, #C9A84C, #E8C96B);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 /* ─── Interactive States ─────────────────────────────────────────── */
@@ -287,56 +365,13 @@ a:focus-visible,
 input:focus-visible,
 textarea:focus-visible,
 select:focus-visible {
-  outline: 2px solid var(--secondary);
+  outline: 2px solid var(--primary-gold);
   outline-offset: 3px;
 }
 
 /* ─── Section Base Styles ────────────────────────────────────────── */
 section {
   position: relative;
-}
-
-/* ─── Card Hover Lift ────────────────────────────────────────────── */
-.card-hover {
-  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.35s ease;
-}
-
-.card-hover:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4), 0 0 30px rgba(201, 168, 76, 0.1);
-}
-
-/* ─── Image Overlay ──────────────────────────────────────────────── */
-.img-overlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to top, rgba(10, 15, 30, 0.85) 0%, rgba(10, 15, 30, 0.1) 60%, transparent 100%);
-}
-
-/* ─── Section Badge ──────────────────────────────────────────────── */
-.section-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.375rem;
-  padding: 0.3rem 0.875rem;
-  border-radius: 9999px;
-  font-size: 0.7rem;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  background: rgba(201, 168, 76, 0.1);
-  border: 1px solid rgba(201, 168, 76, 0.3);
-  color: #c9a84c;
-}
-
-/* ─── Noise Texture Overlay ──────────────────────────────────────── */
-.noise::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
-  pointer-events: none;
-  z-index: 0;
 }
 
 /* ─── Responsive Utilities ───────────────────────────────────────── */

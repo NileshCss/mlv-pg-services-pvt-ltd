@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Navbar } from '@/components/ui/Navbar'
 import { NoticeTicker } from '@/components/ui/NoticeTicker'
 import { Footer } from '@/components/ui/Footer'
@@ -20,28 +20,24 @@ export default function Home() {
   const [popupOpen, setPopupOpen] = useState(false)
 
   useEffect(() => {
-    // Show popup after 10 seconds
-    const timer = setTimeout(() => {
-      setPopupOpen(true)
-    }, 10000)
+    const timer = setTimeout(() => setPopupOpen(true), 10000)
     return () => clearTimeout(timer)
   }, [])
 
   const handleScrollTo = (elementId: string) => {
-    const element = document.getElementById(elementId)
-    element?.scrollIntoView({ behavior: 'smooth' })
+    document.getElementById(elementId)?.scrollIntoView({ behavior: 'smooth' })
   }
 
   return (
     <>
-      {/* Navbar — fixed at top (z-50) */}
+      {/* Notice Ticker — fixed at very top (z-60), above Navbar */}
+      <NoticeTicker />
+
+      {/* Navbar — fixed below the notice ticker (z-50) */}
       <Navbar onBookClick={() => setPopupOpen(true)} />
 
-      {/* Spacer to push content below the fixed navbar (h-20 = 80px) */}
-      <div style={{ height: '80px' }} />
-
-      {/* Notice Ticker — flows with the page, NOT fixed */}
-      <NoticeTicker />
+      {/* Spacer: 38px ticker + 80px navbar = 118px total */}
+      <div style={{ height: '118px' }} />
 
       <main>
         <HeroSection

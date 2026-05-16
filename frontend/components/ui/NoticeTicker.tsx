@@ -18,7 +18,7 @@ const FALLBACK_NOTICES: Notice[] = [
   { id: '5', text: 'WiFi upgraded to 1 Gbps across all floors', emoji: '✅', is_active: true, order: 5 },
 ]
 
-const REFRESH_INTERVAL = 5 * 60 * 1000 // 5 minutes
+const REFRESH_INTERVAL = 5 * 60 * 1000
 
 export const NoticeTicker: React.FC = () => {
   const [notices, setNotices] = useState<Notice[]>(FALLBACK_NOTICES)
@@ -30,13 +30,11 @@ export const NoticeTicker: React.FC = () => {
       const { data } = await res.json()
       const active = (data as Notice[]).filter(n => n.is_active).sort((a, b) => a.order - b.order)
       if (active.length > 0) setNotices(active)
-      // else keep current (fallback or previous valid data)
     } catch {
-      // API failed — keep fallback/previous notices; do not crash
+      // keep fallback
     }
   }, [])
 
-  // Fetch on mount and auto-refresh every 5 minutes
   useEffect(() => {
     fetchNotices()
     const interval = setInterval(fetchNotices, REFRESH_INTERVAL)
@@ -52,16 +50,19 @@ export const NoticeTicker: React.FC = () => {
       style={{
         width: '100%',
         height: '38px',
-        background: 'linear-gradient(90deg, #0a0f1e 0%, #111827 100%)',
-        borderBottom: '1px solid rgba(201,168,76,0.25)',
+        background: '#C9A84C',
         display: 'flex',
         alignItems: 'center',
         overflow: 'hidden',
-        position: 'relative',
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        zIndex: 60,
         flexShrink: 0,
       }}
     >
-      {/* Fixed "Notice:" label */}
+      {/* Fixed "📢 Notice:" label */}
       <div
         style={{
           flexShrink: 0,
@@ -70,13 +71,21 @@ export const NoticeTicker: React.FC = () => {
           gap: '6px',
           padding: '0 14px',
           height: '100%',
-          background: 'linear-gradient(135deg, #c9a84c 0%, #e8c96d 100%)',
-          borderRight: '1px solid rgba(201,168,76,0.4)',
+          background: 'rgba(0,0,0,0.15)',
+          borderRight: '1px solid rgba(255,255,255,0.25)',
           whiteSpace: 'nowrap',
           zIndex: 2,
         }}
       >
-        <span style={{ fontSize: '13px', fontWeight: 700, color: '#0a0f1e', letterSpacing: '0.02em' }}>
+        <span
+          style={{
+            fontSize: '12px',
+            fontWeight: 800,
+            color: '#1A1A2E',
+            letterSpacing: '0.06em',
+            fontFamily: 'Poppins, sans-serif',
+          }}
+        >
           📢 Notice:
         </span>
       </div>
@@ -108,12 +117,25 @@ export const NoticeTicker: React.FC = () => {
             (e.currentTarget as HTMLElement).style.animationPlayState = 'running'
           }}
         >
-          <span style={{ fontSize: '13px', fontWeight: 500, color: '#d1d5db', letterSpacing: '0.01em' }}>
+          <span
+            style={{
+              fontSize: '12.5px',
+              fontWeight: 600,
+              color: '#ffffff',
+              letterSpacing: '0.01em',
+              fontFamily: 'Inter, sans-serif',
+            }}
+          >
             {noticeText}
           </span>
-          {/* Duplicate for seamless infinite loop */}
           <span
-            style={{ fontSize: '13px', fontWeight: 500, color: '#d1d5db', letterSpacing: '0.01em' }}
+            style={{
+              fontSize: '12.5px',
+              fontWeight: 600,
+              color: '#ffffff',
+              letterSpacing: '0.01em',
+              fontFamily: 'Inter, sans-serif',
+            }}
             aria-hidden="true"
           >
             {noticeText}

@@ -92,13 +92,31 @@ const ContactForm: React.FC<ContactFormProps> = ({ onSuccess }) => {
       />
 
       <div>
-        <label className="mb-2 block text-sm font-medium text-gray-100">
+        <label
+          className="mb-2 block text-sm font-medium"
+          style={{ color: '#1A1A2E', fontFamily: 'Inter, sans-serif' }}
+        >
           Message
         </label>
         <textarea
           placeholder="Tell us your thoughts..."
           {...register('message')}
-          className="w-full rounded-lg border border-gray-700 bg-gray-900 px-4 py-3 text-gray-50 placeholder:text-gray-500 focus:border-secondary-500 focus:outline-none focus:ring-1 focus:ring-secondary-500 resize-none"
+          className="w-full rounded-lg border px-4 py-3 placeholder:text-[#8A8AA0] resize-none transition-all duration-300 focus:outline-none"
+          style={{
+            background: '#FFFFFF',
+            border: '1px solid #EBEBF0',
+            color: '#1A1A2E',
+            fontFamily: 'Inter, sans-serif',
+            fontSize: '14px',
+          }}
+          onFocus={e => {
+            e.currentTarget.style.borderColor = 'rgba(201,168,76,0.6)'
+            e.currentTarget.style.boxShadow = '0 0 0 3px rgba(201,168,76,0.1)'
+          }}
+          onBlur={e => {
+            e.currentTarget.style.borderColor = '#EBEBF0'
+            e.currentTarget.style.boxShadow = 'none'
+          }}
           rows={5}
         />
         {errors.message && (

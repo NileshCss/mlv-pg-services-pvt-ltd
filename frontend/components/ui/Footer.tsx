@@ -8,9 +8,9 @@ import { WHATSAPP_NUMBER, SITE_NAME } from '@/lib/utils/constants'
 
 const Footer: React.FC = () => {
   const socialLinks = [
-    { icon: Instagram, href: '#', label: 'Instagram', color: '#E1306C' },
-    { icon: Facebook, href: '#', label: 'Facebook', color: '#1877F2' },
-    { icon: Youtube, href: '#', label: 'YouTube', color: '#FF0000' },
+    { icon: Instagram, href: '#', label: 'Instagram' },
+    { icon: Facebook, href: '#', label: 'Facebook' },
+    { icon: Youtube, href: '#', label: 'YouTube' },
   ]
 
   const quickLinks = [
@@ -27,14 +27,15 @@ const Footer: React.FC = () => {
     <footer
       className="relative overflow-hidden pt-16 pb-8"
       style={{
-        background: 'linear-gradient(180deg, #0a0f1e 0%, #050810 100%)',
-        borderTop: '1px solid rgba(255,255,255,0.05)',
+        background: '#1A1A2E',
+        borderTop: '3px solid',
+        borderImage: 'linear-gradient(90deg, transparent, #C9A84C 30%, #E8C96B 50%, #C9A84C 70%, transparent) 1',
       }}
     >
       {/* Ambient orb */}
       <div
-        className="absolute -top-32 left-1/2 -translate-x-1/2 w-[600px] h-[300px] rounded-full opacity-10 blur-3xl pointer-events-none"
-        style={{ background: 'radial-gradient(circle, rgba(201,168,76,0.4) 0%, transparent 70%)' }}
+        className="absolute -top-32 left-1/2 -translate-x-1/2 w-[600px] h-[300px] rounded-full opacity-8 blur-3xl pointer-events-none"
+        style={{ background: 'radial-gradient(circle, rgba(201,168,76,0.3) 0%, transparent 70%)' }}
       />
 
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -43,26 +44,41 @@ const Footer: React.FC = () => {
 
           {/* Brand */}
           <div className="lg:col-span-1">
-            {/* Logo */}
+            {/* Gold Logo */}
             <div className="flex items-center gap-3 mb-5">
               <div
-                className="flex h-10 w-10 items-center justify-center rounded-xl font-bold text-sm text-dark-900"
-                style={{ background: 'linear-gradient(135deg, #c9a84c 0%, #dcc9a0 100%)' }}
+                className="flex h-10 w-10 items-center justify-center rounded-xl font-bold text-sm"
+                style={{
+                  background: 'linear-gradient(135deg, #C9A84C 0%, #E8C96B 100%)',
+                  color: '#1A1A2E',
+                  fontFamily: 'Poppins, sans-serif',
+                }}
               >
                 MLV
               </div>
               <div>
-                <div className="text-sm font-bold text-white">{SITE_NAME}</div>
-                <div className="text-[10px] uppercase tracking-widest font-semibold" style={{ color: '#c9a84c' }}>
+                <div
+                  className="text-sm font-bold"
+                  style={{ color: '#ffffff', fontFamily: 'Playfair Display, serif' }}
+                >
+                  {SITE_NAME}
+                </div>
+                <div
+                  className="text-[10px] uppercase tracking-widest font-semibold"
+                  style={{ color: '#C9A84C', fontFamily: 'Poppins, sans-serif' }}
+                >
                   Premium PG · Bangalore
                 </div>
               </div>
             </div>
-            <p className="text-gray-500 text-sm leading-relaxed mb-6">
+            <p
+              className="text-sm leading-relaxed mb-6"
+              style={{ color: 'rgba(255,255,255,0.45)' }}
+            >
               Your home away from home. Premium student PG near Acharya Institute with unlimited
               food, safety, and parent-like care since 2014.
             </p>
-            {/* Socials */}
+            {/* Social icons — gold on hover */}
             <div className="flex gap-2.5">
               {socialLinks.map((social, idx) => (
                 <a
@@ -72,12 +88,23 @@ const Footer: React.FC = () => {
                   className="w-9 h-9 rounded-lg flex items-center justify-center transition-all duration-300 hover:scale-110 group"
                   style={{
                     background: 'rgba(255,255,255,0.05)',
-                    border: '1px solid rgba(255,255,255,0.08)',
+                    border: '1px solid rgba(255,255,255,0.1)',
+                  }}
+                  onMouseEnter={e => {
+                    const el = e.currentTarget
+                    el.style.background = 'rgba(201,168,76,0.15)'
+                    el.style.borderColor = 'rgba(201,168,76,0.4)'
+                  }}
+                  onMouseLeave={e => {
+                    const el = e.currentTarget
+                    el.style.background = 'rgba(255,255,255,0.05)'
+                    el.style.borderColor = 'rgba(255,255,255,0.1)'
                   }}
                 >
                   <social.icon
                     size={16}
-                    className="text-gray-400 group-hover:text-white transition-colors"
+                    className="transition-colors"
+                    style={{ color: 'rgba(255,255,255,0.5)' }}
                   />
                 </a>
               ))}
@@ -86,7 +113,10 @@ const Footer: React.FC = () => {
 
           {/* Quick Links */}
           <div>
-            <h4 className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-5">
+            <h4
+              className="text-xs font-bold uppercase tracking-widest mb-5"
+              style={{ color: 'rgba(255,255,255,0.35)', fontFamily: 'Poppins, sans-serif' }}
+            >
               Navigation
             </h4>
             <ul className="space-y-2.5">
@@ -94,10 +124,14 @@ const Footer: React.FC = () => {
                 <li key={idx}>
                   <a
                     href={link.href}
-                    className="text-gray-500 hover:text-secondary-400 text-sm font-medium transition-colors duration-300 flex items-center gap-2 group"
+                    className="text-sm font-medium transition-colors duration-300 flex items-center gap-2 group"
+                    style={{ color: 'rgba(255,255,255,0.45)', fontFamily: 'Inter, sans-serif' }}
+                    onMouseEnter={e => (e.currentTarget as HTMLElement).style.color = '#C9A84C'}
+                    onMouseLeave={e => (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.45)'}
                   >
                     <span
-                      className="w-1 h-1 rounded-full bg-secondary-600 group-hover:bg-secondary-400 transition-colors flex-shrink-0"
+                      className="w-1 h-1 rounded-full flex-shrink-0 transition-colors"
+                      style={{ background: 'rgba(201,168,76,0.4)' }}
                     />
                     {link.label}
                   </a>
@@ -108,7 +142,10 @@ const Footer: React.FC = () => {
 
           {/* Contact */}
           <div>
-            <h4 className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-5">
+            <h4
+              className="text-xs font-bold uppercase tracking-widest mb-5"
+              style={{ color: 'rgba(255,255,255,0.35)', fontFamily: 'Poppins, sans-serif' }}
+            >
               Contact
             </h4>
             <ul className="space-y-4">
@@ -117,9 +154,18 @@ const Footer: React.FC = () => {
                   href="tel:918809630649"
                   className="flex items-start gap-3 group"
                 >
-                  <Phone size={15} className="text-secondary-600 mt-0.5 flex-shrink-0 group-hover:text-secondary-400 transition-colors" />
-                  <span className="text-gray-500 text-sm group-hover:text-gray-300 transition-colors">
-                    +91 98765 43210
+                  <Phone
+                    size={15}
+                    className="mt-0.5 flex-shrink-0 transition-colors"
+                    style={{ color: '#C9A84C' }}
+                  />
+                  <span
+                    className="text-sm transition-colors"
+                    style={{ color: 'rgba(255,255,255,0.45)', fontFamily: 'Inter, sans-serif' }}
+                    onMouseEnter={e => (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.75)'}
+                    onMouseLeave={e => (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.45)'}
+                  >
+                    +91 88096 30649
                   </span>
                 </a>
               </li>
@@ -128,16 +174,24 @@ const Footer: React.FC = () => {
                   href="mailto:info@mlvpg.com"
                   className="flex items-start gap-3 group"
                 >
-                  <Mail size={15} className="text-secondary-600 mt-0.5 flex-shrink-0 group-hover:text-secondary-400 transition-colors" />
-                  <span className="text-gray-500 text-sm group-hover:text-gray-300 transition-colors">
+                  <Mail size={15} className="mt-0.5 flex-shrink-0" style={{ color: '#C9A84C' }} />
+                  <span
+                    className="text-sm transition-colors"
+                    style={{ color: 'rgba(255,255,255,0.45)', fontFamily: 'Inter, sans-serif' }}
+                    onMouseEnter={e => (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.75)'}
+                    onMouseLeave={e => (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.45)'}
+                  >
                     info@mlvpg.com
                   </span>
                 </a>
               </li>
               <li>
                 <div className="flex items-start gap-3">
-                  <MapPin size={15} className="text-secondary-600 mt-0.5 flex-shrink-0" />
-                  <span className="text-gray-500 text-sm leading-relaxed">
+                  <MapPin size={15} className="mt-0.5 flex-shrink-0" style={{ color: '#C9A84C' }} />
+                  <span
+                    className="text-sm leading-relaxed"
+                    style={{ color: 'rgba(255,255,255,0.45)', fontFamily: 'Inter, sans-serif' }}
+                  >
                     Opposite Acharya Institute,<br />
                     Bangalore, Karnataka 560107
                   </span>
@@ -148,30 +202,41 @@ const Footer: React.FC = () => {
 
           {/* WhatsApp CTA */}
           <div>
-            <h4 className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-5">
+            <h4
+              className="text-xs font-bold uppercase tracking-widest mb-5"
+              style={{ color: 'rgba(255,255,255,0.35)', fontFamily: 'Poppins, sans-serif' }}
+            >
               Quick Enquiry
             </h4>
-            <p className="text-gray-500 text-sm mb-5 leading-relaxed">
+            <p
+              className="text-sm mb-5 leading-relaxed"
+              style={{ color: 'rgba(255,255,255,0.45)' }}
+            >
               Chat with us instantly on WhatsApp for the fastest response.
             </p>
             <a
               href={`https://wa.me/${WHATSAPP_NUMBER}?text=Hi! I'm interested in booking a room at MLV PG.`}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2.5 px-5 py-3 rounded-xl font-bold text-sm text-dark-900 transition-all duration-300 hover:scale-105 hover:shadow-lg"
+              className="inline-flex items-center gap-2.5 px-5 py-3 rounded-xl font-bold text-sm transition-all duration-300 hover:scale-105 hover:shadow-lg"
               style={{
                 background: 'linear-gradient(135deg, #25d366, #128c7e)',
+                color: '#ffffff',
                 boxShadow: '0 4px 20px rgba(37,211,102,0.25)',
+                fontFamily: 'Poppins, sans-serif',
               }}
             >
               <span className="text-xl">💬</span>
               WhatsApp Us
             </a>
 
-            <div className="mt-5 flex items-center gap-2 text-xs text-gray-600">
+            <div
+              className="mt-5 flex items-center gap-2 text-xs"
+              style={{ color: 'rgba(255,255,255,0.3)' }}
+            >
               <span
-                className="w-2 h-2 rounded-full bg-green-500"
-                style={{ boxShadow: '0 0 8px rgba(34,197,94,0.8)' }}
+                className="w-2 h-2 rounded-full"
+                style={{ background: '#22c55e', boxShadow: '0 0 8px rgba(34,197,94,0.8)' }}
               />
               <span>Usually replies within minutes</span>
             </div>
@@ -179,22 +244,34 @@ const Footer: React.FC = () => {
         </div>
 
         {/* Divider */}
-        <div style={{ borderTop: '1px solid rgba(255,255,255,0.05)' }} />
+        <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }} />
 
         {/* Bottom Bar */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-7">
-          <p className="text-gray-600 text-xs">
+          <p className="text-xs" style={{ color: 'rgba(255,255,255,0.25)' }}>
             © {new Date().getFullYear()} {SITE_NAME}. All rights reserved.
           </p>
-          <p className="text-gray-600 text-xs">
+          <p className="text-xs" style={{ color: 'rgba(255,255,255,0.25)' }}>
             Made with ❤️ for students across India
           </p>
           <div className="flex items-center gap-4 text-xs">
-            <a href="#" className="text-gray-600 hover:text-secondary-400 transition-colors">
+            <a
+              href="#"
+              className="transition-colors"
+              style={{ color: 'rgba(255,255,255,0.25)' }}
+              onMouseEnter={e => (e.currentTarget as HTMLElement).style.color = '#C9A84C'}
+              onMouseLeave={e => (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.25)'}
+            >
               Privacy Policy
             </a>
-            <span className="text-gray-700">·</span>
-            <a href="#" className="text-gray-600 hover:text-secondary-400 transition-colors">
+            <span style={{ color: 'rgba(255,255,255,0.15)' }}>·</span>
+            <a
+              href="#"
+              className="transition-colors"
+              style={{ color: 'rgba(255,255,255,0.25)' }}
+              onMouseEnter={e => (e.currentTarget as HTMLElement).style.color = '#C9A84C'}
+              onMouseLeave={e => (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.25)'}
+            >
               Terms of Service
             </a>
           </div>

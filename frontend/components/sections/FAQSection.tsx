@@ -23,12 +23,12 @@ const faqs = [
   {
     question: 'What is the booking process?',
     answer:
-      'Simply fill the pre-registration form → we\'ll contact you within 24 hours → schedule a visit → finalize your room → and you\'re all set! The whole process takes as little as 2–3 days.',
+      "Simply fill the pre-registration form → we'll contact you within 24 hours → schedule a visit → finalize your room → and you're all set! The whole process takes as little as 2–3 days.",
   },
   {
     question: 'Are guests allowed?',
     answer:
-      "Yes, guests are allowed with prior notice. There are designated visiting hours (9 AM \u2013 9 PM) and sign-in guidelines for guest visits to ensure everyone's comfort and safety.",
+      "Yes, guests are allowed with prior notice. There are designated visiting hours (9 AM – 9 PM) and sign-in guidelines for guest visits to ensure everyone's comfort and safety.",
   },
   {
     question: 'What is the location and connectivity?',
@@ -63,16 +63,21 @@ const FAQSection: React.FC = () => {
   const [expandedIdx, setExpandedIdx] = useState<number>(0)
 
   return (
-    <section id="faq" className="py-24 md:py-32 relative overflow-hidden">
-      {/* Background */}
-      <div className="absolute inset-0 -z-10">
-        <div
-          className="absolute inset-0 opacity-20"
-          style={{
-            background: 'radial-gradient(ellipse 60% 60% at 50% 50%, rgba(13,27,133,0.2) 0%, transparent 70%)',
-          }}
-        />
-      </div>
+    <section
+      id="faq"
+      className="relative overflow-hidden"
+      style={{
+        background: '#F8F6F1',
+        padding: 'clamp(40px, 5vw, 72px) 0',
+      }}
+    >
+      {/* Subtle background */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background: 'radial-gradient(ellipse 60% 60% at 50% 50%, rgba(201,168,76,0.05) 0%, transparent 70%)',
+        }}
+      />
 
       <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
@@ -84,16 +89,19 @@ const FAQSection: React.FC = () => {
           transition={{ duration: 0.65 }}
         >
           <span className="section-badge mb-5 inline-block">✦ FAQ</span>
-          <h2 className="font-bold text-white mb-5">
+          <h2
+            className="font-bold mb-5"
+            style={{ color: '#1A1A2E', fontFamily: 'Playfair Display, serif' }}
+          >
             Frequently Asked{' '}
             <span className="gradient-text">Questions</span>
           </h2>
-          <p className="text-gray-400">
+          <p style={{ color: '#4A4A6A' }}>
             Everything you need to know about living at MLV PG. Can't find your answer?{' '}
             <a
               href="#contact"
-              className="underline underline-offset-2 hover:text-secondary-400 transition-colors"
-              style={{ color: '#c9a84c' }}
+              className="underline underline-offset-2 transition-colors"
+              style={{ color: '#C9A84C' }}
             >
               Contact us.
             </a>
@@ -115,9 +123,10 @@ const FAQSection: React.FC = () => {
                 key={idx}
                 className="rounded-2xl overflow-hidden"
                 style={{
-                  background: isOpen ? 'rgba(201,168,76,0.06)' : 'rgba(255,255,255,0.03)',
-                  border: isOpen ? '1px solid rgba(201,168,76,0.25)' : '1px solid rgba(255,255,255,0.06)',
-                  transition: 'background 0.3s, border-color 0.3s',
+                  background: isOpen ? 'rgba(201,168,76,0.04)' : '#FFFFFF',
+                  border: isOpen ? '1.5px solid rgba(201,168,76,0.3)' : '1px solid #EBEBF0',
+                  boxShadow: isOpen ? '0 4px 20px rgba(0,0,0,0.07)' : '0 1px 8px rgba(0,0,0,0.04)',
+                  transition: 'background 0.3s, border-color 0.3s, box-shadow 0.3s',
                 }}
                 variants={itemVariants}
               >
@@ -129,18 +138,22 @@ const FAQSection: React.FC = () => {
                   <div
                     className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 transition-all duration-300"
                     style={{
-                      background: isOpen ? 'rgba(201,168,76,0.2)' : 'rgba(255,255,255,0.05)',
+                      background: isOpen ? 'rgba(201,168,76,0.12)' : 'rgba(201,168,76,0.06)',
+                      border: `1px solid ${isOpen ? 'rgba(201,168,76,0.3)' : 'rgba(201,168,76,0.15)'}`,
                     }}
                   >
                     <HelpCircle
                       size={15}
-                      style={{ color: isOpen ? '#c9a84c' : '#6b7280' }}
+                      style={{ color: '#C9A84C' }}
                     />
                   </div>
 
                   <h3
                     className="flex-1 text-base font-semibold leading-snug transition-colors duration-300 pr-2"
-                    style={{ color: isOpen ? '#fff' : '#d1d5db' }}
+                    style={{
+                      color: isOpen ? '#1A1A2E' : '#4A4A6A',
+                      fontFamily: 'Inter, sans-serif',
+                    }}
                   >
                     {faq.question}
                   </h3>
@@ -152,7 +165,7 @@ const FAQSection: React.FC = () => {
                   >
                     <ChevronDown
                       size={18}
-                      style={{ color: isOpen ? '#c9a84c' : '#6b7280' }}
+                      style={{ color: isOpen ? '#C9A84C' : '#8A8AA0' }}
                     />
                   </motion.div>
                 </button>
@@ -169,9 +182,12 @@ const FAQSection: React.FC = () => {
                     >
                       <div
                         className="px-6 pb-6 pl-[4.5rem]"
-                        style={{ borderTop: '1px solid rgba(255,255,255,0.05)' }}
+                        style={{ borderTop: '1px solid rgba(201,168,76,0.1)' }}
                       >
-                        <p className="text-gray-400 leading-relaxed text-sm pt-4">
+                        <p
+                          className="leading-relaxed text-sm pt-4"
+                          style={{ color: '#4A4A6A' }}
+                        >
                           {faq.answer}
                         </p>
                       </div>
@@ -188,3 +204,5 @@ const FAQSection: React.FC = () => {
 }
 
 export { FAQSection }
+
+
