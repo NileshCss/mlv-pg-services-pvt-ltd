@@ -27,29 +27,42 @@ const poppins = Poppins({
 import SchemaMarkup from '../components/SEO/SchemaMarkup'
 
 export const metadata: Metadata = {
-  title: 'MLV PG Services – Best Student PG Near Acharya Institute Bangalore',
-  description:
-    'MLV PG Services offers premium student PG near Acharya Institute Bangalore. Boys and girls PG on Hesaraghatta Road with unlimited food, WiFi, and safety. Best cheap PG near Acharya Institute.',
-  keywords: [
-    'PG near Acharya Institute Bangalore',
-    'student PG Bangalore with food',
-    'boys girls PG Hesaraghatta Road',
-    'cheap PG near Acharya Institute',
-    'MLV PG Services Bangalore',
-    'Acharya Institute of Technology PG',
-    'Student accommodation Bangalore',
-  ],
-  authors: [{ name: 'MLV PG Services' }],
   metadataBase: new URL('https://mlv-pg-services-pvt-ltd-frontend.vercel.app'),
-  alternates: {
-    canonical: '/',
+
+  title: {
+    default: 'MLV PG Services – Best Student PG Near Acharya Institute Bangalore',
+    template: '%s | MLV PG Services',
   },
+
+  description:
+    'MLV PG Services offers premium student PG accommodation near Acharya Institute of Technology, Bangalore. Unlimited food, WiFi, CCTV, 24/7 electricity. Rooms from ₹7,500/month.',
+
+  keywords: [
+    'PG near Acharya Institute',
+    'student PG Bangalore',
+    'boys PG Bangalore',
+    'girls PG Bangalore',
+    'PG with food Bangalore',
+    'cheap PG near Acharya Institute',
+    'MLV PG Services',
+    'paying guest Bangalore',
+    'student accommodation Bangalore',
+    'PG near Soladevanahalli',
+    'PG Hesaraghatta Road Bangalore',
+  ],
+
+  authors: [{ name: 'MLV PG Services' }],
+  creator: 'MLV PG Services',
+  publisher: 'MLV PG Services',
+
   openGraph: {
-    title: 'MLV PG Services – Premium Student PG Bangalore',
-    description: 'Premium student accommodation near Acharya Institute with food, WiFi, and 24/7 security.',
+    type: 'website',
+    locale: 'en_IN',
     url: 'https://mlv-pg-services-pvt-ltd-frontend.vercel.app',
     siteName: 'MLV PG Services',
-    type: 'website',
+    title: 'MLV PG Services – Premium Student PG Near Acharya Institute',
+    description:
+      'Best student PG in Bangalore near Acharya Institute. Unlimited food, WiFi, CCTV, power backup. Rooms from ₹7,500/month.',
     images: [
       {
         url: 'https://images.unsplash.com/photo-1555854877-bab0e564b8d5?w=1200&q=80',
@@ -59,12 +72,15 @@ export const metadata: Metadata = {
       },
     ],
   },
+
   twitter: {
     card: 'summary_large_image',
-    title: 'MLV PG Services – Student PG Near Acharya Institute',
-    description: 'Best student PG in Bangalore with food and safety.',
+    title: 'MLV PG Services – Premium Student PG Bangalore',
+    description:
+      'Best student PG near Acharya Institute Bangalore. Unlimited food, WiFi, CCTV. Rooms from ₹7,500/month.',
     images: ['https://images.unsplash.com/photo-1555854877-bab0e564b8d5?w=1200&q=80'],
   },
+
   robots: {
     index: true,
     follow: true,
@@ -76,10 +92,15 @@ export const metadata: Metadata = {
       'max-snippet': -1,
     },
   },
+
   verification: {
-    google: 'google-site-verification-placeholder',
+    google: 'google-site-verification=rD7eAGYg6VWx8leXLSqhHETZK0noWwYzaje51kig3vA', // get from Google Search Console
   },
-}
+
+  alternates: {
+    canonical: 'https://mlv-pg-services-pvt-ltd-frontend.vercel.app',
+  },
+};
 
 export default function RootLayout({
   children,
