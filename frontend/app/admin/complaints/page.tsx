@@ -7,6 +7,7 @@ import {
   MessageCircle, AlertTriangle, Clock, TrendingUp,
 } from 'lucide-react'
 import { DashboardLayout } from '@/components/admin/layout/DashboardLayout'
+import { toast } from 'sonner'
 
 /* ─── Types ──────────────────────────────────────────────── */
 interface Complaint {
@@ -229,9 +230,16 @@ export default function AdminComplaintsPage() {
     try {
       const res  = await fetch(`/api/complaints?_t=${Date.now()}`)
       const json = await res.json()
-      setComplaints(json.data || [])
+      if (!res.ok || json.error) {
+        console.error('[Complaints fetch error]', json.error)
+        toast.error(`Failed to load complaints: ${json.error || res.statusText}`)
+        setComplaints([])
+      } else {
+        setComplaints(json.data || [])
+      }
     } catch (e) {
       console.error(e)
+      toast.error('Network error — could not reach the complaints API.')
     } finally {
       setLoading(false)
     }
