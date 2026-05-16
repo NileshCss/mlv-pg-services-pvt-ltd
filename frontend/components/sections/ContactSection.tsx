@@ -1,9 +1,10 @@
 'use client'
 
-import React from 'react'
+import React, { useState } from 'react'
 import { motion } from 'motion/react'
-import { Mail, Phone, MapPin, Clock, ExternalLink } from 'lucide-react'
+import { Mail, Phone, MapPin, Clock, ExternalLink, MessageSquareWarning } from 'lucide-react'
 import { ContactForm } from '@/components/forms/ContactForm'
+import { ComplaintFormModal } from '@/components/forms/ComplaintFormModal'
 
 const contactInfo = [
   {
@@ -55,6 +56,8 @@ const itemVariants = {
 }
 
 const ContactSection: React.FC = () => {
+  const [complaintOpen, setComplaintOpen] = useState(false)
+
   return (
     <section
       id="contact"
@@ -200,7 +203,53 @@ const ContactSection: React.FC = () => {
               )
             })}
 
-            {/* Map */}
+            {/* Raise a Complaint CTA */}
+            <motion.div variants={itemVariants}>
+              <button
+                onClick={() => setComplaintOpen(true)}
+                className="w-full flex items-center gap-4 p-5 rounded-2xl group transition-all duration-300 text-left"
+                style={{
+                  background: 'rgba(231,76,60,0.04)',
+                  border: '1.5px solid rgba(231,76,60,0.2)',
+                  boxShadow: '0 2px 12px rgba(0,0,0,0.04)',
+                  cursor: 'pointer',
+                }}
+                onMouseEnter={e => {
+                  Object.assign((e.currentTarget as HTMLElement).style, {
+                    borderColor: 'rgba(231,76,60,0.45)',
+                    boxShadow: '0 4px 20px rgba(231,76,60,0.12)',
+                    background: 'rgba(231,76,60,0.07)',
+                  })
+                }}
+                onMouseLeave={e => {
+                  Object.assign((e.currentTarget as HTMLElement).style, {
+                    borderColor: 'rgba(231,76,60,0.2)',
+                    boxShadow: '0 2px 12px rgba(0,0,0,0.04)',
+                    background: 'rgba(231,76,60,0.04)',
+                  })
+                }}
+              >
+                <div
+                  className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
+                  style={{ background: 'rgba(231,76,60,0.1)', border: '1px solid rgba(231,76,60,0.25)' }}
+                >
+                  <MessageSquareWarning size={20} style={{ color: '#E74C3C' }} />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="text-xs font-semibold uppercase tracking-wider mb-0.5" style={{ color: '#E74C3C', fontFamily: 'Poppins, sans-serif' }}>
+                    Have an Issue?
+                  </div>
+                  <div className="font-semibold text-sm" style={{ color: '#1A1A2E', fontFamily: 'Inter, sans-serif' }}>
+                    Raise a Complaint
+                  </div>
+                  <div className="text-xs mt-0.5" style={{ color: '#8A8AA0' }}>
+                    Resolved within 24 hours · Instant admin alert
+                  </div>
+                </div>
+              </button>
+            </motion.div>
+
+            {/* Map */}}
             <motion.div
               className="rounded-2xl overflow-hidden"
               style={{ height: '240px', border: '1px solid #EBEBF0', boxShadow: '0 2px 12px rgba(0,0,0,0.05)' }}
@@ -221,6 +270,8 @@ const ContactSection: React.FC = () => {
         </div>
       </div>
     </section>
+
+    <ComplaintFormModal open={complaintOpen} onOpenChange={setComplaintOpen} />
   )
 }
 

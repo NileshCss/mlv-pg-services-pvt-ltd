@@ -18,22 +18,24 @@ import {
   Menu,
   X,
   Megaphone,
+  MessageSquareWarning,
 } from 'lucide-react'
 import { useUIStore } from '@/store/uiStore'
 import { useAuthStore } from '@/store/authStore'
 import { createClient } from '@/lib/supabase/client'
 
 const navItems = [
-  { label: 'Dashboard',    icon: LayoutDashboard, href: '/admin/dashboard' },
-  { label: 'Registrations',icon: ClipboardList,   href: '/admin/registrations' },
-  { label: 'Bookings',     icon: Calendar,        href: '/admin/bookings' },
-  { label: 'Food Menu',    icon: UtensilsCrossed, href: '/admin/food-menu' },
-  { label: 'Rooms',        icon: Home,            href: '/admin/rooms' },
-  { label: 'Gallery',      icon: Image,           href: '/admin/gallery' },
-  { label: 'Testimonials', icon: Star,            href: '/admin/testimonials' },
-  { label: 'Notice Board', icon: Megaphone,       href: '/admin/notice-board' },
-  { label: 'Users',        icon: Users,           href: '/admin/users' },
-  { label: 'Settings',     icon: Settings,        href: '/admin/settings' },
+  { label: 'Dashboard',    icon: LayoutDashboard,     href: '/admin/dashboard' },
+  { label: 'Registrations',icon: ClipboardList,       href: '/admin/registrations' },
+  { label: 'Bookings',     icon: Calendar,            href: '/admin/bookings' },
+  { label: 'Food Menu',    icon: UtensilsCrossed,     href: '/admin/food-menu' },
+  { label: 'Rooms',        icon: Home,                href: '/admin/rooms' },
+  { label: 'Gallery',      icon: Image,               href: '/admin/gallery' },
+  { label: 'Testimonials', icon: Star,                href: '/admin/testimonials' },
+  { label: 'Notice Board', icon: Megaphone,           href: '/admin/notice-board' },
+  { label: 'Complaints',   icon: MessageSquareWarning,href: '/admin/complaints', badge: true },
+  { label: 'Users',        icon: Users,               href: '/admin/users' },
+  { label: 'Settings',     icon: Settings,            href: '/admin/settings' },
 ]
 
 /* ─── Shared styles ─────────────────────────────────────── */
@@ -83,9 +85,10 @@ interface NavItemProps {
   isActive: boolean
   collapsed?: boolean
   onClick?: () => void
+  badgeCount?: number
 }
 
-const NavItem: React.FC<NavItemProps> = ({ item, isActive, collapsed = false, onClick }) => {
+const NavItem: React.FC<NavItemProps> = ({ item, isActive, collapsed = false, onClick, badgeCount = 0 }) => {
   const [showTooltip, setShowTooltip] = React.useState(false)
   const Icon = item.icon
 
@@ -110,11 +113,32 @@ const NavItem: React.FC<NavItemProps> = ({ item, isActive, collapsed = false, on
         }}
         className={isActive ? '' : 'sidebar-nav-inactive'}
       >
-        <Icon size={20} style={{ flexShrink: 0 }} />
+        <div style={{ position: 'relative', flexShrink: 0 }}>
+          <Icon size={20} />
+          {/* Badge on icon (collapsed view) */}
+          {collapsed && badgeCount > 0 && (
+            <span style={{
+              position: 'absolute', top: -6, right: -6,
+              background: '#E74C3C', color: '#fff',
+              fontSize: '9px', fontWeight: 700,
+              width: 16, height: 16, borderRadius: '50%',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}>{badgeCount > 99 ? '99+' : badgeCount}</span>
+          )}
+        </div>
         {!collapsed && (
-          <span style={{ fontSize: '14px', fontWeight: 500, whiteSpace: 'nowrap' }}>
+          <span style={{ fontSize: '14px', fontWeight: 500, whiteSpace: 'nowrap', flex: 1 }}>
             {item.label}
           </span>
+        )}
+        {/* Badge on label (expanded view) */}
+        {!collapsed && badgeCount > 0 && (
+          <span style={{
+            background: '#E74C3C', color: '#fff',
+            fontSize: '10px', fontWeight: 700,
+            padding: '1px 6px', borderRadius: '999px',
+            marginLeft: 'auto', flexShrink: 0,
+          }}>{badgeCount > 99 ? '99+' : badgeCount}</span>
         )}
         {collapsed && showTooltip && <Tooltip label={item.label} />}
       </div>
@@ -186,7 +210,8 @@ const SidebarContent: React.FC<{
   onLogout: () => void
   showCloseBtn?: boolean
   onClose?: () => void
-}> = ({ collapsed = false, pathname, onNavClick, onLogout, showCloseBtn = false, onClose }) => (
+  pendingComplaints?: number
+}> = ({ collapsed = false, pathname, onNavClick, onLogout, showCloseBtn = false, onClose, pendingComplaints = 0 }) => (
   <>
     {showCloseBtn && (
       <div style={{ display: 'flex', justifyContent: 'flex-start', padding: '12px 12px 0', flexShrink: 0 }}>
@@ -212,6 +237,7 @@ const SidebarContent: React.FC<{
           isActive={pathname === item.href}
           collapsed={collapsed}
           onClick={onNavClick}
+          badgeCount={item.badge ? pendingComplaints : 0}
         />
       ))}
     </nav>
@@ -225,6 +251,14 @@ export const Sidebar: React.FC = () => {
   const supabase = createClient()
   const { mobileOpen, closeMobileSidebar, toggleMobileSidebar } = useUIStore()
   const { logout } = useAuthStore()
+  const [pendingComplaints, setPendingComplaints] = React.useState(0)
+
+  React.useEffect(() => {
+    fetch('/api/complaints?status=pending')
+      .then(r => r.json())
+      .then(j => setPendingComplaints((j.data ?? []).length))
+      .catch(() => {})
+  }, [])
 
   const handleLogout = async () => {
     await supabase.auth.signOut()
@@ -387,6 +421,7 @@ export const Sidebar: React.FC = () => {
               onLogout={handleLogout}
               showCloseBtn
               onClose={closeMobileSidebar}
+              pendingComplaints={pendingComplaints}
             />
           </motion.aside>
         )}
@@ -513,6 +548,7 @@ export const Sidebar: React.FC = () => {
           collapsed={false}
           pathname={pathname}
           onLogout={handleLogout}
+          pendingComplaints={pendingComplaints}
         />
       </aside>
     </>

@@ -1,12 +1,14 @@
 'use client'
 
-import React from 'react'
+import React, { useState } from 'react'
 import Link from 'next/link'
-import { Mail, Phone, MapPin, Instagram, Facebook, Youtube } from 'lucide-react'
+import { Mail, Phone, MapPin, Instagram, Facebook, Youtube, MessageSquareWarning } from 'lucide-react'
 import { motion } from 'motion/react'
 import { WHATSAPP_NUMBER, SITE_NAME } from '@/lib/utils/constants'
+import { ComplaintFormModal } from '@/components/forms/ComplaintFormModal'
 
 const Footer: React.FC = () => {
+  const [complaintOpen, setComplaintOpen] = useState(false)
   const socialLinks = [
     { icon: Instagram, href: '#', label: 'Instagram' },
     { icon: Facebook, href: '#', label: 'Facebook' },
@@ -240,6 +242,24 @@ const Footer: React.FC = () => {
               />
               <span>Usually replies within minutes</span>
             </div>
+
+            {/* Raise a Complaint */}
+            <button
+              onClick={() => setComplaintOpen(true)}
+              className="mt-5 inline-flex items-center gap-2.5 px-5 py-3 rounded-xl font-bold text-sm transition-all duration-300 hover:scale-105"
+              style={{
+                background: 'rgba(231,76,60,0.15)',
+                border: '1.5px solid rgba(231,76,60,0.35)',
+                color: '#ff8070',
+                fontFamily: 'Poppins, sans-serif',
+                cursor: 'pointer',
+              }}
+              onMouseEnter={e => (e.currentTarget.style.background = 'rgba(231,76,60,0.25)')}
+              onMouseLeave={e => (e.currentTarget.style.background = 'rgba(231,76,60,0.15)')}
+            >
+              <MessageSquareWarning size={16} />
+              Raise a Complaint
+            </button>
           </div>
         </div>
 
@@ -278,6 +298,8 @@ const Footer: React.FC = () => {
         </div>
       </div>
     </footer>
+
+    <ComplaintFormModal open={complaintOpen} onOpenChange={setComplaintOpen} />
   )
 }
 
