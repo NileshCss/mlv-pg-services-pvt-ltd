@@ -72,7 +72,7 @@ const RoomCard = memo(function RoomCardComponent({ room, onEdit, onRefetch }: Ro
         {room.images && room.images.length > 0 ? (
           <Image
             src={room.images[0]}
-            alt={`Room ${room.room_number}`}
+            alt={`Room ${room.room_number} - MLV PG Services`}
             fill
             className="object-cover group-hover:scale-105 transition-transform duration-300"
           />

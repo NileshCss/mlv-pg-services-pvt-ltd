@@ -207,7 +207,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onBookClick, onContactClick }
             >
               <Image
                 src="https://images.unsplash.com/photo-1555854877-bab0e564b8d5?w=700&q=85"
-                alt="MLV PG – Premium Student Accommodation"
+                alt="MLV PG Services – Best Student PG near Acharya Institute Bangalore"
                 fill
                 className="object-cover transition-transform duration-700 group-hover:scale-105"
                 priority

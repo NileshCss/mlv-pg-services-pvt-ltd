@@ -88,7 +88,7 @@ const AboutSection: React.FC = () => {
             >
               <Image
                 src="https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=700&q=85"
-                alt="MLV PG – Your Home in Bangalore"
+                alt="MLV PG Services Bangalore – Student PG with food near Hesaraghatta Road"
                 fill
                 className="object-cover transition-transform duration-700 group-hover:scale-105"
               />

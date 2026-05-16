@@ -53,7 +53,7 @@ const RoomCard = memo(function RoomCardComponent({ room, isFeatured, onBookClick
       <div className="relative h-52 overflow-hidden flex-shrink-0">
         <Image
           src={ROOM_IMAGES[room.id] ?? ROOM_IMAGES.single}
-          alt={room.name}
+          alt={`${room.name} – Luxury Student PG near Acharya Institute`}
           fill
           className="object-cover transition-transform duration-700 group-hover:scale-110"
           loading="lazy"
