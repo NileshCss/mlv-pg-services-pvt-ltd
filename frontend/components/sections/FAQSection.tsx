@@ -6,39 +6,44 @@ import { ChevronDown, HelpCircle } from 'lucide-react'
 
 const faqs = [
   {
-    question: 'What is included in the room rent?',
+    question: 'Is there a PG near Acharya Institute with North Indian food?',
     answer:
-      'Room rent includes a fully furnished room, high-speed WiFi, 24/7 electricity with backup, CCTV security, housekeeping, laundry service, and unlimited food (breakfast, lunch & dinner).',
+      'Yes — MLV PG is located directly opposite Acharya Institute of Technology, just a 2-minute walk away. We are one of the very few PGs in Soladevanahalli that serve authentic North Indian home-cooked food — dal, roti, sabzi, and rice prepared fresh every day in a hygienic kitchen.',
   },
   {
-    question: 'Do you provide vegetarian and non-vegetarian food?',
+    question: 'Which PG near Acharya College serves home-cooked food?',
     answer:
-      'Yes! We provide both vegetarian and non-vegetarian options. You can choose your food preference during registration, and we also accommodate special dietary needs.',
+      'MLV PG Services is known for its warm, home-style North Indian meals. Students from Acharya College (Soladevanahalli) and Acharya Institute of Graduate Studies (AIGS) regularly choose us because our food tastes just like what their parents cook — no mess food, no tiffin boxes, just real meals made with care.',
   },
   {
-    question: 'Is there any deposit or advance payment required?',
+    question: 'Best PG for girls near Acharya Institute Bangalore?',
     answer:
-      "We require a one-month refundable security deposit plus the first month's rent in advance. Full details and payment options will be discussed during your site visit.",
+      'MLV PG offers secure, dedicated accommodation for girls with 24/7 CCTV surveillance, on-site female staff, biometric entry, and gated premises. Located a short walk from Acharya Institute of Technology (AIT) and AIGS, it is widely regarded as one of the safest and most comfortable PGs for girls in the area.',
   },
   {
-    question: 'What is the booking process?',
+    question: 'Is MLV PG safe for girls?',
     answer:
-      "Simply fill the pre-registration form → we'll contact you within 24 hours → schedule a visit → finalize your room → and you're all set! The whole process takes as little as 2–3 days.",
+      'Absolutely. Safety is our highest priority. MLV PG has 24/7 CCTV cameras covering all common areas, a biometric access system, gated entry, and dedicated female staff on duty at all times. Parents of our girl residents regularly tell us they sleep peacefully knowing their daughters are with us.',
   },
   {
-    question: 'Are guests allowed?',
+    question: 'Is there a PG with parent-like care near Acharya Institute?',
     answer:
-      "Yes, guests are allowed with prior notice. There are designated visiting hours (9 AM – 9 PM) and sign-in guidelines for guest visits to ensure everyone's comfort and safety.",
+      'MLV PG is built on the belief that every student deserves a family-like environment away from home. Our staff knows each resident by name, checks on their well-being, and ensures no one skips meals. Students from Acharya Institute of Technology and Acharya College consistently call it the most caring PG they have lived in.',
   },
   {
-    question: 'What is the location and connectivity?',
+    question: 'How far is MLV PG from Acharya Institute of Technology?',
     answer:
-      'We are located directly opposite Acharya Institute of Technology — just a 3-minute walk! The area is well-connected by public transport (metro, bus) and has all essential amenities nearby.',
+      'MLV PG is located directly opposite Acharya Institute of Technology (AIT) on Hesaraghatta Road, Soladevanahalli — roughly a 2-minute walk from the campus gate. Students from Acharya Institute of Graduate Studies (AIGS) and Acharya College are also within comfortable walking distance from our facility.',
   },
   {
-    question: 'Is the PG safe for girls?',
+    question: 'What type of food is served at MLV PG?',
     answer:
-      'Absolutely. We have dedicated women-only floors with 24/7 CCTV, biometric entry, and on-site female staff. Safety is our highest priority.',
+      'We serve authentic North Indian home-cooked meals: dal (arhar/chana), fresh rotis, seasonal sabzi, steamed rice, and curd. Meals are prepared daily in a hygienically maintained kitchen using fresh ingredients. Both vegetarian and non-vegetarian options are available. There are no shortcuts — it tastes exactly like food made at home.',
+  },
+  {
+    question: 'What are the room charges and what is included?',
+    answer:
+      'Room rent starts at ₹7,500/month (triple sharing) and goes up to ₹13,000/month (single room). All plans include North Indian home-cooked meals (breakfast, lunch & dinner), high-speed WiFi, 24/7 electricity with backup, CCTV security, housekeeping, and laundry. A refundable one-month security deposit is required at move-in.',
   },
 ]
 

@@ -133,27 +133,37 @@ export const VALIDATION_MESSAGES = {
 
 // Hero section content
 export const HERO_CONTENT = {
-  badge: '🏛️ Opposite Acharya Institute of Technology',
-  heading: 'Premium Student PG\nNear Acharya Institute',
-  subheading: 'Unlimited Food | Safe Environment | Parent-Like Care\nYour home away from home in Bangalore.',
+  badge: '🏛️ Opp. Acharya Institute · Soladevanahalli, Bangalore',
+  heading: '#1 PG near Acharya College\nwith Authentic North Indian Food',
+  subheading: 'Because home is not a place — it is a feeling. We cook, care, and look after you just like your family would.',
   pills: [
-    '🍽️ Unlimited Hygienic Food',
-    '⚡ 24/7 Electricity',
-    '👨‍👩‍👧 Parent-Like Support',
+    '🍲 North Indian Home-Cooked Food',
+    '👨‍👩‍👧 Parent-Like Care',
+    '🔒 Safe for Boys & Girls',
+    '⚡ 24/7 Open',
   ],
   stats: [
-    { label: 'Students Stayed', value: '500+' },
+    { label: 'Happy Students', value: '500+' },
     { label: 'Average Rating', value: '4.9/5' },
-    { label: 'States Represented', value: '5+' },
+    { label: 'Years of Trust', value: '10+' },
   ],
 }
 
 // SEO Keywords
 export const SEO_KEYWORDS = [
-  'PG near Acharya Institute',
-  'Student PG in Bangalore',
-  'Unlimited food PG Bangalore',
-  'Boys PG near Acharya',
-  'Girls PG near Acharya',
-  'Best student PG Bangalore',
+  'PG near Acharya College',
+  'PG near Acharya Institute of Technology',
+  'PG near Acharya Institute of Graduate Studies',
+  'North Indian PG near Acharya',
+  'MLV PG',
+  'MLV PG Services',
+  'North Indian food PG Bangalore',
+  'PG with home-cooked food near Acharya',
+  'student PG Bangalore',
+  'boys PG near Acharya Institute',
+  'girls PG near Acharya Institute Bangalore',
+  'safe PG for girls Bangalore',
+  'PG near Soladevanahalli',
+  'PG Hesaraghatta Road Bangalore',
+  'affordable PG near Acharya Institute',
 ]

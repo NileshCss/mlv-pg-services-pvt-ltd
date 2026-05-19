@@ -6,9 +6,10 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: '*',
         allow: '/',
-        disallow: ['/admin/', '/api/'],
+        disallow: ['/admin/', '/api/', '/(auth)/'],
       },
     ],
-    sitemap: 'https://mlv-pg-services-pvt-ltd-frontend.vercel.app/sitemap.xml',
+    sitemap: 'https://mlvpg.com/sitemap.xml',
+    host: 'https://mlvpg.com',
   }
 }

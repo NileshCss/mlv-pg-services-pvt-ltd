@@ -8,6 +8,7 @@ import { WhatsAppButton } from '@/components/ui/WhatsAppButton'
 import { PreRegistrationForm } from '@/components/forms/PreRegistrationForm'
 import { HeroSection } from '@/components/sections/HeroSection'
 import { AboutSection } from '@/components/sections/AboutSection'
+import { WhyMLVSection } from '@/components/sections/WhyMLVSection'
 import { FacilitiesSection } from '@/components/sections/FacilitiesSection'
 import { RoomsSection } from '@/components/sections/RoomsSection'
 import FoodMenuSection from '@/components/food/FoodMenuSection'
@@ -45,6 +46,7 @@ export default function Home() {
           onContactClick={() => handleScrollTo('contact')}
         />
         <AboutSection />
+        <WhyMLVSection />
         <FacilitiesSection />
         <RoomsSection onBookClick={() => setPopupOpen(true)} />
         <FoodMenuSection />

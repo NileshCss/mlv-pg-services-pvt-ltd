@@ -103,20 +103,25 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onBookClick, onContactClick }
 
             {/* Heading — Playfair Display */}
             <div className="stagger-item" style={{ animationDelay: '0.1s' }}>
-              <h1
-                className="font-bold leading-[1.1]"
-                style={{ fontFamily: 'Playfair Display, serif', color: '#1A1A2E' }}
-              >
-                <span className="block mb-2">
-                  {HERO_CONTENT.heading.split('\n')[0]}
-                </span>
-                <span className="block">
-                  Near{' '}
-                  <span className="gradient-text">
-                    {HERO_CONTENT.heading.split('\n')[1]?.split(' ').slice(-2).join(' ') ?? 'Acharya Institute'}
-                  </span>
-                </span>
-              </h1>
+              {(() => {
+                const [line1, line2] = HERO_CONTENT.heading.split('\n')
+                const words2 = (line2 ?? '').split(' ')
+                // Last 3 words get the gold gradient; remainder is plain
+                const plainPrefix = words2.slice(0, -3).join(' ')
+                const gradientWords = words2.slice(-3).join(' ')
+                return (
+                  <h1
+                    className="font-bold leading-[1.1]"
+                    style={{ fontFamily: 'Playfair Display, serif', color: '#1A1A2E' }}
+                  >
+                    <span className="block mb-2">{line1}</span>
+                    <span className="block">
+                      {plainPrefix && <>{plainPrefix}{' '}</>}
+                      <span className="gradient-text">{gradientWords || 'North Indian Food'}</span>
+                    </span>
+                  </h1>
+                )
+              })()}
             </div>
 
             {/* Subheading */}

@@ -168,9 +168,15 @@ const AboutSection: React.FC = () => {
                 className="text-lg leading-relaxed"
                 style={{ color: '#4A4A6A' }}
               >
-                MLV PG SERVICES PVT LTD provides a safe, hygienic, and supportive environment
-                for students from across India and abroad, located opposite Acharya Institute
-                of Technology.
+                MLV PG Services Pvt Ltd is Bangalore's most-loved North Indian PG, situated
+                directly opposite <strong style={{ color: '#1A1A2E' }}>Acharya Institute of
+                Technology (AIT)</strong> in Soladevanahalli. Students from{' '}
+                <strong style={{ color: '#1A1A2E' }}>Acharya Institute of Graduate Studies
+                (AIGS)</strong> and <strong style={{ color: '#1A1A2E' }}>Acharya College</strong>{' '}
+                choose us because we offer something rare — authentic North Indian home-cooked
+                meals (dal, roti, sabzi, rice) served fresh every day, a hygienically maintained
+                kitchen, and staff who treat every resident like their own child. Safe
+                accommodation for both boys and girls, starting at just ₹7,500/month.
               </p>
             </motion.div>
 
