@@ -88,14 +88,14 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onBookClick, onContact
 
   return (
     // 2. Color Palette: Warm cream bg (#FDF9F3)
-    <section className={`relative min-h-[95vh] bg-[#FDF9F3] text-[#1C1C3A] ${jakarta.className} flex items-center overflow-hidden py-24 lg:py-0`}>
+    <section className={`relative min-h-[85vh] bg-[#FDF9F3] text-[#1C1C3A] ${jakarta.className} flex items-center overflow-hidden py-16 lg:py-0`}>
       {/* Decorative background glows */}
       <div className="absolute top-0 right-0 -mt-32 -mr-32 w-[600px] h-[600px] bg-[#D4A017] rounded-full blur-[140px] opacity-[0.08] pointer-events-none" />
       <div className="absolute bottom-0 left-0 -mb-24 -ml-24 w-[400px] h-[400px] bg-[#D4A017] rounded-full blur-[120px] opacity-[0.06] pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full">
         {/* 10. Fully responsive grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-14 lg:gap-8 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
           
           {/* ── Left Content Column ── */}
           <motion.div 
@@ -105,17 +105,17 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onBookClick, onContact
             animate="show"
           >
             {/* Brand Name */}
-            <motion.div variants={itemVariants} className="mb-5">
-              <span className={`inline-block text-2xl md:text-3xl text-transparent bg-clip-text bg-gradient-to-r from-[#D4A017] to-[#E8C96B] font-bold tracking-wide ${playfair.className} italic drop-shadow-sm`}>
+            <motion.div variants={itemVariants} className="mb-3">
+              <span className={`inline-block text-lg md:text-xl lg:text-2xl text-transparent bg-clip-text bg-gradient-to-r from-[#D4A017] to-[#E8C96B] font-bold tracking-wide ${playfair.className} italic drop-shadow-sm`}>
                 MLV PG Services Pvt Ltd
               </span>
             </motion.div>
 
             {/* 4. Location Pill (Glass-morphism) */}
-            <motion.div variants={itemVariants} className="mb-8">
-              <div className="inline-flex items-center gap-2.5 px-5 py-2.5 rounded-full bg-white/40 border border-white/60 backdrop-blur-md shadow-sm">
+            <motion.div variants={itemVariants} className="mb-5">
+              <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-white/40 border border-white/60 backdrop-blur-md shadow-sm">
                 <MapPin size={16} className="text-[#D4A017]" />
-                <span className="text-sm font-semibold tracking-wide text-[#1C1C3A]">
+                <span className="text-xs md:text-sm font-semibold tracking-wide text-[#1C1C3A]">
                   Opp. Acharya Institute · Soladevanahalli, Bangalore
                 </span>
               </div>
@@ -124,7 +124,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onBookClick, onContact
             {/* 3. & 11. H1 Heading (SEO Optimized) */}
             <motion.h1 
               variants={itemVariants}
-              className={`text-5xl md:text-6xl lg:text-7xl tracking-tight leading-[1.05] mb-6 ${playfair.className} text-[#1C1C3A]`}
+              className={`text-4xl md:text-5xl lg:text-6xl tracking-tight leading-[1.05] mb-4 ${playfair.className} text-[#1C1C3A]`}
             >
               <span className="block mb-2">
                 <span className="inline-block text-[#D4A017] hover:scale-110 hover:-rotate-6 transition-transform duration-300 drop-shadow-md cursor-default">
@@ -140,13 +140,13 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onBookClick, onContact
             {/* 5. Subtext */}
             <motion.p 
               variants={itemVariants}
-              className="text-lg md:text-xl text-[#1C1C3A]/70 max-w-xl leading-relaxed mb-10"
+              className="text-base md:text-lg text-[#1C1C3A]/70 max-w-xl leading-relaxed mb-6"
             >
               Because home is not a place — it is a feeling. We cook, care, and look after you just like your family would.
             </motion.p>
 
             {/* 6. Feature Badges */}
-            <motion.div variants={itemVariants} className="flex flex-wrap justify-center lg:justify-start gap-3.5 mb-12 max-w-2xl">
+            <motion.div variants={itemVariants} className="flex flex-wrap justify-center lg:justify-start gap-3 mb-8 max-w-2xl">
               {[
                 { icon: '🍛', text: 'North Indian Home-Cooked Food' },
                 { icon: '👨‍👩‍👧', text: 'Parent-Like Care' },
@@ -164,18 +164,18 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onBookClick, onContact
             </motion.div>
 
             {/* 7. CTA Buttons */}
-            <motion.div variants={itemVariants} className="flex flex-col sm:flex-row gap-4 mb-16 w-full sm:w-auto">
+            <motion.div variants={itemVariants} className="flex flex-col sm:flex-row gap-4 mb-10 w-full sm:w-auto">
               {/* Primary Button */}
               <button 
                 onClick={onBookClick}
-                className="bg-[#D4A017] text-white rounded-full px-8 py-4 font-semibold hover:bg-[#B8891A] transition-all duration-300 shadow-xl shadow-[#D4A017]/25 hover:shadow-2xl hover:shadow-[#D4A017]/30 hover:-translate-y-0.5 flex-1 sm:flex-none text-center text-lg"
+                className="bg-[#D4A017] text-white rounded-full px-6 py-3 font-semibold hover:bg-[#B8891A] transition-all duration-300 shadow-xl shadow-[#D4A017]/25 hover:shadow-2xl hover:shadow-[#D4A017]/30 hover:-translate-y-0.5 flex-1 sm:flex-none text-center text-base"
               >
                 Pre-Reserve Now
               </button>
               {/* Secondary Button */}
               <button 
                 onClick={onContactClick}
-                className="border-2 border-[#1C1C3A] text-[#1C1C3A] rounded-full px-8 py-4 font-semibold hover:bg-[#1C1C3A] hover:text-white transition-all duration-300 flex-1 sm:flex-none text-center text-lg"
+                className="border-2 border-[#1C1C3A] text-[#1C1C3A] rounded-full px-6 py-3 font-semibold hover:bg-[#1C1C3A] hover:text-white transition-all duration-300 flex-1 sm:flex-none text-center text-base"
               >
                 Book a Visit
               </button>
@@ -184,35 +184,35 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onBookClick, onContact
             {/* 9. Stats Section */}
             <motion.div 
               variants={itemVariants}
-              className="flex flex-row items-center justify-center lg:justify-start gap-6 sm:gap-12 w-full pt-8 border-t border-[#1C1C3A]/10"
+              className="flex flex-row items-center justify-center lg:justify-start gap-6 sm:gap-12 w-full pt-6 border-t border-[#1C1C3A]/10"
             >
               <div className="flex flex-col items-center lg:items-start">
-                <div className={`text-3xl sm:text-4xl font-bold text-[#D4A017] ${playfair.className} tracking-tight`}>
+                <div className={`text-2xl sm:text-3xl font-bold text-[#D4A017] ${playfair.className} tracking-tight`}>
                   <AnimatedCounter end={500} suffix="+" duration={2.5} />
                 </div>
-                <div className="text-[11px] sm:text-xs uppercase tracking-[0.15em] text-[#1C1C3A]/60 font-bold mt-1.5">
+                <div className="text-[10px] sm:text-xs uppercase tracking-[0.15em] text-[#1C1C3A]/60 font-bold mt-1">
                   Happy Students
                 </div>
               </div>
               
-              <div className="w-px h-12 bg-[#1C1C3A]/15"></div>
+              <div className="w-px h-10 bg-[#1C1C3A]/15"></div>
               
               <div className="flex flex-col items-center lg:items-start">
-                <div className={`text-3xl sm:text-4xl font-bold text-[#D4A017] ${playfair.className} tracking-tight`}>
+                <div className={`text-2xl sm:text-3xl font-bold text-[#D4A017] ${playfair.className} tracking-tight`}>
                   <AnimatedCounter end={4.9} decimals={1} suffix="/5" duration={2} />
                 </div>
-                <div className="text-[11px] sm:text-xs uppercase tracking-[0.15em] text-[#1C1C3A]/60 font-bold mt-1.5">
+                <div className="text-[10px] sm:text-xs uppercase tracking-[0.15em] text-[#1C1C3A]/60 font-bold mt-1">
                   Average Rating
                 </div>
               </div>
 
-              <div className="w-px h-12 bg-[#1C1C3A]/15 hidden sm:block"></div>
+              <div className="w-px h-10 bg-[#1C1C3A]/15 hidden sm:block"></div>
               
               <div className="flex flex-col items-center lg:items-start hidden sm:flex">
-                <div className={`text-3xl sm:text-4xl font-bold text-[#D4A017] ${playfair.className} tracking-tight`}>
+                <div className={`text-2xl sm:text-3xl font-bold text-[#D4A017] ${playfair.className} tracking-tight`}>
                   <AnimatedCounter end={10} suffix="+" duration={2} />
                 </div>
-                <div className="text-[11px] sm:text-xs uppercase tracking-[0.15em] text-[#1C1C3A]/60 font-bold mt-1.5">
+                <div className="text-[10px] sm:text-xs uppercase tracking-[0.15em] text-[#1C1C3A]/60 font-bold mt-1">
                   Years of Trust
                 </div>
               </div>
