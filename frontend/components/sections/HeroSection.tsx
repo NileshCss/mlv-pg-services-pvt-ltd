@@ -89,7 +89,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onBookClick, onContact
 
   return (
     // 2. Color Palette: Warm cream bg (#FDF9F3)
-    <section className={`relative bg-[#FDF9F3] text-[#1C1C3A] ${jakarta.className} overflow-hidden pt-[94px] md:pt-[94px] pb-16 lg:pb-24`}>
+    <section className={`relative bg-[#FDF9F3] text-[#1C1C3A] ${jakarta.className} overflow-hidden pt-4 md:pt-4 pb-16 lg:pb-24`}>
       {/* Decorative background glows */}
       <div className="absolute top-0 right-0 -mt-32 -mr-32 w-[600px] h-[600px] bg-[#D4A017] rounded-full blur-[140px] opacity-[0.08] pointer-events-none" />
       <div className="absolute bottom-0 left-0 -mb-24 -ml-24 w-[400px] h-[400px] bg-[#D4A017] rounded-full blur-[120px] opacity-[0.06] pointer-events-none" />
