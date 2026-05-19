@@ -5,6 +5,7 @@ import { motion, useInView } from 'framer-motion'
 import { MapPin } from 'lucide-react'
 import { Playfair_Display, Plus_Jakarta_Sans } from 'next/font/google'
 import Image from 'next/image'
+import { BrandName } from '../ui/BrandName'
 
 // 1. Configure Google Fonts
 const playfair = Playfair_Display({ 
@@ -88,7 +89,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onBookClick, onContact
 
   return (
     // 2. Color Palette: Warm cream bg (#FDF9F3)
-    <section className={`relative min-h-[85vh] bg-[#FDF9F3] text-[#1C1C3A] ${jakarta.className} flex items-center overflow-hidden py-16 lg:py-0`}>
+    <section className={`relative bg-[#FDF9F3] text-[#1C1C3A] ${jakarta.className} overflow-hidden pt-[94px] md:pt-[94px] pb-16 lg:pb-24`}>
       {/* Decorative background glows */}
       <div className="absolute top-0 right-0 -mt-32 -mr-32 w-[600px] h-[600px] bg-[#D4A017] rounded-full blur-[140px] opacity-[0.08] pointer-events-none" />
       <div className="absolute bottom-0 left-0 -mb-24 -ml-24 w-[400px] h-[400px] bg-[#D4A017] rounded-full blur-[120px] opacity-[0.06] pointer-events-none" />
@@ -105,14 +106,12 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onBookClick, onContact
             animate="show"
           >
             {/* Brand Name */}
-            <motion.div variants={itemVariants} className="mb-3">
-              <span className={`inline-block text-lg md:text-xl lg:text-2xl text-transparent bg-clip-text bg-gradient-to-r from-[#D4A017] to-[#E8C96B] font-bold tracking-wide ${playfair.className} italic drop-shadow-sm`}>
-                MLV PG Services Pvt Ltd
-              </span>
+            <motion.div variants={itemVariants} className="w-full">
+              <BrandName />
             </motion.div>
 
             {/* 4. Location Pill (Glass-morphism) */}
-            <motion.div variants={itemVariants} className="mb-5">
+            <motion.div variants={itemVariants} className="mb-5 mt-3">
               <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-white/40 border border-white/60 backdrop-blur-md shadow-sm">
                 <MapPin size={16} className="text-[#D4A017]" />
                 <span className="text-xs md:text-sm font-semibold tracking-wide text-[#1C1C3A]">
