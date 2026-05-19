@@ -104,6 +104,13 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onBookClick, onContact
             initial="hidden"
             animate="show"
           >
+            {/* Brand Name */}
+            <motion.div variants={itemVariants} className="mb-5">
+              <span className={`inline-block text-2xl md:text-3xl text-transparent bg-clip-text bg-gradient-to-r from-[#D4A017] to-[#E8C96B] font-bold tracking-wide ${playfair.className} italic drop-shadow-sm`}>
+                MLV PG Services Pvt Ltd
+              </span>
+            </motion.div>
+
             {/* 4. Location Pill (Glass-morphism) */}
             <motion.div variants={itemVariants} className="mb-8">
               <div className="inline-flex items-center gap-2.5 px-5 py-2.5 rounded-full bg-white/40 border border-white/60 backdrop-blur-md shadow-sm">
@@ -119,7 +126,12 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onBookClick, onContact
               variants={itemVariants}
               className={`text-5xl md:text-6xl lg:text-7xl tracking-tight leading-[1.05] mb-6 ${playfair.className} text-[#1C1C3A]`}
             >
-              <span className="block mb-2">#1 PG near Acharya College</span>
+              <span className="block mb-2">
+                <span className="inline-block text-[#D4A017] hover:scale-110 hover:-rotate-6 transition-transform duration-300 drop-shadow-md cursor-default">
+                  #1
+                </span>{' '}
+                PG near Acharya College
+              </span>
               <span className="block">
                 with Authentic <span className="text-[#D4A017] italic">North Indian Food</span>
               </span>
