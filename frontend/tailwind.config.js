@@ -8,8 +8,9 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        playfair: ['var(--font-playfair)', 'Playfair Display', 'serif'],
-        sans: ['var(--font-inter)', 'Inter', 'sans-serif'],
+        jakarta: ['var(--font-jakarta)', 'Plus Jakarta Sans', 'sans-serif'],
+        playfair: ['var(--font-jakarta)', 'Plus Jakarta Sans', 'sans-serif'],
+        sans: ['var(--font-jakarta)', 'Plus Jakarta Sans', 'sans-serif'],
       },
       colors: {
         brand: {

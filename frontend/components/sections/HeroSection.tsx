@@ -3,21 +3,8 @@
 import React, { useEffect, useState, useRef } from 'react'
 import { motion, useInView } from 'framer-motion'
 import { MapPin } from 'lucide-react'
-import { Playfair_Display, Plus_Jakarta_Sans } from 'next/font/google'
 import Image from 'next/image'
 import { BrandName } from '../ui/BrandName'
-
-// 1. Configure Google Fonts
-const playfair = Playfair_Display({ 
-  subsets: ['latin'],
-  style: ['normal', 'italic'],
-  weight: ['400', '500', '600', '700']
-})
-
-const jakarta = Plus_Jakarta_Sans({ 
-  subsets: ['latin'],
-  weight: ['400', '500', '600', '700']
-})
 
 // Custom Count-Up Animation Hook Component
 const AnimatedCounter = ({ 
@@ -89,7 +76,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onBookClick, onContact
 
   return (
     // 2. Color Palette: Warm cream bg (#FDF9F3)
-    <section id="home" className={`relative bg-[#FDF9F3] text-[#1C1C3A] ${jakarta.className} overflow-hidden pt-4 md:pt-4 pb-16 lg:pb-24`}>
+    <section id="home" className="relative bg-[#FDF9F3] text-[#1C1C3A] font-jakarta overflow-hidden pt-4 md:pt-4 pb-16 lg:pb-24">
       {/* Decorative background glows */}
       <div className="absolute top-0 right-0 -mt-32 -mr-32 w-[600px] h-[600px] bg-[#D4A017] rounded-full blur-[140px] opacity-[0.08] pointer-events-none" />
       <div className="absolute bottom-0 left-0 -mb-24 -ml-24 w-[400px] h-[400px] bg-[#D4A017] rounded-full blur-[120px] opacity-[0.06] pointer-events-none" />
@@ -114,7 +101,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onBookClick, onContact
             <motion.div variants={itemVariants} className="mb-5 mt-3">
               <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-white/40 border border-white/60 backdrop-blur-md shadow-sm">
                 <MapPin size={16} className="text-[#D4A017]" />
-                <span className="text-xs md:text-sm font-semibold tracking-wide text-[#1C1C3A]">
+                <span className="text-xs md:text-sm font-jakarta font-semibold tracking-normal text-[#1C1C3A]">
                   Opp. Acharya Institute · Soladevanahalli, Bangalore
                 </span>
               </div>
@@ -123,7 +110,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onBookClick, onContact
             {/* 3. & 11. H1 Heading (SEO Optimized) */}
             <motion.h1 
               variants={itemVariants}
-              className={`text-4xl md:text-5xl lg:text-6xl tracking-tight leading-[1.05] mb-4 ${playfair.className} text-[#1C1C3A]`}
+              className="text-4xl md:text-5xl lg:text-6xl font-jakarta font-extrabold tracking-[-0.025em] leading-[1.1] mb-4 text-[#1C1C3A]"
             >
               <span className="block mb-2">
                 <span className="inline-block text-[#D4A017] hover:scale-110 hover:-rotate-6 transition-transform duration-300 drop-shadow-md cursor-default">
@@ -132,14 +119,14 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onBookClick, onContact
                 PG near Acharya College
               </span>
               <span className="block">
-                with Authentic <span className="text-[#D4A017] italic">North Indian Food</span>
+                with Authentic <span className="text-[#D4A017] font-jakarta font-extrabold italic text-[1.05em] leading-none">North Indian Food</span>
               </span>
             </motion.h1>
 
             {/* 5. Subtext */}
             <motion.p 
               variants={itemVariants}
-              className="text-base md:text-lg text-[#1C1C3A]/70 max-w-xl leading-relaxed mb-6"
+              className="text-base md:text-lg text-[#555577] max-w-xl font-jakarta font-normal leading-relaxed mb-6"
             >
               Because home is not a place — it is a feeling. We cook, care, and look after you just like your family would.
             </motion.p>
@@ -180,42 +167,42 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onBookClick, onContact
               </button>
             </motion.div>
 
-            {/* 9. Stats Section */}
-            <motion.div 
-              variants={itemVariants}
-              className="flex flex-row items-center justify-center lg:justify-start gap-6 sm:gap-12 w-full pt-6 border-t border-[#1C1C3A]/10"
-            >
-              <div className="flex flex-col items-center lg:items-start">
-                <div className={`text-2xl sm:text-3xl font-bold text-[#D4A017] ${playfair.className} tracking-tight`}>
-                  <AnimatedCounter end={500} suffix="+" duration={2.5} />
-                </div>
-                <div className="text-[10px] sm:text-xs uppercase tracking-[0.15em] text-[#1C1C3A]/60 font-bold mt-1">
-                  Happy Students
-                </div>
-              </div>
-              
-              <div className="w-px h-10 bg-[#1C1C3A]/15"></div>
-              
-              <div className="flex flex-col items-center lg:items-start">
-                <div className={`text-2xl sm:text-3xl font-bold text-[#D4A017] ${playfair.className} tracking-tight`}>
-                  <AnimatedCounter end={4.9} decimals={1} suffix="/5" duration={2} />
-                </div>
-                <div className="text-[10px] sm:text-xs uppercase tracking-[0.15em] text-[#1C1C3A]/60 font-bold mt-1">
-                  Average Rating
-                </div>
-              </div>
-
-              <div className="w-px h-10 bg-[#1C1C3A]/15 hidden sm:block"></div>
-              
-              <div className="flex flex-col items-center lg:items-start hidden sm:flex">
-                <div className={`text-2xl sm:text-3xl font-bold text-[#D4A017] ${playfair.className} tracking-tight`}>
-                  <AnimatedCounter end={10} suffix="+" duration={2} />
-                </div>
-                <div className="text-[10px] sm:text-xs uppercase tracking-[0.15em] text-[#1C1C3A]/60 font-bold mt-1">
-                  Years of Trust
-                </div>
-              </div>
-            </motion.div>
+             {/* 9. Stats Section */}
+             <motion.div 
+               variants={itemVariants}
+               className="flex flex-row items-center justify-center lg:justify-start gap-6 sm:gap-12 w-full pt-6 border-t border-[#1C1C3A]/10"
+             >
+               <div className="flex flex-col items-center lg:items-start">
+                 <div className="text-2xl sm:text-3xl font-jakarta font-extrabold text-[#D4A017] tracking-tight">
+                   <AnimatedCounter end={500} suffix="+" duration={2.5} />
+                 </div>
+                 <div className="text-[10px] sm:text-xs uppercase tracking-[0.15em] text-[#1C1C3A]/60 font-bold mt-1">
+                   Happy Students
+                 </div>
+               </div>
+               
+               <div className="w-px h-10 bg-[#1C1C3A]/15"></div>
+               
+               <div className="flex flex-col items-center lg:items-start">
+                 <div className="text-2xl sm:text-3xl font-jakarta font-extrabold text-[#D4A017] tracking-tight">
+                   <AnimatedCounter end={4.9} decimals={1} suffix="/5" duration={2} />
+                 </div>
+                 <div className="text-[10px] sm:text-xs uppercase tracking-[0.15em] text-[#1C1C3A]/60 font-bold mt-1">
+                   Average Rating
+                 </div>
+               </div>
+ 
+               <div className="w-px h-10 bg-[#1C1C3A]/15 hidden sm:block"></div>
+               
+               <div className="flex flex-col items-center lg:items-start hidden sm:flex">
+                 <div className="text-2xl sm:text-3xl font-jakarta font-extrabold text-[#D4A017] tracking-tight">
+                   <AnimatedCounter end={10} suffix="+" duration={2} />
+                 </div>
+                 <div className="text-[10px] sm:text-xs uppercase tracking-[0.15em] text-[#1C1C3A]/60 font-bold mt-1">
+                   Years of Trust
+                 </div>
+               </div>
+             </motion.div>
           </motion.div>
 
           {/* ── Right Side Image Column (Visible on Desktop) ── */}

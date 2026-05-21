@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Playfair_Display, Inter, Poppins } from 'next/font/google'
+import { Playfair_Display, Inter, Poppins, Plus_Jakarta_Sans } from 'next/font/google'
 import '../styles/globals.css'
 import { Toaster } from 'sonner'
 
@@ -21,6 +21,13 @@ const poppins = Poppins({
   subsets: ['latin'],
   variable: '--font-poppins',
   weight: ['400', '500', '600', '700'],
+  display: 'swap',
+})
+
+const jakarta = Plus_Jakarta_Sans({
+  subsets: ['latin'],
+  variable: '--font-jakarta',
+  weight: ['400', '500', '600', '700', '800'],
   display: 'swap',
 })
 
@@ -120,7 +127,7 @@ export default function RootLayout({
         <meta name="theme-color" content="#C9A84C" />
         <link rel="icon" href="/favicon.ico" />
       </head>
-      <body className={`${playfair.variable} ${inter.variable} ${poppins.variable} bg-white text-[#1A1A2E]`}>
+      <body className={`${playfair.variable} ${inter.variable} ${poppins.variable} ${jakarta.variable} bg-white text-[#1A1A2E]`}>
         <SchemaMarkup />
         {children}
         <Toaster position="top-center" />

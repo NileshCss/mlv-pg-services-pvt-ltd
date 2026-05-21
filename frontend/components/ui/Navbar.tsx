@@ -130,12 +130,12 @@ const Navbar: React.FC<NavbarProps> = ({ onBookClick }) => {
               {/* Brand Name - Hidden on Mobile */}
               <div className="hidden sm:block">
                 <h1
-                  className="text-[17px] font-bold text-[#1C1C3A] leading-tight font-playfair"
+                  className="text-[17px] font-jakarta font-extrabold text-[#1C1C3A] leading-tight"
                 >
                   MLV PG Services
                 </h1>
                 <p
-                  className="text-[9px] tracking-[0.18em] text-[#C9A240] font-sans mt-0.5"
+                  className="text-[9px] tracking-[0.18em] text-[#C9A240] font-jakarta font-semibold mt-0.5"
                 >
                   PREMIUM PG · BANGALORE
                 </p>
