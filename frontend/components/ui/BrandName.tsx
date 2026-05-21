@@ -13,10 +13,10 @@ export const BrandName = () => {
     >
       <div className="inline-flex flex-col items-center md:items-start">
         <h2 className="leading-tight">
-          <span className="font-jakarta font-extrabold text-[24px] md:text-[28px] text-[#C9A240] tracking-[-0.02em] border-b-2 border-[#C9A240] pb-0.5">
+          <span className="font-playfair font-black text-[24px] md:text-[28px] text-[#C9A240] tracking-[-0.02em] border-b-2 border-[#C9A240] pb-0.5">
             MLV PG
           </span>
-          <span className="font-jakarta font-extrabold text-[24px] md:text-[28px] text-[#1C1C3A] tracking-[-0.02em]">
+          <span className="font-playfair font-black text-[24px] md:text-[28px] text-[#1C1C3A] tracking-[-0.02em]">
             {' '}Services Pvt Ltd
           </span>
         </h2>

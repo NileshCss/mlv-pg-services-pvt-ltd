@@ -1,5 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Inter:wght@300;400;500;600&family=Poppins:wght@400;500;600;700&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -25,7 +23,7 @@
   --dark-surface:    #242440;
 
   /* ── Typography ───────────────────────────────────────────────── */
-  --font-heading:    var(--font-jakarta), 'Plus Jakarta Sans', sans-serif;
+  --font-heading:    var(--font-playfair), 'Playfair Display', serif;
   --font-body:       var(--font-jakarta), 'Plus Jakarta Sans', sans-serif;
   --font-accent:     var(--font-jakarta), 'Plus Jakarta Sans', sans-serif;
 
@@ -71,28 +69,25 @@ html {
 }
 
 body {
-  font-family: var(--font-body);
-  background-color: var(--primary-bg);
-  color: var(--dark-text);
+  font-family: var(--font-jakarta), sans-serif;
+  font-size: 16px;
   line-height: 1.6;
+  color: #1C1C3A;
+  background-color: #FDF9F3;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  font-size: var(--body);
 }
 
 /* ─── Typography ─────────────────────────────────────────────────── */
 h1,
 h2,
 h3,
-h4,
-h5,
-h6 {
-  font-family: var(--font-heading);
-  font-weight: 700;
-  line-height: 1.15;
-  letter-spacing: -0.01em;
-  color: var(--dark-text);
+h4 {
+  font-family: var(--font-playfair), serif;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: #1C1C3A;
 }
 
 h1 { font-size: var(--h1); }
@@ -101,8 +96,57 @@ h3 { font-size: var(--h3); }
 
 p {
   color: var(--body-text);
-  font-size: var(--body);
+  font-size: 16px;
   line-height: 1.8;
+}
+
+/* ─── Typography Utility Classes ─────────────────────────────────── */
+.text-hero {
+  font-family: var(--font-playfair), serif;
+  font-size: clamp(2.25rem, 5vw, 3.75rem);
+  font-weight: 900;
+  line-height: 1.1;
+  letter-spacing: -0.025em;
+}
+
+.text-brand {
+  font-family: var(--font-playfair), serif;
+  font-size: 28px;
+  font-weight: 900;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+.text-section-heading {
+  font-family: var(--font-playfair), serif;
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+.text-card-title {
+  font-family: var(--font-playfair), serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+
+.text-body {
+  font-family: var(--font-jakarta), sans-serif;
+  font-size: 17px;
+  font-weight: 400;
+  line-height: 1.7;
+}
+
+.text-label {
+  font-family: var(--font-jakarta), sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
 }
 
 a {

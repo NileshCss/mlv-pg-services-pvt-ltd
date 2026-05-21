@@ -1,33 +1,20 @@
 import type { Metadata } from 'next'
-import { Playfair_Display, Inter, Poppins, Plus_Jakarta_Sans } from 'next/font/google'
+import { Playfair_Display, Plus_Jakarta_Sans } from 'next/font/google'
 import '../styles/globals.css'
 import { Toaster } from 'sonner'
 
 const playfair = Playfair_Display({
   subsets: ['latin'],
+  weight: ['700', '900'],
+  style: ['normal', 'italic'],
   variable: '--font-playfair',
-  weight: ['400', '500', '600', '700'],
-  display: 'swap',
-})
-
-const inter = Inter({
-  subsets: ['latin'],
-  variable: '--font-inter',
-  weight: ['300', '400', '500', '600'],
-  display: 'swap',
-})
-
-const poppins = Poppins({
-  subsets: ['latin'],
-  variable: '--font-poppins',
-  weight: ['400', '500', '600', '700'],
   display: 'swap',
 })
 
 const jakarta = Plus_Jakarta_Sans({
   subsets: ['latin'],
+  weight: ['400', '500', '600'],
   variable: '--font-jakarta',
-  weight: ['400', '500', '600', '700', '800'],
   display: 'swap',
 })
 
@@ -127,7 +114,7 @@ export default function RootLayout({
         <meta name="theme-color" content="#C9A84C" />
         <link rel="icon" href="/favicon.ico" />
       </head>
-      <body className={`${playfair.variable} ${inter.variable} ${poppins.variable} ${jakarta.variable} bg-white text-[#1A1A2E]`}>
+      <body className={`${playfair.variable} ${jakarta.variable} bg-white text-[#1A1A2E]`}>
         <SchemaMarkup />
         {children}
         <Toaster position="top-center" />

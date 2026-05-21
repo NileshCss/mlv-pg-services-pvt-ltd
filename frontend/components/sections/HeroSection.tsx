@@ -110,7 +110,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onBookClick, onContact
             {/* 3. & 11. H1 Heading (SEO Optimized) */}
             <motion.h1 
               variants={itemVariants}
-              className="text-4xl md:text-5xl lg:text-6xl font-jakarta font-extrabold tracking-[-0.025em] leading-[1.1] mb-4 text-[#1C1C3A]"
+              className="text-4xl md:text-5xl lg:text-6xl font-playfair font-black tracking-[-0.02em] leading-[1.1] mb-4 text-[#1C1C3A]"
             >
               <span className="block mb-2">
                 <span className="inline-block text-[#D4A017] hover:scale-110 hover:-rotate-6 transition-transform duration-300 drop-shadow-md cursor-default">
@@ -119,7 +119,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onBookClick, onContact
                 PG near Acharya College
               </span>
               <span className="block">
-                with Authentic <span className="text-[#D4A017] font-jakarta font-extrabold italic text-[1.05em] leading-none">North Indian Food</span>
+                with Authentic <span className="text-[#D4A017] font-playfair font-bold italic text-[1.05em] leading-none">North Indian Food</span>
               </span>
             </motion.h1>
 
