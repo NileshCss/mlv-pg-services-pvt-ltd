@@ -5,6 +5,7 @@ const nextConfig = {
   productionBrowserSourceMaps: false, // Reduce bundle size in production
   poweredByHeader: false, // Remove X-Powered-By header
   generateEtags: true, // Enable ETags for caching
+  typedRoutes: true,
   
   images: {
     remotePatterns: [
@@ -34,7 +35,6 @@ const nextConfig = {
   },
   
   experimental: {
-    typedRoutes: false,
     optimizePackageImports: [
       'lucide-react',
       '@supabase/supabase-js',

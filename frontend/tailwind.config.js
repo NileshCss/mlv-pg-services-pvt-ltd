@@ -7,11 +7,16 @@ module.exports = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        playfair: ['Playfair Display', 'serif'],
+        sans: ['Inter', 'sans-serif'],
+      },
       colors: {
         brand: {
           primary: '#3b82f6',
           secondary: '#1e40af',
         },
+        gold: '#C9A240',
       },
     },
   },

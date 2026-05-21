@@ -374,6 +374,9 @@ select:focus-visible {
 section {
   position: relative;
 }
+section[id] {
+  scroll-margin-top: 108px;
+}
 
 /* ─── Responsive Utilities ───────────────────────────────────────── */
 @media (max-width: 768px) {

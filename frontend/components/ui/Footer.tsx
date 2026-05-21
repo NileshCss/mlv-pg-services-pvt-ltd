@@ -1,14 +1,30 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useCallback } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
+import { usePathname, useRouter } from 'next/navigation'
 import { Mail, Phone, MapPin, Instagram, Facebook, Youtube, MessageSquare } from 'lucide-react'
 import { motion } from 'motion/react'
 import { WHATSAPP_NUMBER, SITE_NAME } from '@/lib/utils/constants'
 import { ComplaintFormModal } from '@/components/forms/ComplaintFormModal'
 
 const Footer: React.FC = () => {
+  const pathname = usePathname()
+  const router = useRouter()
   const [complaintOpen, setComplaintOpen] = useState(false)
+
+  const handleNavClick = useCallback((href: string) => {
+    const id = href.replace('#', '')
+    if (pathname === '/') {
+      const el = document.getElementById(id)
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      }
+    } else {
+      router.push(`/${href}` as any)
+    }
+  }, [pathname, router])
   const socialLinks = [
     { icon: Instagram, href: '#', label: 'Instagram' },
     { icon: Facebook, href: '#', label: 'Facebook' },
@@ -47,21 +63,30 @@ const Footer: React.FC = () => {
 
           {/* Brand */}
           <div className="lg:col-span-1">
-            {/* Gold Logo */}
-            <div className="flex items-center gap-3 mb-5">
-              <div
-                className="flex h-10 w-10 items-center justify-center rounded-xl font-bold text-sm"
-                style={{
-                  background: 'linear-gradient(135deg, #C9A84C 0%, #E8C96B 100%)',
-                  color: '#1A1A2E',
-                  fontFamily: 'Poppins, sans-serif',
-                }}
-              >
-                MLV
+            {/* Logo */}
+            <Link
+              href={pathname === '/' ? '#home' : '/'}
+              onClick={(e) => {
+                if (pathname === '/') {
+                  e.preventDefault()
+                  handleNavClick('#home')
+                }
+              }}
+              className="flex items-center gap-4 mb-6 hover:opacity-90 transition-all duration-300 group inline-flex"
+            >
+              <div className="h-12 w-12 flex-shrink-0 relative group-hover:drop-shadow-lg transition-all duration-300 rounded-lg p-1">
+                <div className="absolute inset-0 rounded-lg bg-gradient-to-br from-amber-400 to-amber-600 opacity-0 group-hover:opacity-15 blur-lg transition-all duration-300" />
+                <Image
+                  src="/images/logo.png"
+                  alt={SITE_NAME}
+                  width={48}
+                  height={48}
+                  className="w-full h-full object-contain relative z-10 drop-shadow-sm"
+                />
               </div>
               <div>
                 <div
-                  className="text-sm font-bold"
+                  className="text-sm font-bold transition-all duration-300 group-hover:text-amber-400"
                   style={{ color: '#ffffff', fontFamily: 'Playfair Display, serif' }}
                 >
                   {SITE_NAME}
@@ -73,7 +98,7 @@ const Footer: React.FC = () => {
                   Premium PG · Bangalore
                 </div>
               </div>
-            </div>
+            </Link>
             <p
               className="text-sm leading-relaxed mb-6"
               style={{ color: 'rgba(255,255,255,0.45)' }}
@@ -125,8 +150,14 @@ const Footer: React.FC = () => {
             <ul className="space-y-2.5">
               {quickLinks.map((link, idx) => (
                 <li key={idx}>
-                  <a
-                    href={link.href}
+                  <Link
+                    href={(pathname === '/' ? link.href : `/${link.href}`) as any}
+                    onClick={(e) => {
+                      if (pathname === '/') {
+                        e.preventDefault()
+                        handleNavClick(link.href)
+                      }
+                    }}
                     className="text-sm font-medium transition-colors duration-300 flex items-center gap-2 group"
                     style={{ color: 'rgba(255,255,255,0.45)', fontFamily: 'Inter, sans-serif' }}
                     onMouseEnter={e => (e.currentTarget as HTMLElement).style.color = '#C9A84C'}
@@ -137,7 +168,7 @@ const Footer: React.FC = () => {
                       style={{ background: 'rgba(201,168,76,0.4)' }}
                     />
                     {link.label}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>

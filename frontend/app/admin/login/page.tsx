@@ -1,6 +1,8 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
+import Link from 'next/link'
+import Image from 'next/image'
 import { motion } from 'motion/react'
 import { Mail, Lock, Eye, EyeOff, Shield, Zap } from 'lucide-react'
 import { useRouter } from 'next/navigation'
@@ -94,15 +96,22 @@ export default function AdminLoginPage() {
         >
           {/* Logo & Branding */}
           <div className="space-y-3">
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-gradient-to-br from-amber-500 to-amber-600 rounded-lg flex items-center justify-center">
-                <span className="text-black font-bold text-lg">MLV</span>
+            <Link href="/" className="flex items-center gap-4 hover:opacity-90 transition-all duration-300 group inline-flex">
+              <div className="w-14 h-14 flex items-center justify-center relative group-hover:drop-shadow-xl transition-all duration-300 rounded-xl p-2">
+                <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 opacity-0 group-hover:opacity-20 blur-lg transition-all duration-300" />
+                <Image
+                  src="/images/logo.png"
+                  alt="MLV Logo"
+                  width={56}
+                  height={56}
+                  className="w-full h-full object-contain relative z-10 drop-shadow-md"
+                />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-white">MLV PG Services</h1>
+                <h1 className="text-2xl font-bold text-white group-hover:text-amber-400 transition-colors duration-300">MLV PG Services</h1>
                 <p className="text-sm text-gray-400">Admin Panel</p>
               </div>
-            </div>
+            </Link>
           </div>
 
           {/* Form Card */}

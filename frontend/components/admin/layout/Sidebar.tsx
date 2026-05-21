@@ -2,6 +2,7 @@
 
 import React, { useEffect } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname, useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'motion/react'
 import {
@@ -10,7 +11,7 @@ import {
   Calendar,
   UtensilsCrossed,
   Home,
-  Image,
+  Image as ImageIcon,
   Star,
   Users,
   Settings,
@@ -30,7 +31,7 @@ const navItems = [
   { label: 'Bookings',     icon: Calendar,            href: '/admin/bookings' },
   { label: 'Food Menu',    icon: UtensilsCrossed,     href: '/admin/food-menu' },
   { label: 'Rooms',        icon: Home,                href: '/admin/rooms' },
-  { label: 'Gallery',      icon: Image,               href: '/admin/gallery' },
+  { label: 'Gallery',      icon: ImageIcon,           href: '/admin/gallery' },
   { label: 'Testimonials', icon: Star,                href: '/admin/testimonials' },
   { label: 'Notice Board', icon: Megaphone,           href: '/admin/notice-board' },
   { label: 'Complaints',   icon: MessageSquare,href: '/admin/complaints', badge: true },
@@ -93,7 +94,7 @@ const NavItem: React.FC<NavItemProps> = ({ item, isActive, collapsed = false, on
   const Icon = item.icon
 
   return (
-    <Link href={item.href} onClick={onClick} style={{ display: 'block', position: 'relative', textDecoration: 'none' }}>
+    <Link href={item.href as any} onClick={onClick} style={{ display: 'block', position: 'relative', textDecoration: 'none' }}>
       <div
         onMouseEnter={() => collapsed && setShowTooltip(true)}
         onMouseLeave={() => setShowTooltip(false)}
@@ -148,19 +149,21 @@ const NavItem: React.FC<NavItemProps> = ({ item, isActive, collapsed = false, on
 
 /* ─── Logo ───────────────────────────────────────────────── */
 const Logo: React.FC<{ collapsed?: boolean }> = ({ collapsed = false }) => (
-  <div style={{ padding: '24px', borderBottom: SIDEBAR_BORDER, flexShrink: 0 }}>
-    <Link href="/admin/dashboard" style={{ display: 'flex', alignItems: 'center', gap: '12px', textDecoration: 'none' }}>
-      <div style={{
-        width: 40, height: 40, flexShrink: 0,
-        background: 'linear-gradient(135deg, #f59e0b, #d97706)',
-        borderRadius: '8px',
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-      }}>
-        <span style={{ color: '#000', fontWeight: 700, fontSize: '12px' }}>MLV</span>
+  <div style={{ padding: '28px 24px', borderBottom: SIDEBAR_BORDER, flexShrink: 0 }}>
+    <Link href="/admin/dashboard" style={{ display: 'flex', alignItems: 'center', gap: '14px', textDecoration: 'none' }} className="group hover:opacity-90 transition-all duration-300">
+      <div style={{ width: 44, height: 44, flexShrink: 0, borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', padding: '4px' }} className="group-hover:drop-shadow-lg transition-all duration-300">
+        <div style={{ position: 'absolute', inset: 0, borderRadius: '10px', background: 'linear-gradient(135deg, rgba(252, 176, 64, 0.4), rgba(217, 119, 6, 0.4))', opacity: 0, transition: 'opacity 0.3s' }} className="group-hover:opacity-100" />
+        <Image
+          src="/images/logo.png"
+          alt="MLV Logo"
+          width={44}
+          height={44}
+          className="w-full h-full object-contain relative z-10"
+        />
       </div>
       {!collapsed && (
         <div>
-          <p style={{ fontWeight: 700, color: '#fff', fontSize: '14px', margin: 0 }}>MLV</p>
+          <p style={{ fontWeight: 700, color: '#fff', fontSize: '14px', margin: 0 }} className="group-hover:text-amber-400 transition-colors duration-300">MLV</p>
           <p style={{ fontSize: '12px', color: '#9ca3af', margin: 0 }}>PG Services</p>
         </div>
       )}
@@ -444,18 +447,20 @@ export const Sidebar: React.FC = () => {
         className="tablet-sidebar"
       >
         {/* Logo icon-only */}
-        <div style={{ padding: '24px 12px', borderBottom: SIDEBAR_BORDER, display: 'flex', justifyContent: 'center', flexShrink: 0 }}>
-          <Link href="/admin/dashboard" style={{ display: 'flex', alignItems: 'center', gap: '12px', textDecoration: 'none' }}>
-            <div style={{
-              width: 40, height: 40, flexShrink: 0,
-              background: 'linear-gradient(135deg, #f59e0b, #d97706)',
-              borderRadius: '8px',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-            }}>
-              <span style={{ color: '#000', fontWeight: 700, fontSize: '12px' }}>MLV</span>
+        <div style={{ padding: '28px 14px', borderBottom: SIDEBAR_BORDER, display: 'flex', justifyContent: 'center', flexShrink: 0 }}>
+          <Link href="/admin/dashboard" style={{ display: 'flex', alignItems: 'center', gap: '12px', textDecoration: 'none' }} className="group hover:opacity-90 transition-all duration-300">
+            <div style={{ width: 44, height: 44, flexShrink: 0, borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', padding: '4px' }} className="group-hover:drop-shadow-lg transition-all duration-300">
+              <div style={{ position: 'absolute', inset: 0, borderRadius: '10px', background: 'linear-gradient(135deg, rgba(252, 176, 64, 0.4), rgba(217, 119, 6, 0.4))', opacity: 0, transition: 'opacity 0.3s' }} className="group-hover:opacity-100" />
+              <Image
+                src="/images/logo.png"
+                alt="MLV Logo"
+                width={44}
+                height={44}
+                className="w-full h-full object-contain relative z-10"
+              />
             </div>
             <div className="logo-text" style={{ display: 'none', minWidth: 0 }}>
-              <p style={{ fontWeight: 700, color: '#fff', fontSize: '14px', margin: 0, whiteSpace: 'nowrap' }}>MLV</p>
+              <p style={{ fontWeight: 700, color: '#fff', fontSize: '14px', margin: 0, whiteSpace: 'nowrap' }} className="group-hover:text-amber-400 transition-colors duration-300">MLV</p>
               <p style={{ fontSize: '12px', color: '#9ca3af', margin: 0 }}>PG Services</p>
             </div>
           </Link>
@@ -468,7 +473,7 @@ export const Sidebar: React.FC = () => {
             const isActive = pathname === item.href
             const [showTooltip, setShowTooltip] = React.useState(false)
             return (
-              <Link key={item.href} href={item.href} style={{ display: 'block', position: 'relative', textDecoration: 'none' }}>
+              <Link key={item.href} href={item.href as any} style={{ display: 'block', position: 'relative', textDecoration: 'none' }}>
                 <div
                   className={`nav-item-inner ${isActive ? '' : 'sidebar-nav-inactive'}`.trim()}
                   onMouseEnter={(e) => {

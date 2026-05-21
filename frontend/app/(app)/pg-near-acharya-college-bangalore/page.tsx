@@ -44,7 +44,7 @@ export default function PGNearAcharyaCollegePage() {
           <a href="#contact-cta" className="px-8 py-3.5 bg-gradient-to-r from-[#C9A84C] to-[#E8C96B] text-[#1A1A2E] font-bold rounded-full shadow-lg hover:scale-105 transition-transform flex items-center gap-2">
             <PhoneCall size={18} /> Book Your Room Today
           </a>
-          <Link href="/rooms" className="px-8 py-3.5 bg-white border border-[#C9A84C]/50 text-[#1A1A2E] font-bold rounded-full shadow-sm hover:bg-[#F8F6F1] transition-colors">
+          <Link href={"/rooms" as any} className="px-8 py-3.5 bg-white border border-[#C9A84C]/50 text-[#1A1A2E] font-bold rounded-full shadow-sm hover:bg-[#F8F6F1] transition-colors">
             View Room Pricing
           </Link>
         </div>
@@ -261,10 +261,10 @@ export default function PGNearAcharyaCollegePage() {
           <div className="border-t border-white/20 pt-8 mt-4">
             <p className="text-gray-400 mb-4 font-medium uppercase tracking-wider text-sm">Explore More</p>
             <div className="flex flex-wrap justify-center gap-6 text-sm">
-              <Link href="/rooms" className="text-gray-300 hover:text-[#C9A84C] flex items-center gap-1 transition-colors">
+              <Link href={"/rooms" as any} className="text-gray-300 hover:text-[#C9A84C] flex items-center gap-1 transition-colors">
                 View Rooms & Pricing <ChevronRight size={14} />
               </Link>
-              <Link href="/gallery" className="text-gray-300 hover:text-[#C9A84C] flex items-center gap-1 transition-colors">
+              <Link href={"/gallery" as any} className="text-gray-300 hover:text-[#C9A84C] flex items-center gap-1 transition-colors">
                 Photo Gallery <ChevronRight size={14} />
               </Link>
               <Link href="/#about" className="text-gray-300 hover:text-[#C9A84C] flex items-center gap-1 transition-colors">

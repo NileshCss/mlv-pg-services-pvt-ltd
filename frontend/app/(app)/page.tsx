@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import { Navbar } from '@/components/ui/Navbar'
+import Navbar from '@/components/ui/Navbar'
 import { NoticeTicker } from '@/components/ui/NoticeTicker'
 import { Footer } from '@/components/ui/Footer'
 import { WhatsAppButton } from '@/components/ui/WhatsAppButton'
@@ -37,8 +37,8 @@ export default function Home() {
       {/* Navbar — fixed below the notice ticker (z-50) */}
       <Navbar onBookClick={() => setPopupOpen(true)} />
 
-      {/* Spacer: 38px ticker + 80px navbar = 118px total */}
-      <div style={{ height: '118px' }} />
+      {/* Spacer to prevent content from going behind fixed headers (38px NoticeTicker + 70px Navbar = 108px) */}
+      <div style={{ height: '108px', background: '#FDF9F3' }} />
 
       <main>
         <HeroSection
