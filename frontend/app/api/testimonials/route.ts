@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
 
     const client = getServiceClient() || await createServerClient()
 
-    const { data, error } = await client
+    let insertResult = await client
       .from('testimonials')
       .insert({
         student_name: student_name.trim(),
@@ -39,6 +39,40 @@ export async function POST(request: NextRequest) {
       })
       .select()
       .single()
+
+    // If 'college' column is missing in the schema, retry with 'college_name' or omit college fields entirely
+    if (insertResult.error && insertResult.error.message.toLowerCase().includes('college')) {
+      console.warn('College column missing in testimonials schema, retrying with college_name...')
+      insertResult = await client
+        .from('testimonials')
+        .insert({
+          student_name: student_name.trim(),
+          college_name: college?.trim() || null,
+          rating: Number(rating),
+          review: review.trim(),
+          status: 'pending',
+          is_featured: false,
+        })
+        .select()
+        .single()
+      
+      if (insertResult.error) {
+        console.warn('college_name also missing, retrying insert with basic payload...')
+        insertResult = await client
+          .from('testimonials')
+          .insert({
+            student_name: student_name.trim(),
+            rating: Number(rating),
+            review: review.trim(),
+            status: 'pending',
+            is_featured: false,
+          })
+          .select()
+          .single()
+      }
+    }
+
+    const { data, error } = insertResult
 
     if (error) {
       console.error('Supabase error:', error)
