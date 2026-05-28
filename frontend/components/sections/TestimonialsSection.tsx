@@ -113,7 +113,7 @@ const GoogleBadge = () => (
 
 const TestimonialCard = memo(({ testimonial }: { testimonial: Testimonial }) => (
   <motion.div
-    className="group relative p-7 rounded-2xl overflow-hidden"
+    className="group relative p-6 sm:p-7 rounded-2xl overflow-hidden flex flex-col justify-between h-full"
     style={{
       background: 'rgba(255,255,255,0.06)',
       border: '1px solid rgba(255,255,255,0.1)',
@@ -131,30 +131,32 @@ const TestimonialCard = memo(({ testimonial }: { testimonial: Testimonial }) => 
       if (el) el.style.borderColor = 'rgba(255,255,255,0.1)'
     }}
   >
-    {/* Quote icon */}
-    <div
-      className="w-10 h-10 rounded-xl flex items-center justify-center mb-5 flex-shrink-0"
-      style={{ background: 'rgba(201,168,76,0.15)' }}
-    >
-      <Quote size={18} style={{ color: '#C9A84C' }} />
-    </div>
+    <div className="flex flex-col flex-1">
+      {/* Quote icon */}
+      <div
+        className="w-10 h-10 rounded-xl flex items-center justify-center mb-5 flex-shrink-0"
+        style={{ background: 'rgba(201,168,76,0.15)' }}
+      >
+        <Quote size={18} style={{ color: '#C9A84C' }} />
+      </div>
 
-    {/* Stars */}
-    <div className="mb-4">
-      <StarDisplay rating={testimonial.rating} size={14} />
-    </div>
+      {/* Stars */}
+      <div className="mb-4">
+        <StarDisplay rating={testimonial.rating} size={14} />
+      </div>
 
-    {/* Review Text */}
-    <p
-      className="leading-relaxed mb-7 text-[15px] italic"
-      style={{ color: 'rgba(255,255,255,0.85)' }}
-    >
-      "{testimonial.review}"
-    </p>
+      {/* Review Text */}
+      <p
+        className="leading-relaxed mb-6 text-sm sm:text-[15px] italic flex-1"
+        style={{ color: 'rgba(255,255,255,0.85)' }}
+      >
+        "{testimonial.review}"
+      </p>
+    </div>
 
     {/* Author row */}
-    <div className="flex items-center justify-between gap-3">
-      <div className="flex items-center gap-3">
+    <div className="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-white/5 mt-4">
+      <div className="flex items-center gap-3 min-w-0">
         <AvatarInitial name={testimonial.student_name} />
         <div className="min-w-0">
           <p
@@ -283,8 +285,8 @@ function TestimonialsSection() {
 
           {/* Testimonials Grid */}
           {loading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {Array.from({ length: 4 }).map((_, i) => (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {Array.from({ length: 6 }).map((_, i) => (
                 <div
                   key={i}
                   className="p-7 rounded-2xl animate-pulse"
@@ -298,7 +300,7 @@ function TestimonialsSection() {
             </div>
           ) : (
             <motion.div
-              className="grid grid-cols-1 md:grid-cols-2 gap-6"
+              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
               variants={containerVariants}
               initial="hidden"
               whileInView="visible"
