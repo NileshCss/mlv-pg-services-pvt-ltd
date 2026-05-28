@@ -1,8 +1,14 @@
-# https://www.robotstxt.org/robotstxt.html
-
+# *
 User-agent: *
 Allow: /
-Disallow: /admin/
-Disallow: /api/
 
+# *
+User-agent: *
+Disallow: /admin
+Disallow: /api
+
+# Host
+Host: https://mlvpg.com
+
+# Sitemaps
 Sitemap: https://mlvpg.com/sitemap.xml

@@ -100,6 +100,16 @@ export const metadata: Metadata = {
   alternates: {
     canonical: '/',
   },
+
+  icons: {
+    icon: [
+      { url: '/favicon.ico', sizes: 'any' },
+      { url: '/favicon.png', type: 'image/png', sizes: '32x32' },
+    ],
+    apple: [
+      { url: '/apple-touch-icon.png', sizes: '180x180' },
+    ],
+  },
 };
 
 export default function RootLayout({
@@ -112,9 +122,11 @@ export default function RootLayout({
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="theme-color" content="#C9A84C" />
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/favicon.ico" sizes="any" />
+        <link rel="icon" type="image/png" href="/favicon.png" sizes="32x32" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
       </head>
-      <body className={`${playfair.variable} ${jakarta.variable} bg-white text-[#1A1A2E]`}>
+      <body className={`${playfair.variable} ${jakarta.variable} bg-white text-[#1A1A2E] overflow-x-hidden`}>
         <SchemaMarkup />
         {children}
         <Toaster position="top-center" />

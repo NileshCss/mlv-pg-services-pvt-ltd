@@ -86,8 +86,8 @@ export const FACILITIES = [
   },
   {
     icon: '🧺',
-    title: 'Laundry Service',
-    description: 'Convenient laundry facilities to save your precious time',
+    title: 'Washing Machine',
+    description: 'Personal washing machine access included with every room booking — clean clothes, zero hassle, zero extra charge',
   },
   {
     icon: '🧹',

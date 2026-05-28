@@ -2,8 +2,81 @@
 
 import React from 'react'
 import { motion } from 'motion/react'
-import { FACILITIES } from '@/lib/utils/constants'
 
+// ─── Washing machine SVG icon ──────────────────────────────────────────────────
+const WashingMachineIcon = (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="26"
+    height="26"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="#C9A84C"
+    strokeWidth="1.8"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+  >
+    <rect x="2" y="2" width="20" height="20" rx="2" />
+    <circle cx="12" cy="13" r="4" />
+    <path d="M6 6h.01M9 6h.01" />
+    <path d="M10 13a2 2 0 1 0 4 0 2 2 0 0 0-4 0" />
+  </svg>
+)
+
+// Emoji icon helper — same wrapper for every emoji card
+const Emoji = ({ e }: { e: string }) => (
+  <span className="text-2xl" style={{ filter: 'drop-shadow(0 2px 8px rgba(201,168,76,0.3))' }}>
+    {e}
+  </span>
+)
+
+// ─── Facilities data (icon as ReactNode — no conditional rendering needed) ────
+const facilities: { icon: React.ReactNode; title: string; description: string }[] = [
+  {
+    icon: <Emoji e="🍽️" />,
+    title: 'Unlimited Food',
+    description: 'Breakfast, Lunch & Dinner — fresh, hygienic, unlimited quantity',
+  },
+  {
+    icon: <Emoji e="⚡" />,
+    title: '24/7 Electricity',
+    description: 'Uninterrupted power with backup generator for all rooms',
+  },
+  {
+    icon: <Emoji e="📶" />,
+    title: 'High-Speed WiFi',
+    description: 'Blazing fast internet for study and entertainment',
+  },
+  {
+    icon: <Emoji e="📹" />,
+    title: 'CCTV Security',
+    description: '24/7 surveillance for complete safety and peace of mind',
+  },
+  {
+    icon: <Emoji e="💧" />,
+    title: 'RO Water',
+    description: 'Pure drinking water available all day throughout the facility',
+  },
+  {
+    icon: WashingMachineIcon,
+    title: 'Washing Machine',
+    description:
+      'Personal washing machine access included with every room booking — clean clothes, zero hassle, zero extra charge',
+  },
+  {
+    icon: <Emoji e="🧹" />,
+    title: 'Housekeeping',
+    description: 'Daily cleaning and maintenance for a hygienic environment',
+  },
+  {
+    icon: <Emoji e="👨‍👩‍👧" />,
+    title: 'Parent-Like Support',
+    description: 'Dedicated staff who care for you like their own family',
+  },
+]
+
+// ─── Component ────────────────────────────────────────────────────────────────
 const FacilitiesSection: React.FC = () => {
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -58,7 +131,7 @@ const FacilitiesSection: React.FC = () => {
             className="max-w-2xl mx-auto text-lg leading-relaxed"
             style={{ color: '#4A4A6A' }}
           >
-            We've thought of everything so you can focus on what matters — your studies and your growth.
+            We&apos;ve thought of everything so you can focus on what matters — your studies and your growth.
           </p>
         </motion.div>
 
@@ -70,7 +143,7 @@ const FacilitiesSection: React.FC = () => {
           whileInView="visible"
           viewport={{ once: true, margin: '-80px' }}
         >
-          {FACILITIES.map((facility, idx) => (
+          {facilities.map((facility, idx) => (
             <motion.div
               key={idx}
               className="group relative p-6 rounded-2xl cursor-pointer overflow-hidden"
@@ -109,7 +182,7 @@ const FacilitiesSection: React.FC = () => {
                 style={{ background: 'radial-gradient(circle at 50% 0%, rgba(201,168,76,0.05) 0%, transparent 70%)' }}
               />
 
-              {/* Icon */}
+              {/* Icon — ReactNode, no conditional branching */}
               <div
                 className="w-14 h-14 rounded-2xl flex items-center justify-center mb-5 transition-transform duration-300 group-hover:scale-110"
                 style={{
@@ -117,12 +190,7 @@ const FacilitiesSection: React.FC = () => {
                   border: '1px solid rgba(201,168,76,0.2)',
                 }}
               >
-                <span
-                  className="text-2xl"
-                  style={{ filter: 'drop-shadow(0 2px 8px rgba(201,168,76,0.3))' }}
-                >
-                  {facility.icon}
-                </span>
+                {facility.icon}
               </div>
 
               <h3
@@ -174,7 +242,7 @@ const FacilitiesSection: React.FC = () => {
               className="max-w-xl mx-auto leading-relaxed"
               style={{ color: '#4A4A6A' }}
             >
-              Enjoy delicious, fresh & hygienic meals 3× a day with unlimited quantity.
+              Enjoy delicious, fresh &amp; hygienic meals 3× a day with unlimited quantity.
               North Indian, South Indian, and healthy home-cooked options every day.
             </p>
             <div className="mt-7 flex flex-wrap justify-center gap-3">
@@ -202,6 +270,3 @@ const FacilitiesSection: React.FC = () => {
 }
 
 export { FacilitiesSection }
-
-
-

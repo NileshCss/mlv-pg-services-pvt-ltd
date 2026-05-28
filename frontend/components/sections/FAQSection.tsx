@@ -43,7 +43,12 @@ const faqs = [
   {
     question: 'What are the room charges and what is included?',
     answer:
-      'Room rent starts at ₹7,500/month (triple sharing) and goes up to ₹13,000/month (single room). All plans include North Indian home-cooked meals (breakfast, lunch & dinner), high-speed WiFi, 24/7 electricity with backup, CCTV security, housekeeping, and laundry. A refundable one-month security deposit is required at move-in.',
+      'Room rent starts at ₹7,500/month (triple sharing) and goes up to ₹13,000/month (single room). All plans include North Indian home-cooked meals (breakfast, lunch & dinner), high-speed WiFi, 24/7 electricity with backup, CCTV security, housekeeping, and self-use washing machine. A refundable one-month security deposit is required at move-in.',
+  },
+  {
+    question: 'Is there a washing machine at MLV PG?',
+    answer:
+      'Yes, self-use washing machines are available for all residents on the premises. You can do your laundry at your convenience — no waiting, no extra charges.',
   },
 ]
 

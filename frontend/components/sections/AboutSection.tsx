@@ -30,7 +30,7 @@ const values = [
 
 const highlights = [
   'CCTV surveillance 24/7',
-  'Housekeeping & laundry',
+  'Housekeeping & washing machine',
   'Peaceful study environment',
   'Parent-like care',
 ]

@@ -127,23 +127,23 @@ const Navbar: React.FC<NavbarProps> = ({ onBookClick }) => {
                 </div>
               </div>
 
-              {/* Brand Name - Hidden on Mobile */}
-              <div className="hidden sm:block">
+              {/* Brand Name */}
+              <div>
                 <h1
-                  className="text-[17px] font-playfair font-black text-[#1C1C3A] leading-tight"
+                  className="text-[15px] sm:text-[17px] font-playfair font-black text-[#1C1C3A] leading-tight"
                 >
                   MLV PG Services
                 </h1>
                 <p
-                  className="text-[9px] tracking-[0.18em] text-[#C9A240] font-jakarta font-semibold mt-0.5"
+                  className="text-[8px] sm:text-[9px] tracking-[0.15em] sm:tracking-[0.18em] text-[#C9A240] font-jakarta font-semibold mt-0.5"
                 >
                   PREMIUM PG · BANGALORE
                 </p>
               </div>
             </Link>
 
-            {/* Desktop Navigation Links */}
-            <div className="hidden md:flex items-center gap-3 lg:gap-5 flex-1 mx-4 lg:mx-8 overflow-hidden">
+            {/* Nav Links — visible from lg upward to avoid tablet crowding */}
+            <div className="hidden lg:flex items-center gap-3 lg:gap-5 flex-1 mx-4 lg:mx-8 overflow-hidden">
               {navLinks.map((link) => {
                 const id = link.href.replace('#', '')
                 const isActive = activeSection === id
@@ -158,9 +158,7 @@ const Navbar: React.FC<NavbarProps> = ({ onBookClick }) => {
                       }
                     }}
                     className="relative text-[12px] lg:text-[13px] font-medium transition-all duration-300 group whitespace-nowrap flex-shrink-0"
-                    style={{
-                      color: isActive ? '#C9A240' : '#1C1C3A',
-                    }}
+                    style={{ color: isActive ? '#C9A240' : '#1C1C3A' }}
                     onMouseEnter={(e) => {
                       if (!isActive) {
                         (e.currentTarget as HTMLElement).style.color = '#C9A240'
@@ -186,28 +184,28 @@ const Navbar: React.FC<NavbarProps> = ({ onBookClick }) => {
               })}
             </div>
 
-            {/* Right Side Buttons - Desktop */}
+            {/* Right Side Buttons — md+ */}
             <div className="hidden md:flex items-center gap-2 flex-shrink-0">
-              {/* WhatsApp Button */}
+              {/* WhatsApp */}
               <a
                 href={`https://wa.me/${WHATSAPP_NUMBER.replace(/[^0-9]/g, '')}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="bg-[#25D366] hover:bg-[#1da851] text-white rounded-full px-3 py-1.5 text-xs font-medium flex items-center gap-1.5 transition-all duration-300 hover:shadow-md whitespace-nowrap"
+                className="bg-[#25D366] hover:bg-[#1da851] text-white rounded-full px-3 py-1.5 text-xs font-medium flex items-center gap-1.5 transition-all duration-300 hover:shadow-md whitespace-nowrap min-h-[36px]"
               >
                 <MessageCircle size={14} />
                 <span className="hidden lg:inline">WhatsApp</span>
               </a>
 
-              {/* Pre-Register Button */}
+              {/* Pre-Register */}
               <button
                 onClick={onBookClick}
-                className="bg-[#C9A240] hover:bg-[#b8891a] text-white rounded-full px-3 py-1.5 text-xs font-semibold transition-all duration-300 hover:shadow-md whitespace-nowrap"
+                className="bg-[#C9A240] hover:bg-[#b8891a] text-white rounded-full px-3 py-1.5 text-xs font-semibold transition-all duration-300 hover:shadow-md whitespace-nowrap min-h-[36px]"
               >
                 Pre-Register
               </button>
 
-              {/* Admin Link */}
+              {/* Admin */}
               <Link
                 href="/admin/login"
                 className="text-[12px] font-medium text-[#1C1C3A] hover:text-[#C9A240] transition-colors duration-300 px-2 py-1.5 whitespace-nowrap"
@@ -216,13 +214,22 @@ const Navbar: React.FC<NavbarProps> = ({ onBookClick }) => {
               </Link>
             </div>
 
-            {/* Mobile Menu Button */}
-            <div className="md:hidden flex items-center gap-3">
+            {/* Mobile header right — Pre-Register pill + hamburger */}
+            <div className="md:hidden flex items-center gap-2">
+              {/* Mini Pre-Register pill visible on mobile */}
+              <button
+                onClick={onBookClick}
+                className="bg-[#C9A240] hover:bg-[#b8891a] text-white rounded-full px-3 py-1.5 text-[11px] font-semibold transition-all duration-200 whitespace-nowrap min-h-[36px]"
+              >
+                Pre-Register
+              </button>
+              {/* Hamburger */}
               <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="p-2 rounded-lg hover:bg-[#f0e8d0] transition-colors duration-300 text-[#1C1C3A]"
+                className="p-2 rounded-lg hover:bg-[#f0e8d0] transition-colors duration-300 text-[#1C1C3A] min-h-[44px] min-w-[44px] flex items-center justify-center"
+                aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
               >
-                {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+                {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
               </button>
             </div>
           </div>

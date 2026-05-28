@@ -43,7 +43,7 @@ const benefits = [
     icon: '💰',
     title: 'Honest, Affordable Pricing',
     description:
-      'Triple sharing from ₹7,500/month. Single rooms from ₹13,000/month. Everything included — North Indian food, WiFi, power backup, housekeeping, laundry, and CCTV. No hidden charges, ever.',
+      'Triple sharing from ₹7,500/month. Single rooms from ₹13,000/month. Everything included — North Indian food, WiFi, power backup, housekeeping, washing machine, and CCTV. No hidden charges, ever.',
     tag: 'From ₹7,500/mo',
   },
 ]
