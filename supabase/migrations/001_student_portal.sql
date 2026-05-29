@@ -41,6 +41,17 @@ ALTER TABLE rooms ADD COLUMN IF NOT EXISTS amenities TEXT[] DEFAULT ARRAY[]::TEX
 ALTER TABLE rooms ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ DEFAULT now();
 ALTER TABLE rooms ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT now();
 
+-- Safely add unique constraint on room_number to support ON CONFLICT checks
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_constraint WHERE conname = 'rooms_room_number_key'
+    ) THEN
+        ALTER TABLE rooms ADD CONSTRAINT rooms_room_number_key UNIQUE (room_number);
+    END IF;
+END $$;
+
+
 
 -- ── 3. Beds ──────────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS beds (
