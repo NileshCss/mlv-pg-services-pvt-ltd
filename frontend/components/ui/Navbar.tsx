@@ -52,7 +52,7 @@ const Navbar: React.FC<NavbarProps> = ({ onBookClick }) => {
   // Close mobile menu on resize
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth >= 768) setMobileMenuOpen(false)
+      if (window.innerWidth >= 1280) setMobileMenuOpen(false)
     }
     window.addEventListener('resize', handleResize)
     return () => window.removeEventListener('resize', handleResize)
@@ -149,8 +149,8 @@ const Navbar: React.FC<NavbarProps> = ({ onBookClick }) => {
               </div>
             </Link>
 
-            {/* Nav Links — visible from lg upward to avoid tablet crowding */}
-            <div className="hidden lg:flex items-center gap-3 lg:gap-5 flex-1 mx-4 lg:mx-8 overflow-hidden">
+            {/* Nav Links — visible from xl upward to avoid laptop/tablet crowding */}
+            <div className="hidden xl:flex items-center gap-3 xl:gap-5 flex-1 mx-4 lg:mx-8 overflow-hidden justify-center">
               {navLinks.map((link) => {
                 const id = link.href.replace('#', '')
                 const isActive = activeSection === id
@@ -191,8 +191,8 @@ const Navbar: React.FC<NavbarProps> = ({ onBookClick }) => {
               })}
             </div>
 
-            {/* Right Side Buttons — md+ */}
-            <div className="hidden md:flex items-center gap-2 flex-shrink-0">
+            {/* Right Side Buttons — visible on xl+ */}
+            <div className="hidden xl:flex items-center gap-2 flex-shrink-0">
               {/* WhatsApp */}
               <a
                 href={`https://wa.me/${WHATSAPP_NUMBER.replace(/[^0-9]/g, '')}`}
@@ -230,8 +230,8 @@ const Navbar: React.FC<NavbarProps> = ({ onBookClick }) => {
               </Link>
             </div>
 
-            {/* Mobile header right — Pre-Register pill + hamburger */}
-            <div className="md:hidden flex items-center gap-2">
+            {/* Tablet & Mobile header right — Pre-Register pill + hamburger */}
+            <div className="xl:hidden flex items-center gap-2">
               {/* Mini Pre-Register pill visible on mobile */}
               <button
                 onClick={onBookClick}
@@ -262,7 +262,7 @@ const Navbar: React.FC<NavbarProps> = ({ onBookClick }) => {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setMobileMenuOpen(false)}
-              className="fixed inset-0 top-[108px] bg-black/40 md:hidden z-30"
+              className="fixed inset-0 top-[108px] bg-black/40 xl:hidden z-30"
             />
             
             <motion.div
@@ -270,7 +270,7 @@ const Navbar: React.FC<NavbarProps> = ({ onBookClick }) => {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.2 }}
-              className="fixed top-[108px] left-0 right-0 bg-white border-b-2 border-[#C9A240] md:hidden z-40 shadow-xl max-h-[calc(100vh-108px)] overflow-y-auto"
+              className="fixed top-[108px] left-0 right-0 bg-white border-b-2 border-[#C9A240] xl:hidden z-40 shadow-xl max-h-[calc(100vh-108px)] overflow-y-auto"
             >
               <div className="mx-auto max-w-7xl px-4 py-4 space-y-2">
                 {/* Mobile Nav Links */}
