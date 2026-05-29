@@ -31,6 +31,17 @@ CREATE TABLE IF NOT EXISTS rooms (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
+-- Safely add missing columns to existing rooms table if it was created previously
+ALTER TABLE rooms ADD COLUMN IF NOT EXISTS floor INTEGER DEFAULT 1;
+ALTER TABLE rooms ADD COLUMN IF NOT EXISTS type TEXT CHECK (type IN ('single','double','triple'));
+ALTER TABLE rooms ADD COLUMN IF NOT EXISTS capacity INTEGER DEFAULT 1;
+ALTER TABLE rooms ADD COLUMN IF NOT EXISTS status TEXT DEFAULT 'available' CHECK (status IN ('available','occupied','maintenance'));
+ALTER TABLE rooms ADD COLUMN IF NOT EXISTS monthly_rent NUMERIC(10,2);
+ALTER TABLE rooms ADD COLUMN IF NOT EXISTS amenities TEXT[] DEFAULT ARRAY[]::TEXT[];
+ALTER TABLE rooms ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ DEFAULT now();
+ALTER TABLE rooms ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT now();
+
+
 -- ── 3. Beds ──────────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS beds (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
