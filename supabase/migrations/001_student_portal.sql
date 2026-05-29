@@ -41,6 +41,18 @@ ALTER TABLE rooms ADD COLUMN IF NOT EXISTS amenities TEXT[] DEFAULT ARRAY[]::TEX
 ALTER TABLE rooms ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ DEFAULT now();
 ALTER TABLE rooms ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT now();
 
+-- Ensure old columns exist with safe defaults/nullability in case this is a fresh setup
+ALTER TABLE rooms ADD COLUMN IF NOT EXISTS building_name TEXT DEFAULT 'Main Building';
+ALTER TABLE rooms ADD COLUMN IF NOT EXISTS room_type TEXT CHECK (room_type IN ('single','double','triple','dormitory'));
+ALTER TABLE rooms ADD COLUMN IF NOT EXISTS total_beds INTEGER DEFAULT 1;
+ALTER TABLE rooms ADD COLUMN IF NOT EXISTS occupied_beds INTEGER DEFAULT 0;
+ALTER TABLE rooms ADD COLUMN IF NOT EXISTS price_per_bed NUMERIC(10,2);
+ALTER TABLE rooms ADD COLUMN IF NOT EXISTS is_ac BOOLEAN DEFAULT false;
+ALTER TABLE rooms ADD COLUMN IF NOT EXISTS has_attached_bathroom BOOLEAN DEFAULT false;
+ALTER TABLE rooms ADD COLUMN IF NOT EXISTS maintenance_status BOOLEAN DEFAULT false;
+ALTER TABLE rooms ADD COLUMN IF NOT EXISTS images TEXT[] DEFAULT ARRAY[]::TEXT[];
+ALTER TABLE rooms ADD COLUMN IF NOT EXISTS notes TEXT;
+
 -- Safely add unique constraint on room_number to support ON CONFLICT checks
 DO $$
 BEGIN
@@ -318,14 +330,18 @@ CREATE POLICY "beds_read" ON beds
 -- (keep table private, access only through API)
 
 -- ── Seed: Insert sample rooms ─────────────────────────────────
-INSERT INTO rooms (room_number, floor, type, capacity, monthly_rent, amenities)
+INSERT INTO rooms (
+  room_number, floor, type, room_type, capacity, total_beds, 
+  monthly_rent, price_per_bed, building_name, is_ac, 
+  has_attached_bathroom, maintenance_status, amenities
+)
 VALUES
-  ('101', 1, 'single', 1, 13000, ARRAY['WiFi','AC','Wardrobe','Study Table']),
-  ('102', 1, 'double', 2, 9500, ARRAY['WiFi','Fan','Wardrobe','Study Table']),
-  ('103', 1, 'triple', 3, 7500, ARRAY['WiFi','Fan','Wardrobe','Study Table']),
-  ('201', 2, 'double', 2, 9500, ARRAY['WiFi','Fan','Wardrobe','Study Table']),
-  ('202', 2, 'triple', 3, 7500, ARRAY['WiFi','Fan','Wardrobe','Study Table']),
-  ('203', 2, 'single', 1, 13000, ARRAY['WiFi','AC','Wardrobe','Study Table'])
+  ('101', 1, 'single', 'single', 1, 1, 13000, 13000, 'Main Building', true, true, false, ARRAY['WiFi','AC','Wardrobe','Study Table']),
+  ('102', 1, 'double', 'double', 2, 2, 9500, 9500, 'Main Building', false, true, false, ARRAY['WiFi','Fan','Wardrobe','Study Table']),
+  ('103', 1, 'triple', 'triple', 3, 3, 7500, 7500, 'Main Building', false, true, false, ARRAY['WiFi','Fan','Wardrobe','Study Table']),
+  ('201', 2, 'double', 'double', 2, 2, 9500, 9500, 'Main Building', false, true, false, ARRAY['WiFi','Fan','Wardrobe','Study Table']),
+  ('202', 2, 'triple', 'triple', 3, 3, 7500, 7500, 'Main Building', false, true, false, ARRAY['WiFi','Fan','Wardrobe','Study Table']),
+  ('203', 2, 'single', 'single', 1, 1, 13000, 13000, 'Main Building', true, true, false, ARRAY['WiFi','AC','Wardrobe','Study Table'])
 ON CONFLICT (room_number) DO NOTHING;
 
 -- Seed beds for each room
