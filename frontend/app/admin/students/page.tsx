@@ -487,12 +487,13 @@ export default function AdminStudentsPage() {
             <>
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                 onClick={() => !onboarding && setOnboardModalOpen(false)}
-                className="fixed inset-0 bg-black/75 z-40 backdrop-blur-sm flex items-center justify-center p-4"
+                className="fixed inset-0 bg-black/75 z-40 backdrop-blur-sm"
               />
-              <motion.div
-                initial={{ scale: 0.95 }} animate={{ scale: 1 }} exit={{ scale: 0.95 }}
-                className="bg-[#0F1629] border border-white/10 rounded-2xl w-full max-w-xl p-6 z-50 overflow-hidden shadow-2xl relative text-gray-200"
-              >
+              <div className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none">
+                <motion.div
+                  initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }}
+                  className="bg-[#0F1629] border border-white/10 rounded-2xl w-full max-w-xl p-6 overflow-hidden shadow-2xl text-gray-200 pointer-events-auto"
+                >
                 <div className="flex items-center justify-between pb-4 border-b border-white/5 mb-5">
                   <h3 className="text-lg font-bold" style={{ fontFamily: 'Playfair Display' }}>Onboard Resident & Allocate Room</h3>
                   <button onClick={() => !onboarding && setOnboardModalOpen(false)} className="text-gray-400 hover:text-white" disabled={onboarding}>✕</button>
@@ -638,8 +639,9 @@ export default function AdminStudentsPage() {
                   </div>
                 </form>
               </motion.div>
-            </>
-          )}
+            </div>
+          </>
+        )}
         </AnimatePresence>
 
       </motion.div>
