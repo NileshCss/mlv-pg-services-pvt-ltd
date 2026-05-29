@@ -90,11 +90,11 @@ const Navbar: React.FC<NavbarProps> = ({ onBookClick }) => {
     <>
       {/* Main Navbar */}
       <nav
-        className={`fixed z-50 w-full overflow-visible min-h-[68px] transition-all duration-300 bg-white/95 backdrop-blur-sm border-b border-[#f0e8d0]`}
+        className={`fixed z-50 w-full overflow-visible min-h-[64px] transition-all duration-300 bg-white/95 backdrop-blur-sm border-b border-[#f0e8d0]`}
         style={{
           top: '38px',
-          height: scrolled ? '58px' : '70px',
-          minHeight: '68px',
+          height: scrolled ? '64px' : '78px',
+          minHeight: '64px',
           boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
         }}
       >
@@ -150,7 +150,7 @@ const Navbar: React.FC<NavbarProps> = ({ onBookClick }) => {
             </Link>
 
             {/* Nav Links — visible from xl upward to avoid laptop/tablet crowding */}
-            <div className="hidden xl:flex items-center gap-3 xl:gap-5 flex-1 mx-4 lg:mx-8 overflow-hidden justify-center">
+            <div className="hidden xl:flex items-center gap-6 xl:gap-8 flex-shrink-0 mx-6">
               {navLinks.map((link) => {
                 const id = link.href.replace('#', '')
                 const isActive = activeSection === id
