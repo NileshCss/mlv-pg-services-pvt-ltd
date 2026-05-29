@@ -5,7 +5,7 @@ const nextConfig = {
   productionBrowserSourceMaps: false, // Reduce bundle size in production
   poweredByHeader: false, // Remove X-Powered-By header
   generateEtags: true, // Enable ETags for caching
-  typedRoutes: true,
+  typedRoutes: false,
   
   images: {
     remotePatterns: [

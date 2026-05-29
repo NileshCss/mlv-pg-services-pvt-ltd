@@ -20,6 +20,13 @@ import {
   X,
   Megaphone,
   MessageSquare,
+  GraduationCap,
+  Receipt,
+  CreditCard,
+  FileText,
+  FolderOpen,
+  RefreshCcw,
+  BarChart3,
 } from 'lucide-react'
 import { useUIStore } from '@/store/uiStore'
 import { useAuthStore } from '@/store/authStore'
@@ -35,6 +42,13 @@ const navItems = [
   { label: 'Testimonials', icon: Star,                href: '/admin/testimonials' },
   { label: 'Notice Board', icon: Megaphone,           href: '/admin/notice-board' },
   { label: 'Complaints',   icon: MessageSquare,href: '/admin/complaints', badge: true },
+  { label: 'Students',     icon: GraduationCap,       href: '/admin/students' },
+  { label: 'Fee Management',icon: Receipt,            href: '/admin/fee-management' },
+  { label: 'Payments',     icon: CreditCard,          href: '/admin/payments' },
+  { label: 'Agreements',   icon: FileText,            href: '/admin/agreements' },
+  { label: 'Documents',    icon: FolderOpen,          href: '/admin/documents' },
+  { label: 'Renewals',     icon: RefreshCcw,          href: '/admin/renewals' },
+  { label: 'Reports',      icon: BarChart3,           href: '/admin/reports' },
   { label: 'Users',        icon: Users,               href: '/admin/users' },
   { label: 'Settings',     icon: Settings,            href: '/admin/settings' },
 ]

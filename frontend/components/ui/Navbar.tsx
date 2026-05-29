@@ -4,7 +4,7 @@ import React, { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname, useRouter } from 'next/navigation'
-import { Menu, X, MessageCircle } from 'lucide-react'
+import { Menu, X, MessageCircle, GraduationCap } from 'lucide-react'
 import { motion, AnimatePresence } from 'motion/react'
 import { WHATSAPP_NUMBER, SITE_NAME } from '@/lib/utils/constants'
 
@@ -205,6 +205,15 @@ const Navbar: React.FC<NavbarProps> = ({ onBookClick }) => {
                 Pre-Register
               </button>
 
+              {/* Student Login */}
+              <Link
+                href="/student-login"
+                className="flex items-center gap-1.5 border border-[#C9A240] text-[#C9A240] hover:bg-[#C9A240] hover:text-white rounded-full px-3 py-1.5 text-xs font-semibold transition-all duration-300 whitespace-nowrap min-h-[36px]"
+              >
+                <GraduationCap size={13} />
+                Student Login
+              </Link>
+
               {/* Admin */}
               <Link
                 href="/admin/login"
@@ -296,6 +305,16 @@ const Navbar: React.FC<NavbarProps> = ({ onBookClick }) => {
                 >
                   Pre-Register
                 </button>
+
+                {/* Mobile Student Login */}
+                <Link
+                  href="/student-login"
+                  className="w-full flex items-center justify-center gap-2 border border-[#C9A240] text-[#C9A240] hover:bg-[#C9A240] hover:text-white rounded-lg px-4 py-2.5 text-sm font-semibold transition-all duration-300"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <GraduationCap size={15} />
+                  Student Login
+                </Link>
 
                 {/* Mobile Admin Link */}
                 <Link
