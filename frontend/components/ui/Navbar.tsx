@@ -183,6 +183,7 @@ const Navbar: React.FC<NavbarProps> = ({ onBookClick }) => {
           </div>
 
           {/* ── RIGHT ZONE — Action buttons (desktop only, never shrinks) ── */}
+          {/* All buttons share the same base style for identical height + alignment */}
           <div className="hidden lg:flex items-center gap-2 flex-shrink-0">
 
             {/* WhatsApp */}
@@ -190,9 +191,10 @@ const Navbar: React.FC<NavbarProps> = ({ onBookClick }) => {
               href={`https://wa.me/${WHATSAPP_NUMBER.replace(/[^0-9]/g, '')}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="h-9 px-3.5 bg-[#25D366] hover:bg-[#1da851] text-white text-xs font-medium rounded-full inline-flex items-center justify-center gap-1.5 whitespace-nowrap transition-all flex-shrink-0"
+              style={{ height: '36px', lineHeight: '1', boxSizing: 'border-box' }}
+              className="px-3.5 bg-[#25D366] hover:bg-[#1da851] text-white text-xs font-medium rounded-full flex items-center justify-center gap-1.5 whitespace-nowrap transition-all flex-shrink-0 no-underline"
             >
-              <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
+              <svg className="w-3.5 h-3.5 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
                 <path d="M12 0C5.373 0 0 5.373 0 12c0 2.136.558 4.14 1.535 5.877L.057 23.492a.5.5 0 00.614.614l5.725-1.498A11.952 11.952 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.907 0-3.693-.523-5.222-1.432l-.374-.22-3.898 1.02 1.04-3.8-.242-.382A9.954 9.954 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/>
               </svg>
@@ -202,7 +204,8 @@ const Navbar: React.FC<NavbarProps> = ({ onBookClick }) => {
             {/* Pre-Register */}
             <button
               onClick={onBookClick}
-              className="h-9 px-3.5 bg-[#C9A84C] hover:bg-[#b8963e] text-white text-xs font-medium rounded-full inline-flex items-center justify-center whitespace-nowrap transition-all flex-shrink-0"
+              style={{ height: '36px', lineHeight: '1', boxSizing: 'border-box' }}
+              className="px-3.5 bg-[#C9A84C] hover:bg-[#b8963e] text-white text-xs font-medium rounded-full flex items-center justify-center whitespace-nowrap transition-all flex-shrink-0 cursor-pointer border-0"
             >
               Pre-Register
             </button>
@@ -210,18 +213,20 @@ const Navbar: React.FC<NavbarProps> = ({ onBookClick }) => {
             {/* Student Login */}
             <Link
               href="/student-login"
-              className="h-9 px-3.5 border border-[#C9A84C] text-[#C9A84C] hover:bg-[#C9A84C] hover:text-white bg-transparent text-xs font-medium rounded-full inline-flex items-center justify-center gap-1.5 whitespace-nowrap transition-all flex-shrink-0"
+              style={{ height: '36px', lineHeight: '1', boxSizing: 'border-box' }}
+              className="px-3.5 border border-[#C9A84C] text-[#C9A84C] hover:bg-[#C9A84C] hover:text-white bg-transparent text-xs font-medium rounded-full flex items-center justify-center gap-1.5 whitespace-nowrap transition-all flex-shrink-0 no-underline"
             >
-              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+              <svg className="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
               </svg>
               Student Login
             </Link>
 
-            {/* Admin */}
+            {/* Admin — plain text link, same height for vertical alignment */}
             <Link
               href="/admin/login"
-              className="h-9 inline-flex items-center text-xs font-medium text-[#1C1C3A] hover:text-[#C9A84C] transition-colors px-1 whitespace-nowrap flex-shrink-0"
+              style={{ height: '36px', lineHeight: '1', boxSizing: 'border-box' }}
+              className="px-2 flex items-center justify-center text-xs font-medium text-[#1C1C3A] hover:text-[#C9A84C] transition-colors whitespace-nowrap flex-shrink-0 no-underline"
             >
               Admin
             </Link>
