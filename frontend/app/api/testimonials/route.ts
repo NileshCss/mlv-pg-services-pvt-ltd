@@ -2,6 +2,10 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient as createServiceClient } from '@supabase/supabase-js'
 import { createClient as createServerClient } from '@/lib/supabase/server'
 
+// Actual Supabase schema for the testimonials table:
+// id, created_at, updated_at, student_name, course, college_name,
+// message, rating, image_url, is_approved, is_featured, college (legacy/unused)
+
 function getServiceClient() {
   const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_KEY
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL
@@ -12,7 +16,7 @@ function getServiceClient() {
   return null
 }
 
-// POST /api/testimonials — public submit (status: pending)
+// POST /api/testimonials — public submit (is_approved: false, pending review)
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
@@ -27,55 +31,25 @@ export async function POST(request: NextRequest) {
 
     const client = getServiceClient() || await createServerClient()
 
-    let insertResult = await client
+    // Map frontend fields to actual DB column names:
+    // review  → message
+    // college → college_name
+    // status  → is_approved (boolean: false = pending)
+    const { data, error } = await client
       .from('testimonials')
       .insert({
         student_name: student_name.trim(),
-        college: college?.trim() || null,
+        college_name: college?.trim() || null,
         rating: Number(rating),
-        review: review.trim(),
-        status: 'pending',
+        message: review.trim(),
+        is_approved: false,
         is_featured: false,
       })
       .select()
       .single()
 
-    // If 'college' column is missing in the schema, retry with 'college_name' or omit college fields entirely
-    if (insertResult.error && insertResult.error.message.toLowerCase().includes('college')) {
-      console.warn('College column missing in testimonials schema, retrying with college_name...')
-      insertResult = await client
-        .from('testimonials')
-        .insert({
-          student_name: student_name.trim(),
-          college_name: college?.trim() || null,
-          rating: Number(rating),
-          review: review.trim(),
-          status: 'pending',
-          is_featured: false,
-        })
-        .select()
-        .single()
-      
-      if (insertResult.error) {
-        console.warn('college_name also missing, retrying insert with basic payload...')
-        insertResult = await client
-          .from('testimonials')
-          .insert({
-            student_name: student_name.trim(),
-            rating: Number(rating),
-            review: review.trim(),
-            status: 'pending',
-            is_featured: false,
-          })
-          .select()
-          .single()
-      }
-    }
-
-    const { data, error } = insertResult
-
     if (error) {
-      console.error('Supabase error:', error)
+      console.error('Supabase insert error:', error)
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
 
@@ -86,7 +60,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// GET /api/testimonials?featured=true — public fetch featured reviews
+// GET /api/testimonials?featured=true — public fetch approved+featured reviews
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
@@ -94,19 +68,41 @@ export async function GET(request: NextRequest) {
 
     const client = getServiceClient() || await createServerClient()
 
-    let query = client.from('testimonials').select('*').order('created_at', { ascending: false })
+    let query = client
+      .from('testimonials')
+      .select('id, created_at, student_name, course, college_name, message, rating, image_url, is_approved, is_featured')
+      .order('created_at', { ascending: false })
 
     if (featuredOnly) {
-      query = query.eq('is_featured', true).eq('status', 'approved').limit(6)
+      // Use is_approved (boolean) and is_featured — correct DB columns
+      query = query.eq('is_featured', true).eq('is_approved', true).limit(6)
+    } else {
+      // Public listing: only return approved reviews
+      query = query.eq('is_approved', true).limit(20)
     }
 
     const { data, error } = await query
 
     if (error) {
+      console.error('Supabase fetch error:', error)
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
 
-    return NextResponse.json({ data }, { status: 200 })
+    // Normalize DB shape to the frontend Testimonial interface:
+    // DB: message, college_name, is_approved  →  Frontend: review, college, status
+    const normalized = (data || []).map((row: any) => ({
+      id: row.id,
+      student_name: row.student_name,
+      college: row.college_name || row.course || null,
+      rating: row.rating,
+      review: row.message,
+      photo_url: row.image_url || null,
+      status: row.is_approved ? 'approved' : 'pending',
+      is_featured: row.is_featured,
+      created_at: row.created_at,
+    }))
+
+    return NextResponse.json({ data: normalized }, { status: 200 })
   } catch (err) {
     console.error('API error:', err)
     return NextResponse.json({ error: 'Failed to fetch testimonials' }, { status: 500 })
