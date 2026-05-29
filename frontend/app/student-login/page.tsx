@@ -7,6 +7,7 @@ import { motion } from 'motion/react'
 import { Eye, EyeOff, GraduationCap, ArrowLeft, Loader2 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
+import { WHATSAPP_NUMBER } from '@/lib/utils/constants'
 
 export default function StudentLoginPage() {
   const router = useRouter()
@@ -213,7 +214,9 @@ export default function StudentLoginPage() {
           <p className="text-center text-xs mt-6" style={{ color: '#8A8AA0' }}>
             Don&apos;t have an account?{' '}
             <a
-              href="/#contact"
+              href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent("Hello MLV PG Management! I am a resident at MLV PG and I would like to get my login credentials for the Student Portal.")}`}
+              target="_blank"
+              rel="noopener noreferrer"
               className="font-semibold transition-colors"
               style={{ color: '#C9A84C' }}
             >
