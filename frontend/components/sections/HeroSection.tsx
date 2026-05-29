@@ -74,7 +74,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onBookClick, onContact
   }
 
   return (
-    <section id="home" className="relative bg-[#FDF9F3] text-[#1C1C3A] font-jakarta overflow-hidden pt-4 pb-16 lg:pb-24">
+    <section id="home" className="relative bg-[#FDF9F3] text-[#1C1C3A] font-jakarta overflow-hidden pt-4 pb-16 lg:pb-24 min-h-[60vh] md:min-h-[75vh] lg:min-h-[85vh] flex items-center">
       {/* Decorative background glows */}
       <div className="absolute top-0 right-0 -mt-32 -mr-32 w-[600px] h-[600px] bg-[#D4A017] rounded-full blur-[140px] opacity-[0.08] pointer-events-none" />
       <div className="absolute bottom-0 left-0 -mb-24 -ml-24 w-[400px] h-[400px] bg-[#D4A017] rounded-full blur-[120px] opacity-[0.06] pointer-events-none" />
@@ -107,7 +107,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onBookClick, onContact
             {/* H1 Heading */}
             <motion.h1 
               variants={itemVariants}
-              className="text-4xl md:text-5xl lg:text-6xl font-playfair font-black tracking-[-0.02em] leading-[1.1] mb-4 text-[#1C1C3A]"
+              className="text-2xl sm:text-4xl lg:text-5xl xl:text-6xl font-playfair font-black tracking-[-0.02em] leading-[1.1] mb-4 text-[#1C1C3A]"
             >
               <span className="block mb-2">
                 <span className="inline-block text-[#D4A017] hover:scale-110 hover:-rotate-6 transition-transform duration-300 drop-shadow-md cursor-default">

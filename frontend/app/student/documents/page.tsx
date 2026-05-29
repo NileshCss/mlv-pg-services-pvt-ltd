@@ -340,7 +340,7 @@ export default function DocumentsPage() {
             </div>
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse">
+              <table className="w-full min-w-[700px] table-auto text-left border-collapse">
                 <thead>
                   <tr style={{ background: '#FDFBF7' }}>
                     <th className="px-5 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">Document Details</th>

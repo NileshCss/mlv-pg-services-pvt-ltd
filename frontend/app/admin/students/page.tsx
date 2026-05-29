@@ -345,7 +345,7 @@ export default function AdminStudentsPage() {
           ) : (
             <div className="bg-[#0F1629] border border-white/5 rounded-2xl overflow-hidden">
               <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse">
+                <table className="w-full min-w-[800px] table-auto text-left border-collapse">
                   <thead>
                     <tr className="bg-white/5 border-b border-white/5 text-gray-400">
                       <th className="px-5 py-3.5 text-xs font-bold uppercase tracking-wider">Resident</th>

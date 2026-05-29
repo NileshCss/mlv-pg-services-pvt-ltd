@@ -208,7 +208,7 @@ export default function FeeManagementPage() {
         ) : (
           <div className="bg-[#0F1629] border border-white/5 rounded-2xl overflow-hidden">
             <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse text-sm">
+              <table className="w-full min-w-[800px] table-auto text-left border-collapse text-sm">
                 <thead>
                   <tr className="bg-white/5 border-b border-white/5 text-gray-400">
                     <th className="px-5 py-3 text-xs font-bold uppercase tracking-wider">Student</th>

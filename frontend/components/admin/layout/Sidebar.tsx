@@ -288,6 +288,19 @@ export const Sidebar: React.FC = () => {
     closeMobileSidebar()
   }, [pathname])
 
+  // Close mobile drawer on Escape press
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') closeMobileSidebar()
+    }
+    if (mobileOpen) {
+      window.addEventListener('keydown', handleKeyDown)
+    }
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [mobileOpen, closeMobileSidebar])
+
   const sidebarBase: React.CSSProperties = {
     background: SIDEBAR_BG,
     display: 'flex',

@@ -81,7 +81,7 @@ export default function PaymentsPage() {
             </div>
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full">
+              <table className="w-full min-w-[700px] table-auto">
                 <thead>
                   <tr style={{ background: '#F8F6F1' }}>
                     {['Date', 'Type', 'Amount', 'Mode', 'Transaction ID', 'Receipt'].map(h => (

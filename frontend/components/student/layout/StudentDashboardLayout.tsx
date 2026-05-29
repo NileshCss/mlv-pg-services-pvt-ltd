@@ -193,6 +193,19 @@ export function StudentDashboardLayout({ children, title }: StudentDashboardLayo
     checkAuth()
   }, [router, supabase])
 
+  // Close sidebar on Escape press
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setSidebarOpen(false)
+    }
+    if (sidebarOpen) {
+      window.addEventListener('keydown', handleKeyDown)
+    }
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [sidebarOpen])
+
   if (!authChecked) {
     return (
       <div className="flex items-center justify-center min-h-screen" style={{ background: '#FDF9F3' }}>

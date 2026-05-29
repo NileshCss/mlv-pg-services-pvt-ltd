@@ -58,11 +58,18 @@ const Navbar: React.FC<NavbarProps> = ({ onBookClick }) => {
     return () => window.removeEventListener('resize', handleResize)
   }, [])
 
-  // Prevent body scroll when mobile menu is open
+  // Prevent body scroll and handle Escape key when mobile menu is open
   useEffect(() => {
     document.body.style.overflow = mobileMenuOpen ? 'hidden' : ''
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setMobileMenuOpen(false)
+    }
+    if (mobileMenuOpen) {
+      window.addEventListener('keydown', handleKeyDown)
+    }
     return () => {
       document.body.style.overflow = ''
+      window.removeEventListener('keydown', handleKeyDown)
     }
   }, [mobileMenuOpen])
 
@@ -248,85 +255,96 @@ const Navbar: React.FC<NavbarProps> = ({ onBookClick }) => {
       {/* Mobile Menu */}
       <AnimatePresence>
         {mobileMenuOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.2 }}
-            className="fixed top-[108px] left-0 right-0 bg-white border-b border-[#f0e8d0] md:hidden z-40 shadow-lg"
-          >
-            <div className="mx-auto max-w-7xl px-4 py-4 space-y-2">
-              {/* Mobile Nav Links */}
-              {navLinks.map((link) => {
-                const id = link.href.replace('#', '')
-                const isActive = activeSection === id
-                return (
-                  <Link
-                    key={link.label}
-                    href={(pathname === '/' ? link.href : `/${link.href}`) as any}
-                    onClick={(e) => {
-                      if (pathname === '/') {
-                        e.preventDefault()
-                        handleNavClick(link.href)
-                      } else {
-                        setMobileMenuOpen(false)
-                      }
-                    }}
-                    className="w-full text-left px-4 py-2.5 rounded-lg text-[14px] font-medium transition-all duration-300 block"
-                    style={{
-                      color: isActive ? '#C9A84C' : '#1C1C3A',
-                      backgroundColor: isActive ? 'rgba(201,162,64,0.1)' : 'transparent',
-                    }}
+          <>
+            {/* Backdrop for outside click */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setMobileMenuOpen(false)}
+              className="fixed inset-0 top-[108px] bg-black/40 md:hidden z-30"
+            />
+            
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.2 }}
+              className="fixed top-[108px] left-0 right-0 bg-white border-b-2 border-[#C9A240] md:hidden z-40 shadow-xl max-h-[calc(100vh-108px)] overflow-y-auto"
+            >
+              <div className="mx-auto max-w-7xl px-4 py-4 space-y-2">
+                {/* Mobile Nav Links */}
+                {navLinks.map((link) => {
+                  const id = link.href.replace('#', '')
+                  const isActive = activeSection === id
+                  return (
+                    <Link
+                      key={link.label}
+                      href={(pathname === '/' ? link.href : `/${link.href}`) as any}
+                      onClick={(e) => {
+                        if (pathname === '/') {
+                          e.preventDefault()
+                          handleNavClick(link.href)
+                        } else {
+                          setMobileMenuOpen(false)
+                        }
+                      }}
+                      className="w-full text-left px-4 min-h-[48px] h-[48px] flex items-center rounded-lg text-[14px] font-medium transition-all duration-300 active:bg-gray-100"
+                      style={{
+                        color: isActive ? '#C9A84C' : '#1A1A2E',
+                        backgroundColor: isActive ? 'rgba(201,162,64,0.1)' : 'transparent',
+                      }}
+                    >
+                      {link.label}
+                    </Link>
+                  )
+                })}
+
+                <div className="border-t border-[#f0e8d0] pt-3 mt-3 space-y-3">
+                  {/* Mobile WhatsApp Button */}
+                  <a
+                    href={`https://wa.me/${WHATSAPP_NUMBER.replace(/[^0-9]/g, '')}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full bg-[#25D366] hover:bg-[#1da851] text-white rounded-lg px-4 min-h-[48px] h-[48px] text-sm font-semibold flex items-center justify-center gap-2 transition-all duration-300"
                   >
-                    {link.label}
+                    <MessageCircle size={18} />
+                    WhatsApp Us
+                  </a>
+
+                  {/* Mobile Pre-Register Button */}
+                  <button
+                    onClick={() => {
+                      setMobileMenuOpen(false)
+                      onBookClick()
+                    }}
+                    className="w-full bg-[#C9A240] hover:bg-[#b8891a] text-white rounded-lg px-4 min-h-[48px] h-[48px] text-sm font-bold transition-all duration-300"
+                  >
+                    Pre-Register Now
+                  </button>
+
+                  {/* Mobile Student Login */}
+                  <Link
+                    href="/student-login"
+                    className="w-full flex items-center justify-center gap-2 border-2 border-[#C9A240] text-[#C9A240] hover:bg-[#C9A240] hover:text-white rounded-lg px-4 min-h-[48px] h-[48px] text-sm font-bold transition-all duration-300"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    <GraduationCap size={18} />
+                    Student Login Portal
                   </Link>
-                )
-              })}
 
-              <div className="border-t border-[#f0e8d0] pt-3 mt-3 space-y-2">
-                {/* Mobile WhatsApp Button */}
-                <a
-                  href={`https://wa.me/${WHATSAPP_NUMBER.replace(/[^0-9]/g, '')}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-full bg-[#25D366] hover:bg-[#1da851] text-white rounded-lg px-4 py-2.5 text-sm font-medium flex items-center justify-center gap-1.5 transition-all duration-300"
-                >
-                  <MessageCircle size={16} />
-                  WhatsApp
-                </a>
-
-                {/* Mobile Pre-Register Button */}
-                <button
-                  onClick={() => {
-                    setMobileMenuOpen(false)
-                    onBookClick()
-                  }}
-                  className="w-full bg-[#C9A240] hover:bg-[#b8891a] text-white rounded-lg px-4 py-2.5 text-sm font-semibold transition-all duration-300"
-                >
-                  Pre-Register
-                </button>
-
-                {/* Mobile Student Login */}
-                <Link
-                  href="/student-login"
-                  className="w-full flex items-center justify-center gap-2 border border-[#C9A240] text-[#C9A240] hover:bg-[#C9A240] hover:text-white rounded-lg px-4 py-2.5 text-sm font-semibold transition-all duration-300"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  <GraduationCap size={15} />
-                  Student Login
-                </Link>
-
-                {/* Mobile Admin Link */}
-                <Link
-                  href="/admin/login"
-                  className="w-full text-center bg-[#f0e8d0] hover:bg-[#e8dfc0] text-[#1C1C3A] rounded-lg px-4 py-2.5 text-sm font-medium transition-all duration-300 block"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  Admin
-                </Link>
+                  {/* Mobile Admin Link */}
+                  <Link
+                    href="/admin/login"
+                    className="w-full text-center bg-gray-100 hover:bg-gray-200 text-[#1C1C3A] rounded-lg px-4 min-h-[48px] h-[48px] flex items-center justify-center text-sm font-medium transition-all duration-300"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Admin Area
+                  </Link>
+                </div>
               </div>
-            </div>
-          </motion.div>
+            </motion.div>
+          </>
         )}
       </AnimatePresence>
     </>

@@ -279,7 +279,7 @@ export default function RegistrationsPage() {
           className={`${DESIGN_SYSTEM.components.card.base} overflow-hidden`}
         >
           <div className="overflow-x-auto">
-            <table className="w-full">
+            <table className="w-full min-w-[700px] table-auto">
               <thead>
                 <tr className="border-b border-amber-500/10">
                   <th className="px-6 py-3 text-left">

@@ -465,7 +465,7 @@ export default function AdminComplaintsPage() {
         {/* Desktop: Full Table */}
         <div className="hidden md:block rounded-2xl bg-white/5 border border-white/10 overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="w-full">
+            <table className="w-full min-w-[800px] table-auto">
               <thead>
                 <tr className="border-b border-white/5">
                   {['ID', 'Student', 'Room', 'Category', 'Urgency', 'Status', 'Date', 'Actions'].map(h => (
