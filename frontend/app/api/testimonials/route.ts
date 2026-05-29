@@ -60,25 +60,30 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// GET /api/testimonials?featured=true — public fetch approved+featured reviews
+// GET /api/testimonials — public fetch
+// ?featured=true  → all is_approved reviews, featured ones sorted first (limit 6)
+// (no params)     → all is_approved reviews (limit 20)
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
-    const featuredOnly = searchParams.get('featured') === 'true'
+    const forHomepage = searchParams.get('featured') === 'true'
 
     const client = getServiceClient() || await createServerClient()
 
+    // Always filter by is_approved = true.
+    // For the homepage we show up to 6 reviews, featuring ones first.
+    // Simply approving a review in the admin is enough to make it appear.
     let query = client
       .from('testimonials')
       .select('id, created_at, student_name, course, college_name, message, rating, image_url, is_approved, is_featured')
+      .eq('is_approved', true)
+      .order('is_featured', { ascending: false })   // featured reviews bubble to top
       .order('created_at', { ascending: false })
 
-    if (featuredOnly) {
-      // Use is_approved (boolean) and is_featured — correct DB columns
-      query = query.eq('is_featured', true).eq('is_approved', true).limit(6)
+    if (forHomepage) {
+      query = query.limit(6)
     } else {
-      // Public listing: only return approved reviews
-      query = query.eq('is_approved', true).limit(20)
+      query = query.limit(20)
     }
 
     const { data, error } = await query
@@ -88,8 +93,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
 
-    // Normalize DB shape to the frontend Testimonial interface:
-    // DB: message, college_name, is_approved  →  Frontend: review, college, status
+    // Normalize DB shape → frontend Testimonial interface
     const normalized = (data || []).map((row: any) => ({
       id: row.id,
       student_name: row.student_name,
@@ -97,7 +101,7 @@ export async function GET(request: NextRequest) {
       rating: row.rating,
       review: row.message,
       photo_url: row.image_url || null,
-      status: row.is_approved ? 'approved' : 'pending',
+      status: 'approved',
       is_featured: row.is_featured,
       created_at: row.created_at,
     }))
