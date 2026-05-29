@@ -70,24 +70,16 @@ CREATE POLICY "documents_insert" ON public.documents
     NOT EXISTS (SELECT 1 FROM students WHERE user_id = auth.uid())
   );
 
--- 7.3 UPDATE Policy: Admins can update records (students cannot update)
+-- 7.3 UPDATE Policy: Authenticated users can update document records (e.g. admin verification)
 CREATE POLICY "documents_update" ON public.documents
   FOR UPDATE
   TO authenticated
-  USING (
-    NOT EXISTS (SELECT 1 FROM students WHERE user_id = auth.uid())
-  )
-  WITH CHECK (
-    NOT EXISTS (SELECT 1 FROM students WHERE user_id = auth.uid())
-  );
+  USING (true)
+  WITH CHECK (true);
 
--- 7.4 DELETE Policy: Students can delete their own unverified records, Admins can delete any
+-- 7.4 DELETE Policy: Authenticated users can delete document records
 CREATE POLICY "documents_delete" ON public.documents
   FOR DELETE
   TO authenticated
-  USING (
-    (student_id IN (SELECT id FROM students WHERE user_id = auth.uid()) AND NOT verified)
-    OR
-    NOT EXISTS (SELECT 1 FROM students WHERE user_id = auth.uid())
-  );
+  USING (true);
 
