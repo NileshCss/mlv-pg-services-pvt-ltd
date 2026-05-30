@@ -172,7 +172,7 @@ export default function AdminLoginPage() {
               {/* Remember Me & Forgot Password */}
               <div className="flex items-center justify-between">
                 <label className="flex items-center gap-2 cursor-pointer">
-                  <input type="checkbox" className="w-4 h-4 rounded accent-amber-500" />
+                  <input type="checkbox" className="!w-4 !h-4 rounded accent-amber-500 flex-shrink-0 cursor-pointer" />
                   <span className="text-sm text-gray-400">Remember me</span>
                 </label>
                 <a href="#" className="text-sm text-amber-400 hover:text-amber-300 transition-colors">

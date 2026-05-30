@@ -94,7 +94,7 @@ export default function DemoLoginPage() {
               <input
                 type="checkbox"
                 id="remember"
-                className="w-4 h-4 rounded border-gray-700 bg-gray-900 cursor-pointer"
+                className="!w-4 !h-4 rounded border-gray-700 bg-gray-900 cursor-pointer flex-shrink-0"
               />
               <label htmlFor="remember" className="cursor-pointer">
                 Remember me
