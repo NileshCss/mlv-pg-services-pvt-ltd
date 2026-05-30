@@ -74,22 +74,78 @@ export default function ComplaintsPage() {
     }
     setSubmitting(true)
     try {
-      const { error } = await supabase.from('student_complaints').insert({
-        student_id: studentId,
-        category: form.category,
-        subject: form.subject,
-        description: form.description,
-        status: 'open',
+      // Fetch student details needed for the admin `complaints` table schema
+      const { data: studentData } = await supabase
+        .from('students')
+        .select('full_name, phone, room_number, rooms(room_number)')
+        .eq('id', studentId)
+        .single()
+
+      const studentName = studentData?.full_name || 'Student'
+      const phone = studentData?.phone || ''
+      // room_number may be a direct column or via joined rooms table
+      const roomNumber =
+        studentData?.room_number ||
+        (studentData?.rooms as { room_number?: string } | null)?.room_number ||
+        'N/A'
+
+      // Generate complaint ID  (same format as /api/complaints route)
+      const year = new Date().getFullYear()
+      const ts = Math.floor(Date.now() / 1000).toString(36).toUpperCase()
+      const rand = Math.floor(Math.random() * 36).toString(36).toUpperCase()
+      const complaintId = `MLV-${year}-${ts}${rand}`
+
+      const now = new Date().toISOString()
+
+      // Map category label to the format admin uses
+      const categoryLabel = CATEGORIES.find(c => c.value === form.category)?.label
+        .replace(/^[^\s]+ /, '') // strip emoji prefix
+        || form.category
+
+      // Write to `complaints` table — the table the admin dashboard reads from
+      const { error } = await supabase.from('complaints').insert({
+        complaint_id: complaintId,
+        student_name: studentName,
+        room_number: roomNumber,
+        phone,
+        category: categoryLabel,
+        details: `[${form.subject}]\n\n${form.description}`,
+        urgency: 'medium',
+        status: 'pending',
+        admin_notes: '',
+        created_at: now,
+        updated_at: now,
       })
+
       if (error) throw error
+
+      // Also keep a local record in student_complaints for the student's own view
+      try {
+        await supabase.from('student_complaints').insert({
+          student_id: studentId,
+          category: form.category,
+          subject: form.subject,
+          description: form.description,
+          status: 'open',
+          complaint_ref_id: complaintId,
+        })
+      } catch {
+        // non-critical if this fails
+      }
+
       toast.success('Complaint submitted successfully!')
       setShowForm(false)
       setForm({ category: 'food', subject: '', description: '' })
-      // Refresh
-      const { data } = await supabase.from('student_complaints').select('*').eq('student_id', studentId).order('created_at', { ascending: false })
+      // Refresh student's own list from student_complaints
+      const { data } = await supabase
+        .from('student_complaints')
+        .select('*')
+        .eq('student_id', studentId)
+        .order('created_at', { ascending: false })
       setComplaints(data || [])
-    } catch (err: any) {
-      toast.error(err.message || 'Failed to submit complaint')
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Failed to submit complaint'
+      toast.error(message)
     } finally {
       setSubmitting(false)
     }
