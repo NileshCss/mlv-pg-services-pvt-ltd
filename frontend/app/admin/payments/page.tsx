@@ -1,8 +1,8 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
-import { motion } from 'motion/react'
-import { CreditCard, DollarSign, Search, Calendar, Eye, Download, User, ArrowUpRight, Loader2 } from 'lucide-react'
+import { motion, AnimatePresence } from 'motion/react'
+import { CreditCard, Search, Calendar, Download, ArrowUpRight, Loader2, Plus, CheckCircle, X } from 'lucide-react'
 import { DashboardLayout } from '@/components/admin/layout/DashboardLayout'
 import { createClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
@@ -12,25 +12,73 @@ const GOLD = '#C8840A'
 export default function AdminPaymentsPage() {
   const supabase = createClient()
   const [payments, setPayments] = useState<any[]>([])
+  const [students, setStudents] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
   const [typeFilter, setTypeFilter] = useState<'all' | 'monthly' | 'security_deposit' | 'renewal' | 'other'>('all')
 
+  // Manual Payment Modal
+  const [manualModalOpen, setManualModalOpen] = useState(false)
+  const [manualForm, setManualForm] = useState({
+    student_id: '',
+    amount: '',
+    payment_type: 'monthly' as 'monthly' | 'security_deposit' | 'renewal' | 'late_fee' | 'other',
+    payment_mode: 'cash' as 'cash' | 'upi' | 'bank_transfer' | 'cheque' | 'other',
+    transaction_id: '',
+    paid_date: new Date().toISOString().split('T')[0],
+    notes: '',
+  })
+  const [submittingManual, setSubmittingManual] = useState(false)
+
   const loadData = async () => {
     setLoading(true)
     try {
-      const { data, error } = await supabase
-        .from('payments')
-        .select('*, students(full_name, student_id)')
-        .order('created_at', { ascending: false })
-
-      if (error) throw error
-      setPayments(data || [])
+      const [paymentsRes, studentsRes] = await Promise.all([
+        supabase.from('payments').select('*, students(full_name, student_id)').order('created_at', { ascending: false }),
+        supabase.from('students').select('id, full_name, student_id, email').eq('is_active', true).order('full_name'),
+      ])
+      if (paymentsRes.error) throw paymentsRes.error
+      setPayments(paymentsRes.data || [])
+      setStudents(studentsRes.data || [])
     } catch (err) {
       console.error('Error fetching payments:', err)
       toast.error('Failed to load transaction history')
     } finally {
       setLoading(false)
+    }
+  }
+
+  const handleManualPayment = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!manualForm.student_id || !manualForm.amount) {
+      toast.error('Student and amount are required')
+      return
+    }
+    setSubmittingManual(true)
+    try {
+      const { error } = await supabase.from('payments').insert({
+        student_id: manualForm.student_id,
+        amount: Number(manualForm.amount),
+        payment_mode: manualForm.payment_mode,
+        transaction_id: manualForm.transaction_id || null,
+        type: manualForm.payment_type === 'monthly' ? 'monthly' : manualForm.payment_type,
+        payment_type: manualForm.payment_type,
+        status: 'paid',
+        paid_at: new Date(`${manualForm.paid_date}T00:00:00`).toISOString(),
+        notes: manualForm.notes || null,
+      })
+      if (error) throw error
+      toast.success('Payment recorded successfully!')
+      setManualModalOpen(false)
+      setManualForm({
+        student_id: '', amount: '', payment_type: 'monthly', payment_mode: 'cash',
+        transaction_id: '', paid_date: new Date().toISOString().split('T')[0], notes: '',
+      })
+      loadData()
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to record payment')
+    } finally {
+      setSubmittingManual(false)
     }
   }
 
@@ -72,6 +120,14 @@ export default function AdminPaymentsPage() {
       >
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+          {/* Manual Payment Button */}
+          <button
+            onClick={() => setManualModalOpen(true)}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold transition-all"
+            style={{ background: 'linear-gradient(135deg, #C8840A, #F5A623)', color: '#000' }}
+          >
+            <Plus size={15} /> Record Manual Payment
+          </button>
           <div>
             <h1 className="text-4xl font-bold text-white flex items-center gap-3" style={{ fontFamily: 'Playfair Display' }}>
               <CreditCard style={{ color: GOLD }} /> Transaction History
@@ -191,6 +247,150 @@ export default function AdminPaymentsPage() {
             </div>
           </div>
         )}
+
+        {/* ── Manual Payment Recording Modal ────────────── */}
+        <AnimatePresence>
+          {manualModalOpen && (
+            <>
+              <motion.div
+                initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                onClick={() => !submittingManual && setManualModalOpen(false)}
+                className="fixed inset-0 bg-black/75 z-40 backdrop-blur-sm"
+              />
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                className="fixed inset-0 z-50 flex items-center justify-center p-4"
+              >
+                <div className="bg-[#0F1629] border border-white/10 rounded-2xl w-full max-w-md shadow-2xl text-gray-200 overflow-y-auto max-h-[90vh]">
+                  <div className="flex items-center justify-between p-6 border-b border-white/5">
+                    <h3 className="text-lg font-bold" style={{ fontFamily: 'Playfair Display' }}>
+                      Record Manual Payment
+                    </h3>
+                    <button onClick={() => setManualModalOpen(false)} disabled={submittingManual}
+                      className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/5 text-gray-400 hover:text-white transition-colors">
+                      <X size={16} />
+                    </button>
+                  </div>
+
+                  <form onSubmit={handleManualPayment} className="p-6 space-y-4">
+                    {/* Student Select */}
+                    <div>
+                      <label className="block text-xs font-semibold text-gray-400 uppercase mb-1.5">Student *</label>
+                      <select
+                        required
+                        value={manualForm.student_id}
+                        onChange={e => setManualForm(p => ({ ...p, student_id: e.target.value }))}
+                        className="w-full px-3 py-2.5 rounded-xl text-sm border border-white/8 bg-[#0A0E1A] text-white outline-none focus:border-amber-500"
+                      >
+                        <option value="">Select student…</option>
+                        {students.map(s => (
+                          <option key={s.id} value={s.id}>
+                            {s.full_name} ({s.student_id || s.email})
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      {/* Amount */}
+                      <div>
+                        <label className="block text-xs font-semibold text-gray-400 uppercase mb-1.5">Amount (₹) *</label>
+                        <input
+                          type="number" required min="1" placeholder="e.g. 9500"
+                          value={manualForm.amount}
+                          onChange={e => setManualForm(p => ({ ...p, amount: e.target.value }))}
+                          className="w-full px-3 py-2.5 rounded-xl text-sm border border-white/8 bg-[#0A0E1A] text-white outline-none focus:border-amber-500"
+                        />
+                      </div>
+                      {/* Date */}
+                      <div>
+                        <label className="block text-xs font-semibold text-gray-400 uppercase mb-1.5">Payment Date *</label>
+                        <input
+                          type="date" required
+                          value={manualForm.paid_date}
+                          onChange={e => setManualForm(p => ({ ...p, paid_date: e.target.value }))}
+                          className="w-full px-3 py-2.5 rounded-xl text-sm border border-white/8 bg-[#0A0E1A] text-white outline-none focus:border-amber-500"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      {/* Payment Type */}
+                      <div>
+                        <label className="block text-xs font-semibold text-gray-400 uppercase mb-1.5">Payment Type</label>
+                        <select
+                          value={manualForm.payment_type}
+                          onChange={e => setManualForm(p => ({ ...p, payment_type: e.target.value as typeof manualForm.payment_type }))}
+                          className="w-full px-3 py-2.5 rounded-xl text-sm border border-white/8 bg-[#0A0E1A] text-white outline-none focus:border-amber-500"
+                        >
+                          <option value="monthly">Monthly Rent</option>
+                          <option value="security_deposit">Security Deposit</option>
+                          <option value="renewal">Stay Renewal</option>
+                          <option value="late_fee">Late Fee</option>
+                          <option value="other">Other</option>
+                        </select>
+                      </div>
+                      {/* Payment Mode */}
+                      <div>
+                        <label className="block text-xs font-semibold text-gray-400 uppercase mb-1.5">Payment Mode</label>
+                        <select
+                          value={manualForm.payment_mode}
+                          onChange={e => setManualForm(p => ({ ...p, payment_mode: e.target.value as typeof manualForm.payment_mode }))}
+                          className="w-full px-3 py-2.5 rounded-xl text-sm border border-white/8 bg-[#0A0E1A] text-white outline-none focus:border-amber-500"
+                        >
+                          <option value="cash">Cash</option>
+                          <option value="upi">UPI / GPay / PhonePe</option>
+                          <option value="bank_transfer">Bank Transfer / IMPS</option>
+                          <option value="cheque">Cheque</option>
+                          <option value="other">Other</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    {/* Transaction Ref */}
+                    <div>
+                      <label className="block text-xs font-semibold text-gray-400 uppercase mb-1.5">Transaction Reference (optional)</label>
+                      <input
+                        type="text" placeholder="UPI Ref / Txn ID / Cheque No."
+                        value={manualForm.transaction_id}
+                        onChange={e => setManualForm(p => ({ ...p, transaction_id: e.target.value }))}
+                        className="w-full px-3 py-2.5 rounded-xl text-sm border border-white/8 bg-[#0A0E1A] text-white outline-none focus:border-amber-500"
+                      />
+                    </div>
+
+                    {/* Notes */}
+                    <div>
+                      <label className="block text-xs font-semibold text-gray-400 uppercase mb-1.5">Admin Notes (optional)</label>
+                      <textarea
+                        rows={2} placeholder="Any notes about this payment…"
+                        value={manualForm.notes}
+                        onChange={e => setManualForm(p => ({ ...p, notes: e.target.value }))}
+                        className="w-full px-3 py-2 rounded-xl text-sm border border-white/8 bg-[#0A0E1A] text-white outline-none focus:border-amber-500 resize-none"
+                      />
+                    </div>
+
+                    <div className="flex gap-3 pt-2">
+                      <button type="button" onClick={() => setManualModalOpen(false)} disabled={submittingManual}
+                        className="flex-1 py-3 text-sm font-semibold rounded-xl border border-white/10 hover:bg-white/5 text-gray-300 transition-colors">
+                        Cancel
+                      </button>
+                      <button type="submit" disabled={submittingManual}
+                        className="flex-1 py-3 text-sm font-bold rounded-xl text-black flex items-center justify-center gap-2 transition-all"
+                        style={{ background: 'linear-gradient(135deg, #C8840A, #F5A623)' }}>
+                        {submittingManual
+                          ? <><Loader2 size={15} className="animate-spin" /> Saving…</>
+                          : <><CheckCircle size={15} /> Record Payment</>}
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </motion.div>
+            </>
+          )}
+        </AnimatePresence>
+
       </motion.div>
     </DashboardLayout>
   )

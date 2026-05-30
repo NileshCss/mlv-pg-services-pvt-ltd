@@ -290,9 +290,31 @@ const PreRegistrationForm: React.FC<PreRegistrationFormProps> = ({ open, onOpenC
               </Button>
             </div>
 
+            {/* Full Registration CTA */}
+            <div
+              className="mt-4 rounded-xl p-3 sm:p-4 text-center"
+              style={{ background: 'rgba(201,168,76,0.08)', border: '1px solid rgba(201,168,76,0.2)' }}
+            >
+              <p className="text-xs text-gray-300 mb-2">
+                🔐 Want to <strong style={{ color: '#c9a84c' }}>verify your email, upload documents</strong> and{' '}
+                <strong style={{ color: '#c9a84c' }}>pay security deposit</strong> online?
+              </p>
+              <a
+                href="/pre-register"
+                className="inline-flex items-center gap-1.5 text-xs font-bold py-2 px-4 rounded-full transition-all"
+                style={{
+                  background: 'rgba(201,168,76,0.15)',
+                  color: '#c9a84c',
+                  border: '1px solid rgba(201,168,76,0.35)',
+                }}
+              >
+                Complete Full Registration →
+              </a>
+            </div>
+
             {/* Info note */}
             <p className="text-center text-[10px] sm:text-xs text-gray-500 mt-2 sm:mt-4 w-full">
-              ⚡ Your info is secure & used only for admission purposes
+              ⚡ Your info is secure &amp; used only for admission purposes
             </p>
           </form>
         </div>
