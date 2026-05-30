@@ -47,57 +47,73 @@ export async function POST(req: NextRequest) {
 
     const supabase = getServiceClient()
 
-    // Generate unique Application ID (retry if collision)
-    let applicationId = generateApplicationId()
-    let attempts = 0
-    while (attempts < 5) {
-      const { data: existing } = await supabase
-        .from('pre_registrations')
-        .select('application_id')
-        .eq('application_id', applicationId)
-        .single()
-      if (!existing) break
-      applicationId = generateApplicationId()
-      attempts++
-    }
-
-    // Insert or update the pre_registration record
-    const { data: app, error: insertError } = await supabase
+    // ── Check if an application already exists for this email ──
+    const { data: existing } = await supabase
       .from('pre_registrations')
-      .upsert(
-        {
-          application_id: applicationId,
-          full_name,
-          phone,
-          email,
-          gender,
-          college_name,
-          course,
-          room_preference,
-          check_in_date,
-          parent_contact,
-          food_preference,
-          additional_notes: additional_notes || null,
-          aadhar_url: aadhar_url || null,
-          photo_url: photo_url || null,
-          college_id_url: college_id_url || null,
-          status: 'otp_verified',
-          otp_verified: true,
-          otp_verified_at: new Date().toISOString(),
-          deposit_status: 'pending',
-        },
-        { onConflict: 'email', ignoreDuplicates: false }
-      )
-      .select()
-      .single()
+      .select('application_id')
+      .eq('email', email)
+      .maybeSingle()
 
-    if (insertError) {
-      console.error('Application insert error:', insertError)
-      return NextResponse.json({ error: insertError.message }, { status: 500 })
+    let finalAppId: string
+
+    const applicationPayload = {
+      full_name,
+      phone,
+      email,
+      gender,
+      college_name,
+      course,
+      room_preference,
+      check_in_date,
+      parent_contact,
+      food_preference,
+      additional_notes: additional_notes || null,
+      aadhar_url: aadhar_url || null,
+      photo_url: photo_url || null,
+      college_id_url: college_id_url || null,
+      status: 'otp_verified',
+      otp_verified: true,
+      otp_verified_at: new Date().toISOString(),
+      deposit_status: 'pending',
     }
 
-    // Use the actual application_id from DB (in case of upsert on existing email)
-    const finalAppId = app?.application_id || applicationId
+    if (existing?.application_id) {
+      // ── Already registered — update the existing record ──────
+      finalAppId = existing.application_id
+      const { error: updateError } = await supabase
+        .from('pre_registrations')
+        .update(applicationPayload)
+        .eq('application_id', finalAppId)
+
+      if (updateError) {
+        console.error('Application update error:', updateError)
+        return NextResponse.json({ error: updateError.message }, { status: 500 })
+      }
+    } else {
+      // ── New applicant — generate unique ID and insert ─────────
+      let applicationId = generateApplicationId()
+      let attempts = 0
+      while (attempts < 5) {
+        const { data: idConflict } = await supabase
+          .from('pre_registrations')
+          .select('application_id')
+          .eq('application_id', applicationId)
+          .maybeSingle()
+        if (!idConflict) break
+        applicationId = generateApplicationId()
+        attempts++
+      }
+
+      finalAppId = applicationId
+      const { error: insertError } = await supabase
+        .from('pre_registrations')
+        .insert({ ...applicationPayload, application_id: finalAppId })
+
+      if (insertError) {
+        console.error('Application insert error:', insertError)
+        return NextResponse.json({ error: insertError.message }, { status: 500 })
+      }
+    }
 
     // ── Send confirmation email ───────────────────────────────
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://mlvpg.com'
