@@ -14,13 +14,17 @@ const GOLD_BORDER = 'rgba(200,132,10,0.2)'
 export default function FeeManagementPage() {
   const supabase = createClient()
   const [installments, setInstallments] = useState<any[]>([])
+  const [preRegistrations, setPreRegistrations] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
-  const [statusFilter, setStatusFilter] = useState<'all' | 'pending' | 'paid' | 'overdue'>('all')
+  const [statusFilter, setStatusFilter] = useState<'all' | 'pending' | 'paid' | 'overdue' | 'waived'>('all')
+  const [activeTab, setActiveTab] = useState<'installments' | 'deposits'>('installments')
 
   // Payment Recording Modal
   const [payModalOpen, setPayModalOpen] = useState(false)
+  const [depositModalOpen, setDepositModalOpen] = useState(false)
   const [selectedInst, setSelectedInst] = useState<any | null>(null)
+  const [selectedReg, setSelectedReg] = useState<any | null>(null)
   
   const [paymentMode, setPaymentMode] = useState<'cash' | 'upi' | 'bank_transfer' | 'cheque' | 'other'>('upi')
   const [transactionId, setTransactionId] = useState('')
@@ -31,16 +35,25 @@ export default function FeeManagementPage() {
   const loadData = async () => {
     setLoading(true)
     try {
-      const { data, error } = await supabase
-        .from('installments')
-        .select('*, students(id, full_name, student_id, room_id, rooms(room_number, floor))')
-        .order('due_date', { ascending: true })
+      const [instRes, regRes] = await Promise.all([
+        supabase
+          .from('installments')
+          .select('*, students(id, full_name, student_id, room_id, rooms(room_number, floor))')
+          .order('due_date', { ascending: true }),
+        supabase
+          .from('pre_registrations')
+          .select('*')
+          .order('created_at', { ascending: false })
+      ])
 
-      if (error) throw error
-      setInstallments(data || [])
+      if (instRes.error) throw instRes.error
+      if (regRes.error) throw regRes.error
+
+      setInstallments(instRes.data || [])
+      setPreRegistrations(regRes.data || [])
     } catch (err) {
-      console.error('Error fetching installments:', err)
-      toast.error('Failed to load installments details')
+      console.error('Error fetching data:', err)
+      toast.error('Failed to load data')
     } finally {
       setLoading(false)
     }
@@ -117,6 +130,51 @@ export default function FeeManagementPage() {
     return matchesSearch && matchesStatus
   })
 
+  const filteredDeposits = preRegistrations.filter(reg => {
+    const name = (reg.full_name || '').toLowerCase()
+    const id = (reg.application_id || '').toLowerCase()
+    const term = searchQuery.toLowerCase()
+
+    const matchesSearch = name.includes(term) || id.includes(term)
+    const matchesStatus = statusFilter === 'all' || 
+      (reg.deposit_status || 'pending') === statusFilter
+
+    return matchesSearch && matchesStatus
+  })
+
+  const handleRecordDeposit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!selectedReg || !payAmount) return
+
+    setSubmittingPayment(true)
+    try {
+      const { error } = await supabase
+        .from('pre_registrations')
+        .update({
+          deposit_status: 'paid',
+          deposit_amount: payAmount,
+          deposit_payment_mode: paymentMode,
+          deposit_transaction_ref: transactionId,
+          admin_notes: notes,
+          status: ['new', 'contacted', 'otp_verified'].includes(selectedReg.status) ? 'deposit_paid' : selectedReg.status
+        })
+        .eq('id', selectedReg.id)
+
+      if (error) throw error
+
+      toast.success('Security deposit recorded successfully!')
+      setDepositModalOpen(false)
+      setSelectedReg(null)
+      setTransactionId('')
+      setNotes('')
+      loadData()
+    } catch (err: any) {
+      toast.error(err.message || 'Payment recording failed')
+    } finally {
+      setSubmittingPayment(false)
+    }
+  }
+
   const STATUS_CONFIG = {
     paid: { label: 'Paid', color: '#27AE60', bg: 'rgba(46,204,113,0.1)', icon: CheckCircle },
     pending: { label: 'Pending', color: '#F59E0B', bg: 'rgba(245,158,11,0.1)', icon: Clock },
@@ -165,13 +223,33 @@ export default function FeeManagementPage() {
           })}
         </div>
 
+        {/* Tabs */}
+        <div className="flex gap-4 mb-6 border-b border-white/10">
+          <button
+            onClick={() => setActiveTab('installments')}
+            className={`px-4 py-3 text-sm font-bold border-b-2 transition-colors ${
+              activeTab === 'installments' ? 'border-amber-500 text-amber-500' : 'border-transparent text-gray-500 hover:text-gray-300'
+            }`}
+          >
+            Enrolled Installments
+          </button>
+          <button
+            onClick={() => setActiveTab('deposits')}
+            className={`px-4 py-3 text-sm font-bold border-b-2 transition-colors ${
+              activeTab === 'deposits' ? 'border-amber-500 text-amber-500' : 'border-transparent text-gray-500 hover:text-gray-300'
+            }`}
+          >
+            Pre-Reg Security Deposits
+          </button>
+        </div>
+
         {/* Filters and Search */}
         <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center mb-6">
           <div className="flex items-center gap-2 overflow-x-auto pb-1 max-w-full scrollbar-hide">
-            {(['all', 'pending', 'paid', 'overdue'] as const).map(f => (
+            {(['all', 'pending', 'paid', 'overdue', 'waived'] as const).map(f => (
               <button
                 key={f}
-                onClick={() => setStatusFilter(f)}
+                onClick={() => setStatusFilter(f as any)}
                 className={`px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap border ${
                   statusFilter === f
                     ? 'bg-[#C8840A] text-[#F5A623] border-[#F5A623]/30'
@@ -195,17 +273,22 @@ export default function FeeManagementPage() {
           </div>
         </div>
 
-        {/* Main Installments Table */}
+        {/* Main Table */}
         {loading ? (
           <div className="flex items-center justify-center p-12 bg-[#0F1629] rounded-2xl border border-white/5">
             <Loader2 className="animate-spin text-amber-500" size={24} />
           </div>
-        ) : filteredInstallments.length === 0 ? (
+        ) : activeTab === 'installments' && filteredInstallments.length === 0 ? (
           <div className="text-center py-12 bg-[#0F1629] rounded-2xl border border-white/5 p-6">
             <Receipt size={38} className="mx-auto mb-3 text-gray-600" />
             <p className="font-semibold text-gray-300">No installments found</p>
           </div>
-        ) : (
+        ) : activeTab === 'deposits' && filteredDeposits.length === 0 ? (
+          <div className="text-center py-12 bg-[#0F1629] rounded-2xl border border-white/5 p-6">
+            <Receipt size={38} className="mx-auto mb-3 text-gray-600" />
+            <p className="font-semibold text-gray-300">No security deposits found</p>
+          </div>
+        ) : activeTab === 'installments' ? (
           <div className="bg-[#0F1629] border border-white/5 rounded-2xl overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full min-w-[800px] table-auto text-left border-collapse text-sm">
@@ -281,6 +364,73 @@ export default function FeeManagementPage() {
                             </div>
                           ) : (
                             <span className="text-xs text-gray-600">Paid on {inst.paid_at?.split('T')[0] || '—'}</span>
+                          )}
+                        </td>
+                      </tr>
+                    )
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        ) : (
+          <div className="bg-[#0F1629] border border-white/5 rounded-2xl overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[800px] table-auto text-left border-collapse text-sm">
+                <thead>
+                  <tr className="bg-white/5 border-b border-white/5 text-gray-400">
+                    <th className="px-5 py-3 text-xs font-bold uppercase tracking-wider">Applicant</th>
+                    <th className="px-5 py-3 text-xs font-bold uppercase tracking-wider">App ID</th>
+                    <th className="px-5 py-3 text-xs font-bold uppercase tracking-wider">Room Pref</th>
+                    <th className="px-5 py-3 text-xs font-bold uppercase tracking-wider">Deposit Status</th>
+                    <th className="px-5 py-3 text-xs font-bold uppercase tracking-wider text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-white/5">
+                  {filteredDeposits.map((reg) => {
+                    const status = reg.deposit_status || 'pending'
+                    const isPaid = status === 'paid'
+
+                    return (
+                      <tr key={reg.id} className="hover:bg-white/2 transition-all">
+                        <td className="px-5 py-3.5">
+                          <div>
+                            <p className="font-bold text-white">{reg.full_name}</p>
+                            <p className="text-xs text-gray-500 font-mono">{reg.phone}</p>
+                          </div>
+                        </td>
+                        <td className="px-5 py-3.5 whitespace-nowrap">
+                          <span className="text-xs text-amber-500 font-mono">{reg.application_id || '—'}</span>
+                        </td>
+                        <td className="px-5 py-3.5 whitespace-nowrap">
+                          <span className="text-xs text-gray-300">{reg.room_preference}</span>
+                        </td>
+                        <td className="px-5 py-3.5 whitespace-nowrap">
+                          <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold ${
+                            isPaid ? 'bg-green-500/10 text-green-400' :
+                            status === 'waived' ? 'bg-gray-500/10 text-gray-400' :
+                            'bg-amber-500/10 text-amber-500'
+                          }`}>
+                            {status.toUpperCase()}
+                          </span>
+                        </td>
+                        <td className="px-5 py-3.5 text-right whitespace-nowrap">
+                          {!isPaid && status !== 'waived' ? (
+                            <button
+                              onClick={() => {
+                                setSelectedReg(reg);
+                                setPayAmount('5000'); // default security deposit amount
+                                setDepositModalOpen(true);
+                              }}
+                              className="px-2.5 py-1.5 rounded-lg text-xs font-bold text-black transition-colors"
+                              style={{ background: 'linear-gradient(135deg, #C8840A, #F5A623)' }}
+                            >
+                              Record Deposit
+                            </button>
+                          ) : (
+                            <span className="text-xs text-gray-600">
+                              {isPaid ? `Paid ₹${reg.deposit_amount || 5000}` : 'Waived'}
+                            </span>
                           )}
                         </td>
                       </tr>
@@ -374,6 +524,114 @@ export default function FeeManagementPage() {
                     <button
                       type="button"
                       onClick={() => setPayModalOpen(false)}
+                      disabled={submittingPayment}
+                      className="flex-1 py-3 text-sm font-semibold rounded-xl border border-white/10 hover:bg-white/5 text-gray-300 transition-colors"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={submittingPayment}
+                      className="flex-1 py-3 text-sm font-bold rounded-xl text-black transition-all flex items-center justify-center gap-2 hover:shadow-[0_4px_16px_rgba(245,166,35,0.3)]"
+                      style={{ background: 'linear-gradient(135deg, #C8840A, #F5A623)' }}
+                    >
+                      {submittingPayment ? (
+                        <>
+                          <Loader2 size={16} className="animate-spin" />
+                          Saving Payment…
+                        </>
+                      ) : (
+                        <>
+                          <CheckCircle size={16} />
+                          Approve Payment
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </form>
+              </motion.div>
+            </>
+          )}
+        </AnimatePresence>
+
+        {/* Record Deposit Dialog */}
+        <AnimatePresence>
+          {depositModalOpen && selectedReg && (
+            <>
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                onClick={() => !submittingPayment && setDepositModalOpen(false)}
+                className="fixed inset-0 bg-black/75 z-40 backdrop-blur-sm flex items-center justify-center p-4"
+              />
+              <motion.div
+                initial={{ scale: 0.95 }} animate={{ scale: 1 }} exit={{ scale: 0.95 }}
+                className="bg-[#0F1629] border border-white/10 rounded-2xl w-full max-w-md p-6 z-50 overflow-hidden shadow-2xl relative text-gray-200"
+              >
+                <div className="flex items-center justify-between pb-4 border-b border-white/5 mb-5">
+                  <h3 className="text-lg font-bold" style={{ fontFamily: 'Playfair Display' }}>Record Security Deposit</h3>
+                  <button onClick={() => !submittingPayment && setDepositModalOpen(false)} className="text-gray-400 hover:text-white" disabled={submittingPayment}>✕</button>
+                </div>
+
+                <form onSubmit={handleRecordDeposit} className="space-y-4">
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-400 uppercase mb-1">Applicant</label>
+                    <input type="text" readOnly value={`${selectedReg.full_name} (${selectedReg.application_id || '—'})`} className="w-full px-3 py-2 rounded-xl text-sm bg-white/3 border border-white/5 text-gray-400 outline-none" />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs font-semibold text-gray-400 uppercase mb-1">Amount Paid (₹)</label>
+                      <input
+                        type="number"
+                        required
+                        value={payAmount}
+                        onChange={(e) => setPayAmount(e.target.value)}
+                        className="w-full px-3 py-2.5 rounded-xl text-sm border border-white/8 bg-[#0A0E1A] text-white outline-none focus:border-amber-500"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs font-semibold text-gray-400 uppercase mb-1">Payment Mode</label>
+                      <select
+                        value={paymentMode}
+                        onChange={(e: any) => setPaymentMode(e.target.value)}
+                        className="w-full px-3 py-2.5 rounded-xl text-sm border border-white/8 bg-[#0A0E1A] text-white outline-none focus:border-amber-500"
+                      >
+                        <option value="upi">UPI / GPay / PhonePe</option>
+                        <option value="bank_transfer">Net Banking / IMPS</option>
+                        <option value="cash">Cash Payment</option>
+                        <option value="cheque">Cheque</option>
+                        <option value="other">Other</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-gray-400 uppercase mb-1">Transaction Ref ID</label>
+                      <input
+                        type="text"
+                        placeholder="UPI Ref / Txn ID"
+                        value={transactionId}
+                        onChange={(e) => setTransactionId(e.target.value)}
+                        className="w-full px-3 py-2.5 rounded-xl text-sm border border-white/8 bg-[#0A0E1A] text-white outline-none focus:border-amber-500"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-400 uppercase mb-1">Administrative Notes</label>
+                    <textarea
+                      rows={3}
+                      placeholder="Any notes about this payment resolution…"
+                      value={notes}
+                      onChange={(e) => setNotes(e.target.value)}
+                      className="w-full px-3 py-2 rounded-xl text-sm border border-white/8 bg-[#0A0E1A] text-white outline-none focus:border-amber-500 resize-none"
+                    />
+                  </div>
+
+                  <div className="pt-4 border-t border-white/5 flex gap-3">
+                    <button
+                      type="button"
+                      onClick={() => setDepositModalOpen(false)}
                       disabled={submittingPayment}
                       className="flex-1 py-3 text-sm font-semibold rounded-xl border border-white/10 hover:bg-white/5 text-gray-300 transition-colors"
                     >

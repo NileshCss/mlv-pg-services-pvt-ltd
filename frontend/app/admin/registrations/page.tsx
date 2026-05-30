@@ -13,6 +13,7 @@ import { toast } from 'sonner'
 
 interface PreRegistration {
   id: string
+  application_id: string | null
   full_name: string
   phone: string
   email: string
@@ -24,17 +25,27 @@ interface PreRegistration {
   parent_contact: string
   food_preference: string
   additional_notes: string | null
-  status: 'new' | 'contacted' | 'confirmed' | 'rejected'
+  status: 'new' | 'contacted' | 'otp_verified' | 'deposit_paid' | 'under_review' | 'room_allocated' | 'confirmed' | 'rejected'
+  otp_verified: boolean
+  deposit_status: 'pending' | 'paid' | 'waived' | 'failed'
+  aadhar_url: string | null
+  photo_url: string | null
+  college_id_url: string | null
+  admin_notes: string | null
   created_at: string
   updated_at: string
 }
 
-const STATUS_OPTIONS = ['new', 'contacted', 'confirmed', 'rejected']
+const STATUS_OPTIONS = ['new', 'contacted', 'otp_verified', 'deposit_paid', 'under_review', 'room_allocated', 'confirmed', 'rejected']
 const STATUS_COLORS: Record<string, { bg: string; text: string; label: string }> = {
-  new:       { bg: 'bg-blue-500/20',   text: 'text-blue-400',   label: 'New' },
-  contacted: { bg: 'bg-purple-500/20', text: 'text-purple-400', label: 'Contacted' },
-  confirmed: { bg: 'bg-green-500/20',  text: 'text-green-400',  label: 'Confirmed' },
-  rejected:  { bg: 'bg-red-500/20',    text: 'text-red-400',    label: 'Rejected' },
+  new:            { bg: 'bg-blue-500/20',   text: 'text-blue-400',   label: 'New' },
+  contacted:      { bg: 'bg-purple-500/20', text: 'text-purple-400', label: 'Contacted' },
+  otp_verified:   { bg: 'bg-teal-500/20',   text: 'text-teal-400',   label: 'OTP Verified' },
+  deposit_paid:   { bg: 'bg-amber-500/20',  text: 'text-amber-400',  label: 'Deposit Paid' },
+  under_review:   { bg: 'bg-orange-500/20', text: 'text-orange-400', label: 'Under Review' },
+  room_allocated: { bg: 'bg-indigo-500/20', text: 'text-indigo-400', label: 'Room Allocated' },
+  confirmed:      { bg: 'bg-green-500/20',  text: 'text-green-400',  label: 'Confirmed' },
+  rejected:       { bg: 'bg-red-500/20',    text: 'text-red-400',    label: 'Rejected' },
 }
 
 export default function RegistrationsPage() {
@@ -117,6 +128,38 @@ export default function RegistrationsPage() {
     } catch (error) {
       console.error('Update failed:', error)
       toast.error('Failed to update status')
+    }
+  }
+
+  // Handle deposit status change
+  const handleDepositUpdate = async (id: string, newStatus: 'paid' | 'waived', amount?: number) => {
+    try {
+      const updates: any = { deposit_status: newStatus }
+      // If setting to paid, automatically move main status to deposit_paid if it's currently earlier in the flow
+      if (newStatus === 'paid') {
+        const reg = registrations.find(r => r.id === id)
+        if (reg && ['new', 'contacted', 'otp_verified'].includes(reg.status)) {
+          updates.status = 'deposit_paid'
+        }
+      }
+      
+      const { error } = await supabase
+        .from('pre_registrations')
+        .update(updates)
+        .eq('id', id)
+
+      if (error) throw error
+
+      setRegistrations(prev =>
+        prev.map(r => (r.id === id ? { ...r, ...updates } : r))
+      )
+      if (viewingReg?.id === id) {
+        setViewingReg(prev => prev ? { ...prev, ...updates } : null)
+      }
+      toast.success(`Deposit marked as ${newStatus}`)
+    } catch (error) {
+      console.error('Deposit update failed:', error)
+      toast.error('Failed to update deposit status')
     }
   }
 
@@ -296,9 +339,10 @@ export default function RegistrationsPage() {
                       className="w-4 h-4 rounded accent-amber-500"
                     />
                   </th>
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-400">App ID</th>
                   <th className="px-6 py-3 text-left text-sm font-semibold text-gray-400">Name</th>
                   <th className="px-6 py-3 text-left text-sm font-semibold text-gray-400">Phone</th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-400">College</th>
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-400">Deposit</th>
                   <th className="px-6 py-3 text-left text-sm font-semibold text-gray-400">Room Pref</th>
                   <th className="px-6 py-3 text-left text-sm font-semibold text-gray-400">Check-in</th>
                   <th className="px-6 py-3 text-left text-sm font-semibold text-gray-400">Status</th>
@@ -360,13 +404,26 @@ export default function RegistrationsPage() {
                         />
                       </td>
                       <td className="px-6 py-4">
+                        <p className="text-sm font-mono text-amber-400">{reg.application_id || '—'}</p>
+                        {reg.otp_verified && (
+                          <span className="inline-block mt-1 px-2 py-0.5 bg-green-500/20 text-green-400 text-[10px] uppercase font-bold rounded">
+                            OTP ✓
+                          </span>
+                        )}
+                      </td>
+                      <td className="px-6 py-4">
                         <p className="text-sm text-white font-medium">{reg.full_name}</p>
                         {reg.email && <p className="text-xs text-gray-500 mt-0.5">{reg.email}</p>}
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-400 font-mono">{reg.phone}</td>
                       <td className="px-6 py-4">
-                        <p className="text-sm text-gray-400">{reg.college_name}</p>
-                        {reg.course && <p className="text-xs text-gray-600 mt-0.5">{reg.course}</p>}
+                        <span className={`px-2 py-1 rounded text-xs font-medium ${
+                          reg.deposit_status === 'paid' ? 'bg-green-500/20 text-green-400' :
+                          reg.deposit_status === 'waived' ? 'bg-gray-500/20 text-gray-400' :
+                          'bg-red-500/20 text-red-400'
+                        }`}>
+                          {reg.deposit_status ? reg.deposit_status.toUpperCase() : 'PENDING'}
+                        </span>
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-400">{reg.room_preference}</td>
                       <td className="px-6 py-4 text-sm text-gray-400">
@@ -494,17 +551,20 @@ export default function RegistrationsPage() {
                 </div>
                 <div className="p-6 space-y-3 max-h-[60vh] overflow-y-auto">
                   {[
+                    { label: 'App ID',          value: viewingReg.application_id || '—' },
                     { label: 'Full Name',       value: viewingReg.full_name },
                     { label: 'Phone',           value: viewingReg.phone },
                     { label: 'Email',           value: viewingReg.email || '—' },
+                    { label: 'OTP Verified',    value: viewingReg.otp_verified ? 'Yes ✅' : 'No ❌' },
                     { label: 'Nationality',     value: viewingReg.gender },
                     { label: 'College',         value: viewingReg.college_name },
                     { label: 'Course',          value: viewingReg.course || '—' },
                     { label: 'Room Pref',       value: viewingReg.room_preference },
-                    { label: 'Check-in',        value: viewingReg.check_in_date || '—' },
+                    { label: 'Check-in',        value: viewingReg.check_in_date ? new Date(viewingReg.check_in_date).toLocaleDateString('en-IN') : '—' },
                     { label: 'Parent Contact',  value: viewingReg.parent_contact },
                     { label: 'Food Pref',       value: viewingReg.food_preference },
                     { label: 'Notes',           value: viewingReg.additional_notes || '—' },
+                    { label: 'Admin Notes',     value: viewingReg.admin_notes || '—' },
                     { label: 'Registered',      value: new Date(viewingReg.created_at).toLocaleString('en-IN') },
                   ].map(({ label, value }) => (
                     <div key={label} className="flex gap-4">
@@ -512,8 +572,34 @@ export default function RegistrationsPage() {
                       <span className="text-sm text-white">{value}</span>
                     </div>
                   ))}
-                  <div className="flex gap-4">
-                    <span className="text-xs text-gray-500 uppercase tracking-wider w-28 shrink-0 pt-1.5">Status</span>
+                  <div className="flex gap-4 border-t border-white/10 pt-3">
+                    <span className="text-xs text-gray-500 uppercase tracking-wider w-28 shrink-0 pt-1.5">Documents</span>
+                    <div className="flex flex-col gap-2">
+                      {viewingReg.aadhar_url ? <a href={viewingReg.aadhar_url} target="_blank" rel="noopener noreferrer" className="text-sm text-amber-400 hover:underline">Aadhar Card ↗</a> : <span className="text-sm text-gray-600">No Aadhar</span>}
+                      {viewingReg.photo_url ? <a href={viewingReg.photo_url} target="_blank" rel="noopener noreferrer" className="text-sm text-amber-400 hover:underline">Photo ↗</a> : <span className="text-sm text-gray-600">No Photo</span>}
+                      {viewingReg.college_id_url ? <a href={viewingReg.college_id_url} target="_blank" rel="noopener noreferrer" className="text-sm text-amber-400 hover:underline">College ID ↗</a> : <span className="text-sm text-gray-600">No College ID</span>}
+                    </div>
+                  </div>
+                  <div className="flex gap-4 border-t border-white/10 pt-3">
+                    <span className="text-xs text-gray-500 uppercase tracking-wider w-28 shrink-0 pt-1.5">Deposit Status</span>
+                    <div className="flex items-center gap-3">
+                      <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                        viewingReg.deposit_status === 'paid' ? 'bg-green-500/20 text-green-400' :
+                        viewingReg.deposit_status === 'waived' ? 'bg-gray-500/20 text-gray-400' :
+                        'bg-red-500/20 text-red-400'
+                      }`}>
+                        {viewingReg.deposit_status ? viewingReg.deposit_status.toUpperCase() : 'PENDING'}
+                      </span>
+                      {(!viewingReg.deposit_status || viewingReg.deposit_status === 'pending') && (
+                        <div className="flex gap-2">
+                          <button onClick={() => handleDepositUpdate(viewingReg.id, 'paid')} className="px-2 py-1 bg-green-500/20 text-green-400 text-xs rounded hover:bg-green-500/30">Mark Paid</button>
+                          <button onClick={() => handleDepositUpdate(viewingReg.id, 'waived')} className="px-2 py-1 bg-gray-500/20 text-gray-400 text-xs rounded hover:bg-gray-500/30">Waive</button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <div className="flex gap-4 border-t border-white/10 pt-3">
+                    <span className="text-xs text-gray-500 uppercase tracking-wider w-28 shrink-0 pt-1.5">App Status</span>
                     <span className={`px-3 py-1 rounded-full text-xs font-semibold ${STATUS_COLORS[viewingReg.status]?.bg} ${STATUS_COLORS[viewingReg.status]?.text}`}>
                       {STATUS_COLORS[viewingReg.status]?.label || viewingReg.status}
                     </span>
