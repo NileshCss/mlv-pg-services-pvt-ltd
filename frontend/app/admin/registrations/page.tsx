@@ -325,7 +325,7 @@ export default function RegistrationsPage() {
             <table className="w-full min-w-[700px] table-auto">
               <thead>
                 <tr className="border-b border-amber-500/10">
-                  <th className="px-6 py-3 text-left">
+                  <th className="px-6 py-3 text-left w-12">
                     <input
                       type="checkbox"
                       checked={selectedRows.size === paginatedData.length && paginatedData.length > 0}
@@ -336,7 +336,7 @@ export default function RegistrationsPage() {
                           setSelectedRows(new Set())
                         }
                       }}
-                      className="w-4 h-4 rounded accent-amber-500"
+                      className="!w-4 !h-4 rounded accent-amber-500 flex-shrink-0 cursor-pointer"
                     />
                   </th>
                   <th className="px-6 py-3 text-left text-sm font-semibold text-gray-400">App ID</th>
@@ -352,7 +352,7 @@ export default function RegistrationsPage() {
               <tbody>
                 {loading ? (
                   <tr>
-                    <td colSpan={8} className="px-6 py-8 text-center text-gray-400">
+                    <td colSpan={9} className="px-6 py-8 text-center text-gray-400">
                       <div className="flex items-center justify-center gap-2">
                         <div className="w-5 h-5 border-2 border-gray-700 border-t-amber-500 rounded-full animate-spin" />
                         Loading registrations...
@@ -361,7 +361,7 @@ export default function RegistrationsPage() {
                   </tr>
                 ) : paginatedData.length === 0 ? (
                   <tr>
-                    <td colSpan={8} className="px-6 py-16 text-center">
+                    <td colSpan={9} className="px-6 py-16 text-center">
                       <div className="flex flex-col items-center gap-3">
                         <div className="w-12 h-12 rounded-2xl bg-amber-500/10 flex items-center justify-center border border-amber-500/20">
                           <Search className="w-5 h-5 text-amber-500/50" />
@@ -390,7 +390,7 @@ export default function RegistrationsPage() {
                         selectedRows.has(reg.id) ? 'bg-amber-500/5' : ''
                       }`}
                     >
-                      <td className="px-6 py-4">
+                      <td className="px-6 py-4 w-12 align-middle">
                         <input
                           type="checkbox"
                           checked={selectedRows.has(reg.id)}
@@ -400,7 +400,7 @@ export default function RegistrationsPage() {
                             else newSet.delete(reg.id)
                             setSelectedRows(newSet)
                           }}
-                          className="w-4 h-4 rounded accent-amber-500"
+                          className="!w-4 !h-4 rounded accent-amber-500 flex-shrink-0 cursor-pointer"
                         />
                       </td>
                       <td className="px-6 py-4">
