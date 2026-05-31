@@ -325,7 +325,7 @@ export default function RegistrationsPage() {
             <table className="w-full min-w-[700px] table-auto">
               <thead>
                 <tr className="border-b border-amber-500/10">
-                  <th className="px-6 py-3 text-left w-12">
+                  <th className="px-6 py-3 text-left w-[40px]">
                     <input
                       type="checkbox"
                       checked={selectedRows.size === paginatedData.length && paginatedData.length > 0}
@@ -336,7 +336,18 @@ export default function RegistrationsPage() {
                           setSelectedRows(new Set())
                         }
                       }}
-                      className="!w-4 !h-4 rounded accent-amber-500 flex-shrink-0 cursor-pointer"
+                      className="cursor-pointer"
+                      style={{ 
+                        width: '16px', 
+                        height: '16px', 
+                        minWidth: '16px',
+                        minHeight: '16px',
+                        margin: 0, 
+                        accentColor: '#f59e0b',
+                        flexShrink: 0,
+                        appearance: 'auto',
+                        WebkitAppearance: 'auto'
+                      }} 
                     />
                   </th>
                   <th className="px-6 py-3 text-left text-sm font-semibold text-gray-400">App ID</th>
@@ -390,7 +401,7 @@ export default function RegistrationsPage() {
                         selectedRows.has(reg.id) ? 'bg-amber-500/5' : ''
                       }`}
                     >
-                      <td className="px-6 py-4 w-12 align-middle">
+                      <td className="px-6 py-4 w-[40px] align-middle">
                         <input
                           type="checkbox"
                           checked={selectedRows.has(reg.id)}
@@ -400,7 +411,18 @@ export default function RegistrationsPage() {
                             else newSet.delete(reg.id)
                             setSelectedRows(newSet)
                           }}
-                          className="!w-4 !h-4 rounded accent-amber-500 flex-shrink-0 cursor-pointer"
+                          className="cursor-pointer"
+                          style={{ 
+                            width: '16px', 
+                            height: '16px', 
+                            minWidth: '16px',
+                            minHeight: '16px',
+                            margin: 0, 
+                            accentColor: '#f59e0b',
+                            flexShrink: 0,
+                            appearance: 'auto',
+                            WebkitAppearance: 'auto'
+                          }} 
                         />
                       </td>
                       <td className="px-6 py-4">

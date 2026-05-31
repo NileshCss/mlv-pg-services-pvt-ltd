@@ -174,18 +174,22 @@ export default function AdminLoginPage() {
                 <label className="flex items-center gap-[10px] cursor-pointer group">
                   <input 
                     type="checkbox" 
-                    className="cursor-pointer appearance-auto rounded-sm focus:ring-2 focus:ring-[#f59e0b] focus:ring-offset-2 focus:ring-offset-[#0A0E1A] transition-all"
+                    className="cursor-pointer"
                     style={{ 
                       width: '18px', 
                       height: '18px', 
+                      minWidth: '18px',
+                      minHeight: '18px',
                       margin: 0, 
                       accentColor: '#f59e0b',
-                      flexShrink: 0 
+                      flexShrink: 0,
+                      appearance: 'auto',
+                      WebkitAppearance: 'auto'
                     }} 
                   />
                   <span className="text-[14px] text-[#9ca3af] group-hover:text-gray-300 transition-colors">Remember me</span>
                 </label>
-                <a href="#" className="text-sm text-amber-400 hover:text-amber-300 transition-colors">
+                <a href="#" className="text-[14px] text-[#f59e0b] hover:text-[#fbbf24] transition-colors">
                   Forgot password?
                 </a>
               </div>

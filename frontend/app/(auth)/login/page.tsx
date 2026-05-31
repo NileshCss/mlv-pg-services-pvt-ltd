@@ -90,13 +90,24 @@ export default function DemoLoginPage() {
               disabled={loading}
             />
 
-            <div className="flex items-center gap-2 text-sm text-gray-400">
+            <div className="flex items-center gap-[10px] text-[14px] text-gray-400">
               <input
                 type="checkbox"
                 id="remember"
-                className="!w-4 !h-4 rounded border-gray-700 bg-gray-900 cursor-pointer flex-shrink-0"
+                className="cursor-pointer"
+                style={{ 
+                  width: '18px', 
+                  height: '18px', 
+                  minWidth: '18px',
+                  minHeight: '18px',
+                  margin: 0, 
+                  accentColor: '#f59e0b',
+                  flexShrink: 0,
+                  appearance: 'auto',
+                  WebkitAppearance: 'auto'
+                }} 
               />
-              <label htmlFor="remember" className="cursor-pointer">
+              <label htmlFor="remember" className="cursor-pointer hover:text-gray-300 transition-colors">
                 Remember me
               </label>
             </div>
