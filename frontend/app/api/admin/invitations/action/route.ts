@@ -93,31 +93,33 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: 'A resident with this email or phone is already registered in the system' }, { status: 400 })
       }
 
-      // B. Allocate an available bed in the assigned room
-      const { data: bedsList } = await adminClient
-        .from('beds')
-        .select('id, bed_number')
-        .eq('room_id', invitation.room_id)
-        .eq('status', 'available')
-        .limit(1)
-
+      // B. Allocate an available bed in the assigned room if database room exists
       let bedId = null
-      if (bedsList && bedsList.length > 0) {
-        bedId = bedsList[0].id
-      } else {
-        // Fallback: check if there are any beds at all in the room
-        const { data: anyBeds } = await adminClient
+      if (invitation.room_id) {
+        const { data: bedsList } = await adminClient
           .from('beds')
-          .select('id')
+          .select('id, bed_number')
           .eq('room_id', invitation.room_id)
+          .eq('status', 'available')
           .limit(1)
-        if (anyBeds && anyBeds.length > 0) {
-          bedId = anyBeds[0].id
-        }
-      }
 
-      if (!bedId) {
-        return NextResponse.json({ error: 'No beds configured for this room. Please set up beds first.' }, { status: 400 })
+        if (bedsList && bedsList.length > 0) {
+          bedId = bedsList[0].id
+        } else {
+          // Fallback: check if there are any beds at all in the room
+          const { data: anyBeds } = await adminClient
+            .from('beds')
+            .select('id')
+            .eq('room_id', invitation.room_id)
+            .limit(1)
+          if (anyBeds && anyBeds.length > 0) {
+            bedId = anyBeds[0].id
+          }
+        }
+
+        if (!bedId) {
+          return NextResponse.json({ error: 'No beds configured for this room. Please set up beds first.' }, { status: 400 })
+        }
       }
 
       // C. Generate sequential Student ID: format MLV20260001, MLV20260002, etc.
@@ -193,12 +195,17 @@ export async function POST(request: NextRequest) {
       }
 
       // G. Fetch room rent to set up fees
-      const { data: roomData } = await adminClient
-        .from('rooms')
-        .select('monthly_rent')
-        .eq('id', invitation.room_id)
-        .single()
-      const monthlyAmount = roomData?.monthly_rent || 8000
+      let monthlyAmount = 8000
+      if (invitation.room_id) {
+        const { data: roomData } = await adminClient
+          .from('rooms')
+          .select('monthly_rent')
+          .eq('id', invitation.room_id)
+          .maybeSingle()
+        if (roomData) {
+          monthlyAmount = roomData.monthly_rent || 8000
+        }
+      }
 
       // H. Create initial Fee schedule record
       const { data: fee } = await adminClient
@@ -262,11 +269,13 @@ export async function POST(request: NextRequest) {
         await adminClient.from('documents').insert(docsToInsert)
       }
 
-      // K. Set Bed to occupied
-      await adminClient
-        .from('beds')
-        .update({ status: 'occupied' })
-        .eq('id', bedId)
+      // K. Set Bed to occupied if database bed is allocated
+      if (bedId) {
+        await adminClient
+          .from('beds')
+          .update({ status: 'occupied' })
+          .eq('id', bedId)
+      }
 
       // L. Mark Invitation as active
       await adminClient

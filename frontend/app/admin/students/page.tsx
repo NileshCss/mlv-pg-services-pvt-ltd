@@ -655,8 +655,8 @@ export default function AdminStudentsPage() {
                           </div>
                         </td>
                         <td className="px-5 py-3.5 whitespace-nowrap">
-                          <p className="font-semibold text-gray-200">{invite.buildings?.name || 'Main Building'}</p>
-                          <p className="text-xs text-gray-500">Room {invite.rooms?.room_number || '—'} · Floor {invite.floor_number || 1}</p>
+                          <p className="font-semibold text-gray-200">{invite.buildings?.name || invite.profile_data?.manualBuildingName || 'Other Building'}</p>
+                          <p className="text-xs text-gray-500">Room {invite.rooms?.room_number || invite.profile_data?.manualRoomNumber || '—'} · Floor {invite.floor_number || 1}</p>
                         </td>
                         <td className="px-5 py-3.5 text-xs text-gray-400 whitespace-nowrap">
                           <div>Join Date: {invite.joining_date}</div>
@@ -818,8 +818,8 @@ export default function AdminStudentsPage() {
                   <div className="p-4 rounded-xl border border-white/5 bg-white/2 space-y-2">
                     <h5 className="text-xs font-bold text-amber-500 uppercase tracking-widest">PG Stay Info</h5>
                     <div className="grid grid-cols-2 gap-2 text-xs">
-                      <div><span className="text-gray-500">PG Block:</span> <span className="text-gray-300 font-semibold">{selectedInvitation.buildings?.name || 'Main Building'}</span></div>
-                      <div><span className="text-gray-500">Room:</span> <span className="text-gray-300 font-semibold">Room {selectedInvitation.rooms?.room_number || '—'}</span></div>
+                      <div><span className="text-gray-500">PG Block:</span> <span className="text-gray-300 font-semibold">{selectedInvitation.buildings?.name || selectedInvitation.profile_data?.manualBuildingName || 'Other Building'}</span></div>
+                      <div><span className="text-gray-500">Room:</span> <span className="text-gray-300 font-semibold">Room {selectedInvitation.rooms?.room_number || selectedInvitation.profile_data?.manualRoomNumber || '—'}</span></div>
                       <div><span className="text-gray-500">Floor:</span> <span className="text-gray-300 font-semibold">Floor {selectedInvitation.floor_number || 1}</span></div>
                       <div><span className="text-gray-500">Joining Date:</span> <span className="text-gray-300 font-semibold">{selectedInvitation.joining_date}</span></div>
                     </div>

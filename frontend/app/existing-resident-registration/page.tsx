@@ -31,6 +31,11 @@ export default function ExistingResidentRegistrationPage(props: { searchParams: 
   const [floorNumber, setFloorNumber] = useState('')
   const [joiningDate, setJoiningDate] = useState('')
 
+  const [isManualBuilding, setIsManualBuilding] = useState(false)
+  const [manualBuildingName, setManualBuildingName] = useState('')
+  const [isManualRoom, setIsManualRoom] = useState(false)
+  const [manualRoomNumber, setManualRoomNumber] = useState('')
+
   const [buildings, setBuildings] = useState<any[]>([])
   const [rooms, setRooms] = useState<any[]>([])
 
@@ -65,7 +70,12 @@ export default function ExistingResidentRegistrationPage(props: { searchParams: 
     const fetchBuildings = async () => {
       try {
         const { data: bData } = await supabase.from('buildings').select('*').order('name')
-        if (bData) setBuildings(bData)
+        if (bData && bData.length > 0) {
+          setBuildings(bData)
+        } else {
+          setIsManualBuilding(true)
+          setIsManualRoom(true)
+        }
       } catch (err) {
         console.error('Failed to load buildings:', err)
       }
@@ -131,8 +141,10 @@ export default function ExistingResidentRegistrationPage(props: { searchParams: 
       if (!fullName.trim()) errors.fullName = 'Full name is required'
       if (!/^[6-9]\d{9}$/.test(phone)) errors.phone = 'Enter a valid 10-digit mobile number'
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) errors.email = 'Enter a valid email address'
-      if (!buildingId) errors.buildingId = 'PG Building is required'
-      if (!roomId) errors.roomId = 'Room is required'
+      if (!isManualBuilding && !buildingId) errors.buildingId = 'PG Building is required'
+      if (isManualBuilding && !manualBuildingName.trim()) errors.buildingId = 'PG Building name is required'
+      if (!isManualRoom && !roomId) errors.roomId = 'Room is required'
+      if (isManualRoom && !manualRoomNumber.trim()) errors.roomId = 'Room number is required'
       if (!joiningDate) errors.joiningDate = 'Joining date is required'
     }
 
@@ -147,8 +159,6 @@ export default function ExistingResidentRegistrationPage(props: { searchParams: 
     if (!emergencyRelationship.trim()) errors.emergencyRelationship = 'Emergency contact relationship is required'
     if (!collegeName.trim()) errors.collegeName = 'College / Company name is required'
     if (!course.trim()) errors.course = 'Course / Designation is required'
-    if (!photoFile) errors.photoFile = 'Profile photo is required'
-    if (!idProofFile) errors.idProofFile = 'ID Proof upload is required'
     if (password.length < 6) errors.password = 'Password must be at least 6 characters'
     if (password !== confirmPassword) errors.confirmPassword = 'Passwords do not match'
     if (!confirmChecked) errors.confirmChecked = 'You must confirm the correctness of details'
@@ -177,9 +187,9 @@ export default function ExistingResidentRegistrationPage(props: { searchParams: 
 
     setSubmitting(true)
     try {
-      // 1. Upload photo and ID proof (using email state)
-      const photoUrl = await uploadFile(photoFile!, `photos/${email}`)
-      const idProofUrl = await uploadFile(idProofFile!, `id_proofs/${email}`)
+      // 1. Upload photo and ID proof (conditional on existence)
+      const photoUrl = photoFile ? await uploadFile(photoFile, `photos/${email}`) : null
+      const idProofUrl = idProofFile ? await uploadFile(idProofFile, `id_proofs/${email}`) : null
 
       // 2. Submit to existing resident API
       const profileData = {
@@ -194,7 +204,9 @@ export default function ExistingResidentRegistrationPage(props: { searchParams: 
         photoUrl,
         aadharUrl: idProofUrl, // Set as aadharUrl for backend compatibility
         collegeIdUrl: idProofUrl, // Also set as collegeIdUrl
-        password
+        password,
+        manualBuildingName: isManualBuilding ? manualBuildingName : null,
+        manualRoomNumber: isManualRoom ? manualRoomNumber : null
       }
 
       const payload = token 
@@ -205,9 +217,9 @@ export default function ExistingResidentRegistrationPage(props: { searchParams: 
               fullName,
               email,
               phone,
-              buildingId,
-              roomId,
-              floorNumber: floorNumber || null,
+              buildingId: isManualBuilding ? 'manual' : buildingId,
+              roomId: isManualRoom ? 'manual' : roomId,
+              floorNumber: floorNumber ? parseInt(floorNumber) : null,
               joiningDate
             },
             profileData
@@ -385,17 +397,51 @@ export default function ExistingResidentRegistrationPage(props: { searchParams: 
                         <input
                           type="text"
                           disabled
-                          value={invitation?.buildings?.name || 'Main Building'}
+                          value={invitation?.buildings?.name || invitation?.profile_data?.manualBuildingName || 'Main Building'}
                           className="w-full h-12 px-4 rounded-[10px] text-sm bg-white/5 border border-white/10 text-gray-400 cursor-not-allowed"
                         />
+                      ) : isManualBuilding ? (
+                        <div className="relative">
+                          <input
+                            type="text"
+                            required
+                            value={manualBuildingName}
+                            onChange={e => {
+                              setManualBuildingName(e.target.value)
+                              setFormErrors((p: any) => ({ ...p, buildingId: '' }))
+                            }}
+                            placeholder="Enter Building Name"
+                            className="w-full h-12 px-4 rounded-[10px] text-sm bg-white border border-[#f59e0b]/15 text-black font-medium placeholder-[#6b7280] outline-none focus:border-[#f59e0b] focus:ring-2 focus:ring-[#f59e0b]/15 transition-all"
+                          />
+                          {buildings.length > 0 && (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setIsManualBuilding(false)
+                                setBuildingId('')
+                                setManualBuildingName('')
+                              }}
+                              className="text-[10px] text-[#f59e0b] font-semibold hover:underline absolute right-3 top-1/2 -translate-y-1/2"
+                            >
+                              Select from list
+                            </button>
+                          )}
+                        </div>
                       ) : (
                         <select
                           required
                           value={buildingId}
                           onChange={e => {
-                            setBuildingId(e.target.value)
+                            if (e.target.value === 'manual') {
+                              setIsManualBuilding(true)
+                              setBuildingId('')
+                              setIsManualRoom(true)
+                              setRoomId('')
+                            } else {
+                              setBuildingId(e.target.value)
+                              setFormErrors((p: any) => ({ ...p, buildingId: '' }))
+                            }
                             setRoomId('')
-                            setFormErrors((p: any) => ({ ...p, buildingId: '' }))
                           }}
                           className="w-full h-12 px-4 rounded-[10px] text-sm bg-white border border-[#f59e0b]/15 text-black font-medium outline-none focus:border-[#f59e0b] focus:ring-2 focus:ring-[#f59e0b]/15 transition-all"
                         >
@@ -403,6 +449,7 @@ export default function ExistingResidentRegistrationPage(props: { searchParams: 
                           {buildings.map(b => (
                             <option key={b.id} value={b.id}>{b.name}</option>
                           ))}
+                          <option value="manual">Other / Type Manually</option>
                         </select>
                       )}
                       {formErrors.buildingId && <p className="text-red-400 text-[10px] mt-1">{formErrors.buildingId}</p>}
@@ -439,17 +486,49 @@ export default function ExistingResidentRegistrationPage(props: { searchParams: 
                           <input
                             type="text"
                             disabled
-                            value={`Room ${invitation?.rooms?.room_number || '—'}`}
+                            value={`Room ${invitation?.rooms?.room_number || invitation?.profile_data?.manualRoomNumber || '—'}`}
                             className="w-full h-12 px-4 rounded-[10px] text-sm bg-white/5 border border-white/10 text-gray-400 cursor-not-allowed"
                           />
+                        ) : isManualRoom ? (
+                          <div className="relative">
+                            <input
+                              type="text"
+                              required
+                              value={manualRoomNumber}
+                              onChange={e => {
+                                setManualRoomNumber(e.target.value)
+                                setFormErrors((p: any) => ({ ...p, roomId: '' }))
+                              }}
+                              placeholder="Room No"
+                              className="w-full h-12 px-4 rounded-[10px] text-sm bg-white border border-[#f59e0b]/15 text-black font-medium placeholder-[#6b7280] outline-none focus:border-[#f59e0b] focus:ring-2 focus:ring-[#f59e0b]/15 transition-all"
+                            />
+                            {!isManualBuilding && rooms.length > 0 && (
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setIsManualRoom(false)
+                                  setRoomId('')
+                                  setManualRoomNumber('')
+                                }}
+                                className="text-[10px] text-[#f59e0b] font-semibold hover:underline absolute right-3 top-1/2 -translate-y-1/2"
+                              >
+                                Select
+                              </button>
+                            )}
+                          </div>
                         ) : (
                           <select
                             required
                             disabled={!buildingId}
                             value={roomId}
                             onChange={e => {
-                              setRoomId(e.target.value)
-                              setFormErrors((p: any) => ({ ...p, roomId: '' }))
+                              if (e.target.value === 'manual') {
+                                setIsManualRoom(true)
+                                setRoomId('')
+                              } else {
+                                setRoomId(e.target.value)
+                                setFormErrors((p: any) => ({ ...p, roomId: '' }))
+                              }
                             }}
                             className="w-full h-12 px-4 rounded-[10px] text-sm bg-white border border-[#f59e0b]/15 text-black font-medium outline-none focus:border-[#f59e0b] focus:ring-2 focus:ring-[#f59e0b]/15 transition-all disabled:opacity-50"
                           >
@@ -457,6 +536,7 @@ export default function ExistingResidentRegistrationPage(props: { searchParams: 
                             {rooms.map(r => (
                               <option key={r.id} value={r.id}>Room {r.room_number}</option>
                             ))}
+                            <option value="manual">Other / Type Manually</option>
                           </select>
                         )}
                         {formErrors.roomId && <p className="text-red-400 text-[10px] mt-1">{formErrors.roomId}</p>}
@@ -714,7 +794,7 @@ export default function ExistingResidentRegistrationPage(props: { searchParams: 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       {/* Photo upload */}
                       <div>
-                        <label className="block text-xs font-semibold text-gray-400 uppercase mb-2">Profile Passport Photo *</label>
+                        <label className="block text-xs font-semibold text-gray-400 uppercase mb-2">Profile Passport Photo (Optional)</label>
                         <div
                           onClick={() => document.getElementById('photo-input')?.click()}
                           className="rounded-xl p-6 text-center cursor-pointer transition-all flex flex-col items-center justify-center gap-2 hover:bg-[#f59e0b]/5 border-2 border-dashed"
@@ -750,12 +830,11 @@ export default function ExistingResidentRegistrationPage(props: { searchParams: 
                             </div>
                           )}
                         </div>
-                        {formErrors.photoFile && <p className="text-red-400 text-[10px] mt-1">{formErrors.photoFile}</p>}
                       </div>
 
                       {/* Aadhaar ID Proof upload */}
                       <div>
-                        <label className="block text-xs font-semibold text-gray-400 uppercase mb-2">Aadhaar Card / ID Proof (PDF/JPG) *</label>
+                        <label className="block text-xs font-semibold text-gray-400 uppercase mb-2">Aadhaar Card / ID Proof (Optional)</label>
                         <div
                           onClick={() => document.getElementById('id-input')?.click()}
                           className="rounded-xl p-6 text-center cursor-pointer transition-all flex flex-col items-center justify-center gap-2 hover:bg-[#f59e0b]/5 border-2 border-dashed"

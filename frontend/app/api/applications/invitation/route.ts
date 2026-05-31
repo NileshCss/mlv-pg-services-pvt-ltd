@@ -79,6 +79,10 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: 'Missing required resident details' }, { status: 400 })
       }
 
+      // Convert 'manual' placeholders to null for database relationships
+      const targetBuildingId = directDetails.buildingId === 'manual' ? null : directDetails.buildingId
+      const targetRoomId = directDetails.roomId === 'manual' ? null : directDetails.roomId
+
       // 2. Prevent duplicate active students using this email or phone
       const { data: duplicates } = await adminClient
         .from('students')
@@ -111,8 +115,8 @@ export async function POST(request: NextRequest) {
           full_name: directDetails.fullName,
           email: directDetails.email.trim().toLowerCase(),
           phone: directDetails.phone.trim(),
-          building_id: directDetails.buildingId,
-          room_id: directDetails.roomId,
+          building_id: targetBuildingId,
+          room_id: targetRoomId,
           floor_number: directDetails.floorNumber ? parseInt(directDetails.floorNumber) : null,
           joining_date: directDetails.joiningDate,
           status: 'profile_submitted',
