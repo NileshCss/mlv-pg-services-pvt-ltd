@@ -11,6 +11,7 @@ import { DashboardLayout } from '@/components/admin/layout/DashboardLayout'
 import { RegistrationsChart } from '@/components/admin/dashboard/RegistrationsChart'
 import { BookingStatusChart } from '@/components/admin/dashboard/BookingStatusChart'
 import { createClient } from '@/lib/supabase/client'
+import { DashboardInstallBanner } from '@/components/pwa/DashboardInstallBanner'
 
 interface DashboardStats {
   totalRegistrations: number
@@ -282,6 +283,9 @@ export default function AdminDashboardPage() {
             <RefreshCw size={18} className={loading ? 'animate-spin' : ''} />
           </button>
         </div>
+
+        {/* PWA Dashboard Install Banner */}
+        <DashboardInstallBanner />
 
         {/* 8 KPI Stat Cards */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">

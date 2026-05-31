@@ -4,9 +4,10 @@ import React, { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname, useRouter } from 'next/navigation'
-import { Menu, X, MessageCircle, GraduationCap, ShieldCheck } from 'lucide-react'
+import { Menu, X, MessageCircle, GraduationCap, ShieldCheck, Download } from 'lucide-react'
 import { motion, AnimatePresence } from 'motion/react'
 import { WHATSAPP_NUMBER, SITE_NAME } from '@/lib/utils/constants'
+import { usePWA } from '@/components/pwa/PWAProvider'
 
 interface NavbarProps {
   onBookClick: () => void
@@ -35,6 +36,7 @@ const BTN_BASE: React.CSSProperties = {
 }
 
 const Navbar: React.FC<NavbarProps> = ({ onBookClick }) => {
+  const { isInstallable, isInstalled, installApp } = usePWA()
   const pathname       = usePathname()
   const router         = useRouter()
   const [mobileOpen,   setMobileOpen]   = useState(false)
@@ -223,6 +225,18 @@ const Navbar: React.FC<NavbarProps> = ({ onBookClick }) => {
               Student Login
             </Link>
 
+            {/* PWA Install Button */}
+            {isInstallable && !isInstalled && (
+              <button
+                onClick={() => installApp('visitor')}
+                style={{ ...BTN_BASE, paddingLeft: 18, paddingRight: 18 }}
+                className="gap-1.5 bg-amber-500/10 border border-amber-500/30 text-amber-600 text-[13px] font-semibold rounded-full whitespace-nowrap flex-shrink-0 transition-all duration-200 hover:bg-amber-500/20 hover:scale-[1.03] hover:shadow-[0_4px_14px_rgba(200,132,10,0.25)] cursor-pointer"
+              >
+                <Download size={14} />
+                Install App
+              </button>
+            )}
+
             {/* Admin — minimal outlined link */}
             <Link
               href="/admin/login"
@@ -347,6 +361,17 @@ const Navbar: React.FC<NavbarProps> = ({ onBookClick }) => {
                     <GraduationCap size={18} />
                     Student Login
                   </Link>
+
+                  {/* PWA Install Button Mobile */}
+                  {isInstallable && !isInstalled && (
+                    <button
+                      onClick={() => { setMobileOpen(false); installApp('visitor') }}
+                      className="w-full h-12 rounded-xl bg-amber-500/10 border-2 border-amber-500/30 text-amber-600 text-[14px] font-bold flex items-center justify-center gap-2 transition-all hover:bg-amber-500/20 cursor-pointer"
+                    >
+                      <Download size={18} />
+                      Install App
+                    </button>
+                  )}
 
                   {/* Admin */}
                   <Link

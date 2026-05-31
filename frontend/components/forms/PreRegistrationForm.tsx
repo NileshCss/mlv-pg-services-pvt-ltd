@@ -13,6 +13,7 @@ import { motion } from 'motion/react'
 import { toast } from 'sonner'
 import axios from 'axios'
 import { MessageCircle } from 'lucide-react'
+import { usePWA } from '@/components/pwa/PWAProvider'
 
 interface PreRegistrationFormProps {
   open: boolean
@@ -22,6 +23,7 @@ interface PreRegistrationFormProps {
 const PreRegistrationForm: React.FC<PreRegistrationFormProps> = ({ open, onOpenChange }) => {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitSuccess, setSubmitSuccess] = useState(false)
+  const { triggerPreRegistrationInstall } = usePWA()
 
   const {
     register,
@@ -59,6 +61,7 @@ const PreRegistrationForm: React.FC<PreRegistrationFormProps> = ({ open, onOpenC
         setSubmitSuccess(true)
         toast.success('Pre-registration submitted successfully! We will contact you soon.')
         reset()
+        triggerPreRegistrationInstall()
         setTimeout(() => {
           onOpenChange(false)
           setSubmitSuccess(false)

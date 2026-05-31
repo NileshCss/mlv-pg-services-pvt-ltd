@@ -5,6 +5,7 @@ import { motion } from 'motion/react'
 import { Home, CreditCard, AlertCircle, RefreshCcw, Calendar, TrendingUp } from 'lucide-react'
 import { StudentDashboardLayout } from '@/components/student/layout/StudentDashboardLayout'
 import { createClient } from '@/lib/supabase/client'
+import { DashboardInstallBanner } from '@/components/pwa/DashboardInstallBanner'
 
 const GOLD = '#C9A84C'
 
@@ -186,6 +187,9 @@ export default function StudentDashboardPage() {
             </div>
           </div>
         </motion.div>
+
+        {/* PWA Dashboard Install Banner */}
+        <DashboardInstallBanner />
 
         {/* Stat Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">

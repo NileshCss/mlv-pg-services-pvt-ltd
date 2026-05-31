@@ -8,6 +8,8 @@ import { createClient } from '@/lib/supabase/client'
 import { DESIGN_SYSTEM } from '@/lib/admin/designSystem'
 import { toast } from 'sonner'
 
+import { DashboardInstallBanner } from '@/components/pwa/DashboardInstallBanner'
+
 interface SettingsState {
   // Profile
   fullName: string
@@ -180,6 +182,9 @@ export default function SettingsPage() {
           <h1 className="text-4xl font-bold text-white mb-2">Settings</h1>
           <p className="text-gray-400">Manage your admin account and platform integrations</p>
         </div>
+
+        {/* PWA Dashboard Install Banner */}
+        <DashboardInstallBanner />
 
         {/* Tabs */}
         <div className="flex gap-2 border-b border-white/10 overflow-x-auto">

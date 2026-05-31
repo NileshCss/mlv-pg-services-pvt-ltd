@@ -19,6 +19,10 @@ const jakarta = Plus_Jakarta_Sans({
 })
 
 import SchemaMarkup from '../components/SEO/SchemaMarkup'
+import { PWAProvider } from '../components/pwa/PWAProvider'
+import { FloatingInstallButton } from '../components/pwa/FloatingInstallButton'
+import { InstallPromptModal } from '../components/pwa/InstallPromptModal'
+import { StudentInstallBanner } from '../components/pwa/StudentInstallBanner'
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://mlvpg.com'),
@@ -122,14 +126,20 @@ export default function RootLayout({
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="theme-color" content="#C9A84C" />
+        <link rel="manifest" href="/manifest.json" />
         <link rel="icon" href="/favicon.ico" sizes="any" />
         <link rel="icon" type="image/png" href="/favicon.png" sizes="32x32" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
       </head>
       <body className={`${playfair.variable} ${jakarta.variable} bg-white text-[#1A1A2E] overflow-x-hidden`}>
-        <SchemaMarkup />
-        {children}
-        <Toaster position="top-center" />
+        <PWAProvider>
+          <SchemaMarkup />
+          {children}
+          <Toaster position="top-center" />
+          <FloatingInstallButton />
+          <InstallPromptModal />
+          <StudentInstallBanner />
+        </PWAProvider>
       </body>
     </html>
   )

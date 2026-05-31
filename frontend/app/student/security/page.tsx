@@ -6,6 +6,7 @@ import { Shield, Lock, Eye, EyeOff, Loader2, CheckCircle, LogOut } from 'lucide-
 import { StudentDashboardLayout } from '@/components/student/layout/StudentDashboardLayout'
 import { createClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
+import { DashboardInstallBanner } from '@/components/pwa/DashboardInstallBanner'
 
 const GOLD = '#C9A84C'
 const GOLD_LIGHT = 'rgba(201,168,76,0.1)'
@@ -116,6 +117,9 @@ export default function SecurityPage() {
             </div>
           </div>
         </div>
+
+        {/* PWA Install Banner */}
+        <DashboardInstallBanner />
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* Password Reset Form Card */}

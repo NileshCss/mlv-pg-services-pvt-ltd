@@ -6,6 +6,7 @@ import { User, Phone, Mail, GraduationCap, Home, Calendar, Shield } from 'lucide
 import { StudentDashboardLayout } from '@/components/student/layout/StudentDashboardLayout'
 import { createClient } from '@/lib/supabase/client'
 import type { Student } from '@/types/student'
+import { DashboardInstallBanner } from '@/components/pwa/DashboardInstallBanner'
 
 const GOLD = '#C9A84C'
 
@@ -97,6 +98,9 @@ export default function ProfilePage() {
             </span>
           </div>
         </motion.div>
+
+        {/* PWA Install Banner */}
+        <DashboardInstallBanner />
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
           <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}>
