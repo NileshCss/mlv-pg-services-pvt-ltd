@@ -126,9 +126,8 @@ export default function AdminPaymentsPage() {
         transition={{ duration: 0.5 }}
         className="min-h-screen bg-[#0A0E1A] p-4 sm:p-6 lg:p-8 text-gray-100"
       >
-        {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5">
-          <div>
+          <div className="pl-12 sm:pl-0">
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white flex items-center gap-3" style={{ fontFamily: 'Playfair Display' }}>
               <CreditCard style={{ color: GOLD }} size={28} /> Transaction History
             </h1>
