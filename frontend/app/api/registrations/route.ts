@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient as createServerClient } from '@/lib/supabase/server'
 import { createClient as createServiceClient } from '@supabase/supabase-js'
+import { dispatchNotification } from '@/lib/admin/notifications'
 
 export async function POST(request: NextRequest) {
   try {
@@ -72,8 +73,27 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // TODO: Send admin notification email
-    // TODO: Send confirmation email to user
+    // Trigger Admin Notification
+    try {
+      await dispatchNotification({
+        title: 'New Pre-Registration Submitted',
+        message: `${body.full_name} has submitted a new pre-registration request.`,
+        type: 'registration',
+        priority: 'medium',
+        metadata: {
+          student_name: body.full_name,
+          phone: body.phone,
+          email: body.email,
+          college: body.college_name,
+          course: body.course,
+          room_preference: body.room_preference,
+          joining_date: body.check_in_date,
+          status: 'Pending OTP'
+        }
+      })
+    } catch (notifErr: any) {
+      console.warn('[Notification Error] Failed to dispatch registration alert:', notifErr.message)
+    }
 
     return NextResponse.json(
       { success: true, data },

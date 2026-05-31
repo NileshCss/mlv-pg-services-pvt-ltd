@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { dispatchNotification } from '@/lib/admin/notifications'
 
 // POST /api/applications/submit
 // Called after OTP verification to finalize application + send confirmation email
@@ -199,6 +200,29 @@ export async function POST(req: NextRequest) {
       }
     } catch (emailErr) {
       console.warn('Email send failed (non-critical):', emailErr)
+    }
+
+    // Trigger Admin Notification
+    try {
+      await dispatchNotification({
+        title: 'Application Fully Submitted',
+        message: `${full_name} has completed registration verification and is awaiting seat confirmation.`,
+        type: 'registration',
+        priority: 'high',
+        metadata: {
+          student_name: full_name,
+          phone,
+          email,
+          college: college_name,
+          course,
+          room_preference,
+          joining_date: check_in_date,
+          application_id: finalAppId,
+          status: 'OTP Verified'
+        }
+      })
+    } catch (notifErr: any) {
+      console.warn('[Notification Error] Failed to dispatch submit application alert:', notifErr.message)
     }
 
     return NextResponse.json(

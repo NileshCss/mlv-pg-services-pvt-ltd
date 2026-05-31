@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient as createServiceClient } from '@supabase/supabase-js'
+import { dispatchNotification } from '@/lib/admin/notifications'
 
 function getAdminClient() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL
@@ -130,6 +131,26 @@ export async function POST(request: NextRequest) {
 
       console.log(`[AUDIT] Direct resident registration submitted: ${directDetails.fullName} (${directDetails.email})`)
 
+      // Trigger Admin Notification
+      try {
+        await dispatchNotification({
+          title: 'Full Resident Registration Submitted',
+          message: `${directDetails.fullName} completed full registration profile direct submission.`,
+          type: 'registration',
+          priority: 'high',
+          metadata: {
+            student_name: directDetails.fullName,
+            phone: directDetails.phone,
+            email: directDetails.email,
+            joining_date: directDetails.joiningDate,
+            status: 'Pending Verification',
+            registration_type: 'Direct Full Registration'
+          }
+        })
+      } catch (notifErr: any) {
+        console.warn('[Notification Error] Failed to dispatch direct registration alert:', notifErr.message)
+      }
+
       return NextResponse.json({
         success: true,
         message: 'Profile submitted successfully! Awaiting admin verification.'
@@ -181,6 +202,26 @@ export async function POST(request: NextRequest) {
 
     // 4. Create admin audit log or dashboard notice (optional but beautiful)
     console.log(`[AUDIT] Existing resident registration submitted for approval: ${invitation.full_name} (${invitation.email})`)
+
+    // Trigger Admin Notification
+    try {
+      await dispatchNotification({
+        title: 'Existing Resident Profile Submitted',
+        message: `${invitation.full_name} has submitted their profile using their verification link.`,
+        type: 'registration',
+        priority: 'high',
+        metadata: {
+          student_name: invitation.full_name,
+          phone: invitation.phone,
+          email: invitation.email,
+          joining_date: invitation.joining_date,
+          status: 'Awaiting Approval',
+          registration_type: 'Token Invitation Verification'
+        }
+      })
+    } catch (notifErr: any) {
+      console.warn('[Notification Error] Failed to dispatch token registration alert:', notifErr.message)
+    }
 
     return NextResponse.json({
       success: true,

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient as createServiceClient } from '@supabase/supabase-js'
 import { createClient as createServerClient } from '@/lib/supabase/server'
+import { dispatchNotification } from '@/lib/admin/notifications'
 
 // Actual Supabase schema for the testimonials table:
 // id, created_at, updated_at, student_name, course, college_name,
@@ -51,6 +52,25 @@ export async function POST(request: NextRequest) {
     if (error) {
       console.error('Supabase insert error:', error)
       return NextResponse.json({ error: error.message }, { status: 500 })
+    }
+
+    // Trigger Admin Notification
+    try {
+      await dispatchNotification({
+        title: 'New Student Review Submitted',
+        message: `${student_name.trim()} has submitted a review with a rating of ${rating}/5.`,
+        type: 'review',
+        priority: rating <= 2 ? 'high' : 'medium',
+        metadata: {
+          student_name: student_name.trim(),
+          college: college?.trim() || 'None',
+          rating: `${rating}/5`,
+          review_text: review.trim(),
+          status: 'Pending Approval'
+        }
+      })
+    } catch (notifErr: any) {
+      console.warn('[Notification Error] Failed to dispatch review alert:', notifErr.message)
     }
 
     return NextResponse.json({ success: true, data }, { status: 201 })

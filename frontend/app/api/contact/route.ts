@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { dispatchNotification } from '@/lib/admin/notifications'
 
 export async function POST(request: NextRequest) {
   try {
@@ -41,7 +42,24 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // TODO: Send admin notification email
+    // Trigger Admin Notification
+    try {
+      await dispatchNotification({
+        title: 'New Contact Request Submitted',
+        message: `${body.name} has submitted a new inquiry/contact request.`,
+        type: 'contact',
+        priority: 'medium',
+        metadata: {
+          visitor_name: body.name,
+          phone: body.phone,
+          email: body.email,
+          subject: body.subject,
+          message: body.message
+        }
+      })
+    } catch (notifErr: any) {
+      console.warn('[Notification Error] Failed to dispatch contact alert:', notifErr.message)
+    }
 
     return NextResponse.json(
       { success: true, data },

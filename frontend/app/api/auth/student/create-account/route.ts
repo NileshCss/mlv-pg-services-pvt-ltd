@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { dispatchNotification } from '@/lib/admin/notifications'
 
 // POST /api/auth/student/create-account
 // Called by admin when converting an applicant to resident
@@ -178,6 +179,26 @@ export async function POST(request: NextRequest) {
       entity_id: student.id,
       details: { student_id, email, room_id, bed_id },
     })
+
+    // Trigger Admin/Student Notification for student check-in
+    try {
+      await dispatchNotification({
+        title: 'Student Account Activated',
+        message: `${full_name} has checked in and room allocated.`,
+        type: 'student',
+        priority: 'high',
+        metadata: {
+          student_name: full_name,
+          student_id,
+          email,
+          phone: mobile || 'None',
+          joining_date: joining_date || 'None',
+          status: 'Check-In Active'
+        }
+      })
+    } catch (notifErr: any) {
+      console.warn('[Notification Error] Failed to dispatch check-in alert:', notifErr.message)
+    }
 
     return NextResponse.json({
       success: true,

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient as createServiceClient } from '@supabase/supabase-js'
+import { dispatchNotification } from '@/lib/admin/notifications'
 
 function getServiceClient() {
   const url     = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
@@ -149,6 +150,27 @@ export async function POST(request: NextRequest) {
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
 
+    // Trigger Admin Notification
+    try {
+      await dispatchNotification({
+        title: 'New Complaint Raised',
+        message: `${studentName.trim()} has raised a new complaint (${category.trim()}).`,
+        type: 'complaint',
+        priority: urgency === 'high' ? 'critical' : 'medium',
+        metadata: {
+          student_name: studentName.trim(),
+          room_number: roomNumber.trim(),
+          phone: phone.trim(),
+          category: category.trim(),
+          details: details.trim(),
+          urgency: urgency || 'medium',
+          complaint_id: complaintId
+        }
+      })
+    } catch (notifErr: any) {
+      console.warn('[Notification Error] Failed to dispatch complaint alert:', notifErr.message)
+    }
+
     // Fire-and-forget WhatsApp notification
     sendWhatsAppNotification({
       complaintId,
@@ -190,6 +212,26 @@ export async function PATCH(request: NextRequest) {
       .single()
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+
+    // Trigger Complaint Status Updated Notification
+    try {
+      await dispatchNotification({
+        title: status === 'resolved' ? 'Complaint Closed / Resolved' : 'Complaint Status Updated',
+        message: `Complaint ID ${data.complaint_id} has been marked as ${status || 'updated'}.`,
+        type: 'complaint',
+        priority: status === 'resolved' ? 'medium' : 'low',
+        metadata: {
+          complaint_id: data.complaint_id,
+          student_name: data.student_name,
+          room_number: data.room_number,
+          new_status: status || 'updated',
+          admin_notes: adminNotes || 'None'
+        }
+      })
+    } catch (notifErr: any) {
+      console.warn('[Notification Error] Failed to dispatch complaint update alert:', notifErr.message)
+    }
+
     return NextResponse.json({ data }, { status: 200 })
   } catch (err) {
     console.error('[complaints PATCH]', err)

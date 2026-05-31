@@ -24,11 +24,6 @@ interface SettingsState {
   showNewPassword: boolean
   showConfirmPassword: boolean
 
-  // Notifications
-  emailOnNewRegistration: boolean
-  whatsAppOnNewBooking: boolean
-  dailyReportEmail: boolean
-
   // Integrations
   whatsAppApiKey: string
   razorpayKeyId: string
@@ -45,6 +40,16 @@ export default function SettingsPage() {
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [user, setUser] = useState<any>(null)
+  
+  // Notification Preferences States (DB Driven)
+  const [prefEmail, setPrefEmail] = useState(true)
+  const [prefWhatsapp, setPrefWhatsapp] = useState(true)
+  const [prefDashboard, setPrefDashboard] = useState(true)
+  const [prefCritical, setPrefCritical] = useState(true)
+  const [prefPayments, setPrefPayments] = useState(true)
+  const [prefComplaints, setPrefComplaints] = useState(true)
+  const [prefRegistrations, setPrefRegistrations] = useState(true)
+
   const [settings, setSettings] = useState<SettingsState>({
     fullName: '',
     email: '',
@@ -55,9 +60,6 @@ export default function SettingsPage() {
     showCurrentPassword: false,
     showNewPassword: false,
     showConfirmPassword: false,
-    emailOnNewRegistration: true,
-    whatsAppOnNewBooking: true,
-    dailyReportEmail: false,
     whatsAppApiKey: '',
     razorpayKeyId: '',
     razorpayKeySecret: '',
@@ -89,6 +91,26 @@ export default function SettingsPage() {
             email: user.email || '',
             phone: user.user_metadata?.phone || '',
           }))
+
+          // Fetch notifications preferences from DB
+          const { data: dbSettings } = await supabase
+            .from('admin_notification_settings')
+            .select('*')
+            .eq('admin_id', user.id)
+            .maybeSingle()
+
+          if (dbSettings) {
+            setPrefEmail(dbSettings.email_enabled)
+            setPrefWhatsapp(dbSettings.whatsapp_enabled)
+            setPrefDashboard(dbSettings.dashboard_enabled)
+            setPrefCritical(dbSettings.critical_alerts)
+            setPrefPayments(dbSettings.payment_alerts)
+            setPrefComplaints(dbSettings.complaint_alerts)
+            setPrefRegistrations(dbSettings.registration_alerts)
+          } else {
+            // Safe seed
+            await supabase.from('admin_notification_settings').insert({ admin_id: user.id })
+          }
         }
       } catch (error) {
         console.error('Failed to fetch settings:', error)
@@ -157,6 +179,33 @@ export default function SettingsPage() {
     } catch (error) {
       console.error('Password change failed:', error)
       toast.error('Failed to change password')
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  const handleSaveNotifications = async () => {
+    try {
+      setSaving(true)
+      const { error } = await supabase
+        .from('admin_notification_settings')
+        .upsert({
+          admin_id: user?.id,
+          email_enabled: prefEmail,
+          whatsapp_enabled: prefWhatsapp,
+          dashboard_enabled: prefDashboard,
+          critical_alerts: prefCritical,
+          payment_alerts: prefPayments,
+          complaint_alerts: prefComplaints,
+          registration_alerts: prefRegistrations,
+          updated_at: new Date().toISOString()
+        })
+
+      if (error) throw error
+      toast.success('Notification preferences updated successfully')
+    } catch (err: any) {
+      console.error('[Settings Notifications Save Error]:', err.message)
+      toast.error('Failed to update preferences: ' + err.message)
     } finally {
       setSaving(false)
     }
@@ -484,62 +533,116 @@ export default function SettingsPage() {
                 className={`${DESIGN_SYSTEM.components.card.base} p-5 sm:p-6 w-full max-w-2xl space-y-6`}
               >
                 <div>
-                  <h2 className="text-lg font-bold text-white font-serif">Notification Settings</h2>
-                  <p className="text-gray-400 text-xs mt-1">Fine-tune critical messaging triggers for admissions, bookings, and financial activities</p>
+                  <h2 className="text-lg font-bold text-white font-serif">Notification Preferences</h2>
+                  <p className="text-gray-400 text-xs mt-1">Configure your personal preferences for receiving system notifications and alerts</p>
                 </div>
 
-                <div className="space-y-4">
-                  {[
-                    {
-                      key: 'emailOnNewRegistration',
-                      label: 'Email on New Registration',
-                      description: 'Dispatch immediate email alert when a new registration form is submitted',
-                    },
-                    {
-                      key: 'whatsAppOnNewBooking',
-                      label: 'WhatsApp on New Booking',
-                      description: 'Forward WhatsApp status notification when a booking is created',
-                    },
-                    {
-                      key: 'dailyReportEmail',
-                      label: 'Daily Summary digest',
-                      description: 'Dispatch full collections and occupancies summary report at 9:00 AM daily',
-                    },
-                  ].map(notification => (
-                    <div
-                      key={notification.key}
-                      className="flex items-start justify-between gap-4 p-4 rounded-xl border border-white/5 bg-white/[0.01] hover:bg-white/[0.03] transition-colors"
-                    >
-                      <div className="flex-1">
-                        <p className="text-sm font-semibold text-white">{notification.label}</p>
-                        <p className="text-xs text-gray-400 mt-1 leading-relaxed">{notification.description}</p>
-                      </div>
-                      <label className="admin-toggle">
-                        <input
-                          type="checkbox"
-                          checked={
-                            settings[notification.key as keyof SettingsState] as boolean
-                          }
-                          onChange={e =>
-                            handleInputChange(
-                              notification.key as keyof SettingsState,
-                              e.target.checked
-                            )
-                          }
-                        />
-                        <div className="admin-toggle-track">
-                          <div className="admin-toggle-thumb" />
+                <div className="space-y-6">
+                  {/* Channel Subscriptions */}
+                  <div className="space-y-4">
+                    <h3 className="text-sm font-semibold text-[#C8840A] uppercase tracking-wider border-b border-white/5 pb-2">Active Delivery Channels</h3>
+                    
+                    {[
+                      {
+                        label: 'Dashboard Realtime Alerts',
+                        description: 'Receive visual notification logs inside your admin panel bell preview list',
+                        checked: prefDashboard,
+                        onChange: setPrefDashboard
+                      },
+                      {
+                        label: 'Email Broadcasts',
+                        description: 'Dispatch immediate responsive HTML templates through Resend to your registered inbox',
+                        checked: prefEmail,
+                        onChange: setPrefEmail
+                      },
+                      {
+                        label: 'WhatsApp Text Messages',
+                        description: 'Forward instant message alerts to your WhatsApp phone through API webhooks',
+                        checked: prefWhatsapp,
+                        onChange: setPrefWhatsapp
+                      }
+                    ].map((ch, idx) => (
+                      <div
+                        key={idx}
+                        className="flex items-start justify-between gap-4 p-4 rounded-xl border border-white/5 bg-white/[0.01] hover:bg-white/[0.03] transition-colors"
+                      >
+                        <div className="flex-1">
+                          <p className="text-sm font-semibold text-white">{ch.label}</p>
+                          <p className="text-xs text-gray-400 mt-1 leading-relaxed">{ch.description}</p>
                         </div>
-                      </label>
-                    </div>
-                  ))}
+                        <label className="admin-toggle">
+                          <input
+                            type="checkbox"
+                            checked={ch.checked}
+                            onChange={e => ch.onChange(e.target.checked)}
+                          />
+                          <div className="admin-toggle-track">
+                            <div className="admin-toggle-thumb" />
+                          </div>
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Category Alerts */}
+                  <div className="space-y-4 pt-2">
+                    <h3 className="text-sm font-semibold text-[#C8840A] uppercase tracking-wider border-b border-white/5 pb-2">System Categories</h3>
+
+                    {[
+                      {
+                        label: 'Critical Warning Alerts',
+                        description: 'Receive urgent notices for database RLS policies, payment failures, or server disruptions',
+                        checked: prefCritical,
+                        onChange: setPrefCritical
+                      },
+                      {
+                        label: 'Registrations & Onboardings',
+                        description: 'Receive alerts when pre-registrations, direct submittals, or check-ins are active',
+                        checked: prefRegistrations,
+                        onChange: setPrefRegistrations
+                      },
+                      {
+                        label: 'Complaints & Maintenance',
+                        description: 'Receive alerts when complaints are raised, comments are added, or requests resolved',
+                        checked: prefComplaints,
+                        onChange: setPrefComplaints
+                      },
+                      {
+                        label: 'Payments & Fee Transactions',
+                        description: 'Receive alerts when rent payments are verified, manual receipts created, or bills overdue',
+                        checked: prefPayments,
+                        onChange: setPrefPayments
+                      }
+                    ].map((cat, idx) => (
+                      <div
+                        key={idx}
+                        className="flex items-start justify-between gap-4 p-4 rounded-xl border border-white/5 bg-white/[0.01] hover:bg-white/[0.03] transition-colors"
+                      >
+                        <div className="flex-1">
+                          <p className="text-sm font-semibold text-white">{cat.label}</p>
+                          <p className="text-xs text-gray-400 mt-1 leading-relaxed">{cat.description}</p>
+                        </div>
+                        <label className="admin-toggle">
+                          <input
+                            type="checkbox"
+                            checked={cat.checked}
+                            onChange={e => cat.onChange(e.target.checked)}
+                          />
+                          <div className="admin-toggle-track">
+                            <div className="admin-toggle-thumb" />
+                          </div>
+                        </label>
+                      </div>
+                    ))}
+                  </div>
 
                   <button
-                    onClick={() => toast.success('Notification preferences updated successfully')}
+                    onClick={handleSaveNotifications}
+                    disabled={saving}
                     className="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-gradient-to-r from-[#C8840A]/20 to-[#C8840A]/10 border border-[#C8840A]/35 text-[#C8840A] hover:bg-[#C8840A]/25 active:scale-95 transition-all flex items-center justify-center gap-2 font-semibold text-sm"
                   >
                     <Save size={16} />
-                    <span>Save Preferences</span>
+                    <span>{saving ? 'Updating...' : 'Save Preferences'}</span>
                   </button>
                 </div>
               </motion.div>

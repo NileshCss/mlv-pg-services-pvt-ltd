@@ -1,6 +1,7 @@
 import crypto from 'crypto'
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { dispatchNotification } from '@/lib/admin/notifications'
 
 // POST /api/payment/verify
 // Verifies Razorpay HMAC signature, then records payment in Supabase
@@ -58,6 +59,25 @@ export async function POST(req: NextRequest) {
         console.error('Deposit update error:', updateError)
         return NextResponse.json({ success: false, error: updateError.message }, { status: 500 })
       }
+
+      // Trigger Admin Notification
+      try {
+        await dispatchNotification({
+          title: 'Deposit Payment Verified',
+          message: `Razorpay security deposit of ₹${amount} received from application ${application_id}.`,
+          type: 'payment',
+          priority: 'high',
+          metadata: {
+            application_id: application_id,
+            amount: `₹${amount}`,
+            payment_type: 'security_deposit',
+            transaction_id: razorpay_payment_id,
+            status: 'paid'
+          }
+        })
+      } catch (notifErr: any) {
+        console.warn('[Notification Error] Failed to dispatch deposit payment alert:', notifErr.message)
+      }
     } else if (student_id) {
       // Record in payments table for enrolled students
       const paymentRecord: Record<string, unknown> = {
@@ -87,6 +107,25 @@ export async function POST(req: NextRequest) {
       if (payError) {
         console.error('Payment insert error:', payError)
         return NextResponse.json({ success: false, error: payError.message }, { status: 500 })
+      }
+
+      // Trigger Admin Notification
+      try {
+        await dispatchNotification({
+          title: 'Payment Received',
+          message: `Online payment of ₹${amount} recorded for student.`,
+          type: 'payment',
+          priority: payment_type === 'late_fee' ? 'medium' : 'high',
+          metadata: {
+            student_id,
+            amount: `₹${amount}`,
+            payment_type: payment_type || 'other',
+            transaction_id: razorpay_payment_id,
+            status: 'paid'
+          }
+        })
+      } catch (notifErr: any) {
+        console.warn('[Notification Error] Failed to dispatch student payment alert:', notifErr.message)
       }
     } else {
       return NextResponse.json(

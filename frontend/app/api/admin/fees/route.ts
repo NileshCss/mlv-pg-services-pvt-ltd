@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient as createServerClient } from '@/lib/supabase/server'
 import { createClient as createServiceClient } from '@supabase/supabase-js'
+import { dispatchNotification } from '@/lib/admin/notifications'
 
 function getAdminClient() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL
@@ -123,7 +124,25 @@ export async function POST(request: NextRequest) {
       if (feeError) throw feeError
     }
 
-    // 4. Update stay dates if type is renewal (handled in renewals workflow, but here for consistency)
+    // Trigger Admin/Student Notification for manual payments
+    try {
+      await dispatchNotification({
+        title: type === 'security_deposit' ? 'Manual Deposit Recorded' : 'Manual Payment Recorded',
+        message: `Manual payment of ₹${amount} recorded by Admin.`,
+        type: 'payment',
+        priority: 'high',
+        metadata: {
+          student_id: studentId,
+          amount: `₹${amount}`,
+          payment_type: type,
+          payment_mode: paymentMode,
+          transaction_id: transactionId || 'None',
+          status: 'recorded'
+        }
+      })
+    } catch (notifErr: any) {
+      console.warn('[Notification Error] Failed to dispatch manual payment alert:', notifErr.message)
+    }
 
     return NextResponse.json({ success: true, paymentId: payment.id }, { status: 201 })
 

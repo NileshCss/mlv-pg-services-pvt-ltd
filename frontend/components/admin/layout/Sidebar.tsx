@@ -3,7 +3,7 @@
 import React, { useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { usePathname, useRouter } from 'next/navigation'
+import { usePathname } from 'next/navigation'
 import { motion, AnimatePresence } from 'motion/react'
 import {
   LayoutDashboard,
@@ -27,6 +27,7 @@ import {
   FolderOpen,
   RefreshCcw,
   BarChart3,
+  Bell,
 } from 'lucide-react'
 import { useUIStore } from '@/store/uiStore'
 import { useAuthStore } from '@/store/authStore'
@@ -41,7 +42,8 @@ const navItems = [
   { label: 'Gallery',      icon: ImageIcon,           href: '/admin/gallery' },
   { label: 'Testimonials', icon: Star,                href: '/admin/testimonials' },
   { label: 'Notice Board', icon: Megaphone,           href: '/admin/notice-board' },
-  { label: 'Complaints',   icon: MessageSquare,href: '/admin/complaints', badge: true },
+  { label: 'Complaints',   icon: MessageSquare,       href: '/admin/complaints', badge: true },
+  { label: 'Notifications',icon: Bell,                href: '/admin/notifications', badge: true },
   { label: 'Students',     icon: GraduationCap,       href: '/admin/students' },
   { label: 'Fee Management',icon: Receipt,            href: '/admin/fee-management' },
   { label: 'Payments',     icon: CreditCard,          href: '/admin/payments' },
@@ -228,7 +230,8 @@ const SidebarContent: React.FC<{
   showCloseBtn?: boolean
   onClose?: () => void
   pendingComplaints?: number
-}> = ({ collapsed = false, pathname, onNavClick, onLogout, showCloseBtn = false, onClose, pendingComplaints = 0 }) => (
+  unreadNotifications?: number
+}> = ({ collapsed = false, pathname, onNavClick, onLogout, showCloseBtn = false, onClose, pendingComplaints = 0, unreadNotifications = 0 }) => (
   <>
     {showCloseBtn && (
       <div style={{ display: 'flex', justifyContent: 'flex-start', padding: '12px 12px 0', flexShrink: 0 }}>
@@ -254,7 +257,11 @@ const SidebarContent: React.FC<{
           isActive={pathname === item.href}
           collapsed={collapsed}
           onClick={onNavClick}
-          badgeCount={item.badge ? pendingComplaints : 0}
+          badgeCount={
+            item.badge 
+              ? (item.label === 'Notifications' ? unreadNotifications : pendingComplaints) 
+              : 0
+          }
         />
       ))}
     </nav>
@@ -269,13 +276,46 @@ export const Sidebar: React.FC = () => {
   const { mobileOpen, closeMobileSidebar, toggleMobileSidebar } = useUIStore()
   const { logout } = useAuthStore()
   const [pendingComplaints, setPendingComplaints] = React.useState(0)
+  const [unreadNotifications, setUnreadNotifications] = React.useState(0)
 
-  React.useEffect(() => {
+  const fetchBadgeCounts = () => {
+    // 1. Fetch complaints
     fetch('/api/complaints?status=pending')
       .then(r => r.json())
       .then(j => setPendingComplaints((j.data ?? []).length))
       .catch(() => {})
-  }, [])
+
+    // 2. Fetch unread notifications
+    fetch('/api/admin/notifications?page=1&limit=1&readStatus=unread')
+      .then(r => r.json())
+      .then(j => setUnreadNotifications(j.unreadCount || 0))
+      .catch(() => {})
+  }
+
+  React.useEffect(() => {
+    fetchBadgeCounts()
+
+    // Realtime badge alerts subscription
+    const realtimeChannel = supabase
+      .channel('sidebar-badge-realtime-alerts')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'notifications' }, () => {
+        fetch('/api/admin/notifications?page=1&limit=1&readStatus=unread')
+          .then(r => r.json())
+          .then(j => setUnreadNotifications(j.unreadCount || 0))
+          .catch(() => {})
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'complaints' }, () => {
+        fetch('/api/complaints?status=pending')
+          .then(r => r.json())
+          .then(j => setPendingComplaints((j.data ?? []).length))
+          .catch(() => {})
+      })
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(realtimeChannel)
+    }
+  }, [supabase])
 
   const handleLogout = async () => {
     await supabase.auth.signOut()
@@ -452,6 +492,7 @@ export const Sidebar: React.FC = () => {
               showCloseBtn
               onClose={closeMobileSidebar}
               pendingComplaints={pendingComplaints}
+              unreadNotifications={unreadNotifications}
             />
           </motion.aside>
         )}
@@ -581,9 +622,9 @@ export const Sidebar: React.FC = () => {
           pathname={pathname}
           onLogout={handleLogout}
           pendingComplaints={pendingComplaints}
+          unreadNotifications={unreadNotifications}
         />
       </aside>
     </>
   )
 }
-
