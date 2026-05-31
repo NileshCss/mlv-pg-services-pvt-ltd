@@ -94,6 +94,7 @@ export async function POST(request: NextRequest) {
       }
 
       // B. Allocate an available bed in the assigned room if database room exists
+      // NOTE: If no beds are configured yet, we skip bed assignment (admin can assign later)
       let bedId = null
       if (invitation.room_id) {
         const { data: bedsList } = await adminClient
@@ -115,10 +116,7 @@ export async function POST(request: NextRequest) {
           if (anyBeds && anyBeds.length > 0) {
             bedId = anyBeds[0].id
           }
-        }
-
-        if (!bedId) {
-          return NextResponse.json({ error: 'No beds configured for this room. Please set up beds first.' }, { status: 400 })
+          // No beds configured — this is allowed, admin can set up beds later
         }
       }
 
@@ -160,6 +158,14 @@ export async function POST(request: NextRequest) {
       agreementEnd.setMonth(agreementEnd.getMonth() + 11)
       const agreementEndDateStr = agreementEnd.toISOString().split('T')[0]
 
+      // F. Determine manual building/room info for residents with no DB room assigned
+      const manualBuildingName = pData.manualBuildingName || null
+      const manualRoomNumber = pData.manualRoomNumber || null
+      // Build a notes string that captures manual stay info if DB room is not assigned
+      const manualStayNotes = (!invitation.room_id && (manualBuildingName || manualRoomNumber))
+        ? `Building: ${manualBuildingName || 'N/A'} | Room: ${manualRoomNumber || 'N/A'}`
+        : null
+
       // F. Create the record in students table
       const { data: student, error: studentError } = await adminClient
         .from('students')
@@ -177,12 +183,13 @@ export async function POST(request: NextRequest) {
           permanent_address: pData.permanentAddress || '—',
           emergency_contact: `${pData.emergencyName || '—'} (${pData.emergencyRelationship || '—'})`,
           nationality: 'Indian',
-          gender: 'Male', // Default or fallback
-          room_id: invitation.room_id,
+          gender: pData.gender || 'Male',
+          room_id: invitation.room_id || null,
           bed_id: bedId,
           joining_date: invitation.joining_date,
           agreement_end_date: agreementEndDateStr,
           profile_photo_url: pData.photoUrl || null,
+          notes: manualStayNotes,
           is_active: true
         })
         .select()
@@ -208,7 +215,7 @@ export async function POST(request: NextRequest) {
       }
 
       // H. Create initial Fee schedule record
-      const { data: fee } = await adminClient
+      const { data: fee, error: feeError } = await adminClient
         .from('fees')
         .insert({
           student_id: student.id,
@@ -220,28 +227,36 @@ export async function POST(request: NextRequest) {
         .select()
         .single()
 
-      // I. Generate monthly installments for the 11-month stay
-      const start = new Date(invitation.joining_date)
-      const end = agreementEnd
-      let instNo = 1
-      const installmentsToInsert = []
-
-      const current = new Date(start)
-      while (current < end) {
-        installmentsToInsert.push({
-          student_id: student.id,
-          fee_id: fee.id,
-          installment_no: instNo++,
-          due_date: current.toISOString().split('T')[0],
-          amount: parseFloat(monthlyAmount.toString()),
-          status: 'pending'
-        })
-        current.setMonth(current.getMonth() + 1)
+      if (feeError) {
+        console.error('[admin invitations action] Fee creation failed:', feeError)
+        // Non-fatal — proceed without installments
       }
 
-      if (installmentsToInsert.length > 0) {
-        await adminClient.from('installments').insert(installmentsToInsert)
+      // I. Generate monthly installments for the 11-month stay (only if fee was created)
+      if (fee) {
+        const start = new Date(invitation.joining_date)
+        const end = agreementEnd
+        let instNo = 1
+        const installmentsToInsert = []
+
+        const current = new Date(start)
+        while (current < end) {
+          installmentsToInsert.push({
+            student_id: student.id,
+            fee_id: fee.id,
+            installment_no: instNo++,
+            due_date: current.toISOString().split('T')[0],
+            amount: parseFloat(monthlyAmount.toString()),
+            status: 'pending'
+          })
+          current.setMonth(current.getMonth() + 1)
+        }
+
+        if (installmentsToInsert.length > 0) {
+          await adminClient.from('installments').insert(installmentsToInsert)
+        }
       }
+
 
       // J. Save Aadhaar and College ID into documents vault
       const docsToInsert = []

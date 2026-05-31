@@ -542,10 +542,16 @@ export default function AdminStudentsPage() {
                               <p className="font-semibold text-gray-200">Room {res.rooms.room_number}</p>
                               <p className="text-xs text-gray-500">Bed {res.beds?.bed_number || '—'} · {res.rooms.type}</p>
                             </div>
+                          ) : res.notes ? (
+                            <div>
+                              <p className="font-semibold text-gray-200">{res.notes.split('|')[1]?.replace('Room:', '').trim() || 'Manual'}</p>
+                              <p className="text-xs text-amber-600">{res.notes.split('|')[0]?.replace('Building:', '').trim() || '—'} · Manual Entry</p>
+                            </div>
                           ) : (
                             <span className="text-gray-500">Unassigned</span>
                           )}
                         </td>
+
                         <td className="px-5 py-3.5 text-xs text-gray-400 whitespace-nowrap">
                           <div>Join: {res.joining_date}</div>
                           <div className="mt-0.5">End: {res.agreement_end_date}</div>
