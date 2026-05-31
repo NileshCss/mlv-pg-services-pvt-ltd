@@ -604,7 +604,7 @@ export default function AdminDocumentsPage() {
                           <th
                             key={col.key}
                             onClick={() => handleSort(col.key)}
-                            className="px-4 py-3 font-semibold uppercase tracking-wider cursor-pointer hover:bg-white/[0.03] select-none text-[10px]"
+                            className="px-4 py-3 font-semibold uppercase tracking-wider cursor-pointer hover:bg-white/[0.03] select-none text-[10px] whitespace-nowrap"
                           >
                             <div className="flex items-center gap-1">
                               {col.label}
@@ -616,7 +616,7 @@ export default function AdminDocumentsPage() {
                             </div>
                           </th>
                         ))}
-                        <th className="px-4 py-3 text-right font-semibold uppercase tracking-wider text-[10px] w-[140px]">
+                        <th className="px-4 py-3 text-right font-semibold uppercase tracking-wider text-[10px] w-[140px] whitespace-nowrap">
                           Actions
                         </th>
                       </tr>

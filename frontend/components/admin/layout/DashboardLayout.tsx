@@ -85,7 +85,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
           backdrop-filter: blur(8px);
           position: sticky;
           top: 0;
-          z-index: 100;
+          z-index: 1000;
         }
         /* ── Mobile (<768px): no sidebar space, top padding for hamburger ── */
         @media (max-width: 767px) {
