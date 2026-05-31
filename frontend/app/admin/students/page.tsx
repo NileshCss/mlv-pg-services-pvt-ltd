@@ -104,7 +104,12 @@ export default function AdminStudentsPage() {
       // 6. Fetch resident invitations
       const resInv = await fetch('/api/admin/invitations')
       const dataInv = await resInv.json()
+      if (!resInv.ok) {
+        console.error('[admin students] Failed to load invitations:', dataInv?.error)
+        toast.error('Could not load resident invitations. Check server logs.')
+      }
       setInvitations(dataInv.data || [])
+
 
     } catch (err) {
       console.error('Error fetching data:', err)

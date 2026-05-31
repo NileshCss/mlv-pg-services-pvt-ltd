@@ -29,21 +29,30 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
+  // Use admin service client to bypass RLS — admin should always see all invitations
+  const adminClient = getAdminClient()
+  if (!adminClient) {
+    return NextResponse.json({ error: 'Server configuration error' }, { status: 500 })
+  }
+
   try {
-    const supabase = await createServerClient()
-    const { data, error } = await supabase
+    const { data, error } = await adminClient
       .from('resident_invitations')
       .select('*, buildings(name, code), rooms(room_number, type)')
       .order('created_at', { ascending: false })
 
-    if (error) throw error
+    if (error) {
+      console.error('[admin invitations GET] Supabase error:', error)
+      throw error
+    }
 
-    return NextResponse.json({ data }, { status: 200 })
+    return NextResponse.json({ data: data || [] }, { status: 200 })
   } catch (err: any) {
     console.error('[admin invitations GET]', err)
     return NextResponse.json({ error: err.message || 'Failed to fetch invitations' }, { status: 500 })
   }
 }
+
 
 // ── POST /api/admin/invitations — create an invitation ──────
 export async function POST(request: NextRequest) {
