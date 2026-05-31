@@ -49,7 +49,7 @@ export default function FeeManagementPage() {
       const [instRes, regRes] = await Promise.all([
         supabase
           .from('installments')
-          .select('*, students(id, full_name, student_id, room_id, rooms(room_number, floor, building_id), buildings(name))')
+          .select('*, students(id, full_name, student_id, room_id, rooms(room_number, floor, building_id, buildings(name)))')
           .order('due_date', { ascending: true }),
         supabase
           .from('pre_registrations')
@@ -408,7 +408,7 @@ export default function FeeManagementPage() {
                             <p className="text-[11px] text-gray-500 font-mono">{inst.students?.student_id || '—'}</p>
                           </td>
                           <td className="px-4 py-3 whitespace-nowrap text-xs text-gray-400">
-                            {inst.students?.buildings?.name || inst.students?.rooms?.building_id || '—'}
+                            {inst.students?.rooms?.buildings?.name || '—'}
                           </td>
                           <td className="px-4 py-3 whitespace-nowrap">
                             {inst.students?.rooms ? (
