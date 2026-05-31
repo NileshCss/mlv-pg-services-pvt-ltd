@@ -183,8 +183,8 @@ export default function AdminLoginPage() {
                       margin: 0, 
                       accentColor: '#f59e0b',
                       flexShrink: 0,
-                      appearance: 'auto',
-                      WebkitAppearance: 'auto'
+                      appearance: 'auto' as any,
+                      WebkitAppearance: 'checkbox' as any
                     }} 
                   />
                   <span className="text-[14px] text-[#9ca3af] group-hover:text-gray-300 transition-colors">Remember me</span>

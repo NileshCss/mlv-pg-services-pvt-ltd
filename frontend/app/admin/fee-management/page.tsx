@@ -103,6 +103,18 @@ export default function FeeManagementPage() {
     toast.success(`Reminder sent to ${studentName} for ₹${amount} due on ${dueDate}`)
   }
 
+  const handleMarkOverdue = async () => {
+    try {
+      const res = await fetch('/api/admin/mark-overdue', { method: 'POST' })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || 'Failed')
+      toast.success(`Marked ${data.affected} installment(s) as overdue`)
+      loadData()
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to mark overdue')
+    }
+  }
+
   // Calculate Metrics
   const metrics = React.useMemo(() => {
     let collected = 0
@@ -190,11 +202,20 @@ export default function FeeManagementPage() {
         className="min-h-screen bg-[#0A0E1A] p-6 lg:p-8 text-gray-100"
       >
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-white flex items-center gap-3" style={{ fontFamily: 'Playfair Display' }}>
-            <Receipt style={{ color: GOLD }} /> Fee & Billing Management
-          </h1>
-          <p className="text-sm text-gray-500 mt-1">Configure student installment calendars and record payment resolutions</p>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+          <div>
+            <h1 className="text-4xl font-bold text-white flex items-center gap-3" style={{ fontFamily: 'Playfair Display' }}>
+              <Receipt style={{ color: GOLD }} /> Fee & Billing Management
+            </h1>
+            <p className="text-sm text-gray-500 mt-1">Configure student installment calendars and record payment resolutions</p>
+          </div>
+          <button
+            onClick={handleMarkOverdue}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold text-orange-400 border border-orange-500/30 bg-orange-500/10 hover:bg-orange-500/20 transition-all whitespace-nowrap"
+          >
+            <AlertCircle size={16} />
+            Mark Overdue
+          </button>
         </div>
 
         {/* Metrics Grid */}

@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { Sidebar } from './Sidebar'
 import { useAuthStore } from '@/store/authStore'
 import { createClient } from '@/lib/supabase/client'
+import { NotificationBell } from '@/components/admin/NotificationBell'
 
 interface DashboardLayoutProps {
   children: React.ReactNode
@@ -52,19 +53,50 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
         style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', minWidth: 0 }}
         className="dashboard-main"
       >
+        {/* Top header bar with notification bell */}
+        <div className="dashboard-topbar">
+          <div className="flex items-center gap-3 ml-auto">
+            <NotificationBell />
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10">
+              <div className="w-6 h-6 rounded-full bg-amber-500/20 flex items-center justify-center text-amber-400 text-xs font-bold">
+                {user.email?.charAt(0).toUpperCase() ?? 'A'}
+              </div>
+              <span className="text-xs text-gray-400 hidden sm:block max-w-[140px] truncate">
+                {user.email}
+              </span>
+            </div>
+          </div>
+        </div>
+
         <div className="dashboard-content">
           {children}
         </div>
       </main>
 
       <style>{`
+        /* ── Topbar ── */
+        .dashboard-topbar {
+          display: flex;
+          align-items: center;
+          justify-content: flex-end;
+          padding: 12px 24px;
+          border-bottom: 1px solid rgba(255,255,255,0.05);
+          background: rgba(15,22,41,0.6);
+          backdrop-filter: blur(8px);
+          position: sticky;
+          top: 0;
+          z-index: 100;
+        }
         /* ── Mobile (<768px): no sidebar space, top padding for hamburger ── */
         @media (max-width: 767px) {
           .dashboard-main {
             margin-left: 0 !important;
           }
+          .dashboard-topbar {
+            padding-left: 56px !important;
+          }
           .dashboard-content {
-            padding: 72px 16px 32px 16px !important;
+            padding: 24px 16px 32px 16px !important;
           }
         }
         /* ── Tablet (768–1023px): leave room for 64px icon sidebar ── */

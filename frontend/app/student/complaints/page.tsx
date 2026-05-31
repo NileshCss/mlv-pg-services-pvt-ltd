@@ -39,17 +39,41 @@ export default function ComplaintsPage() {
   const [formErrors, setFormErrors] = useState({ subject: '', description: '' })
 
   useEffect(() => {
+    let studentIdRef = ''
+
     const load = async () => {
       const { data: { session } } = await supabase.auth.getSession()
       if (!session) return
       const { data: student } = await supabase.from('students').select('id').eq('user_id', session.user.id).single()
       if (!student) return
       setStudentId(student.id)
+      studentIdRef = student.id
       const { data } = await supabase.from('student_complaints').select('*').eq('student_id', student.id).order('created_at', { ascending: false })
       setComplaints(data || [])
       setLoading(false)
     }
     load()
+
+    // Realtime: listen for admin complaint status/response updates
+    const channel = supabase
+      .channel('student-complaints-realtime')
+      .on('postgres_changes', {
+        event: 'UPDATE',
+        schema: 'public',
+        table: 'student_complaints',
+      }, () => {
+        if (studentIdRef) {
+          supabase
+            .from('student_complaints')
+            .select('*')
+            .eq('student_id', studentIdRef)
+            .order('created_at', { ascending: false })
+            .then(({ data }) => setComplaints(data || []))
+        }
+      })
+      .subscribe()
+
+    return () => { supabase.removeChannel(channel) }
   }, [supabase])
 
   const validate = () => {

@@ -346,8 +346,8 @@ export default function RegistrationsPage() {
                         margin: 0, 
                         accentColor: '#f59e0b',
                         flexShrink: 0,
-                        appearance: 'auto',
-                        WebkitAppearance: 'auto'
+                        appearance: 'auto' as any,
+                        WebkitAppearance: 'checkbox' as any
                       }} 
                     />
                   </th>
@@ -485,8 +485,8 @@ export default function RegistrationsPage() {
                             margin: 0, 
                             accentColor: '#f59e0b',
                             flexShrink: 0,
-                            appearance: 'auto',
-                            WebkitAppearance: 'auto'
+                            appearance: 'auto' as any,
+                            WebkitAppearance: 'checkbox' as any
                           }} 
                         />
                       </td>

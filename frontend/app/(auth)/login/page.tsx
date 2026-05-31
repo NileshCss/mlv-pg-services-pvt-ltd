@@ -103,8 +103,8 @@ export default function DemoLoginPage() {
                   margin: 0, 
                   accentColor: '#f59e0b',
                   flexShrink: 0,
-                  appearance: 'auto',
-                  WebkitAppearance: 'auto'
+                  appearance: 'auto' as any,
+                  WebkitAppearance: 'checkbox' as any
                 }} 
               />
               <label htmlFor="remember" className="cursor-pointer hover:text-gray-300 transition-colors">

@@ -346,14 +346,44 @@ export default function AdminStudentsPage() {
             <div className="bg-[#0F1629] border border-white/5 rounded-2xl overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full min-w-[800px] table-auto text-left border-collapse">
-                  <thead>
-                    <tr className="bg-white/5 border-b border-white/5 text-gray-400">
-                      <th className="px-5 py-3.5 text-xs font-bold uppercase tracking-wider">Resident</th>
-                      <th className="px-5 py-3.5 text-xs font-bold uppercase tracking-wider">Student ID</th>
-                      <th className="px-5 py-3.5 text-xs font-bold uppercase tracking-wider">Room Allocation</th>
-                      <th className="px-5 py-3.5 text-xs font-bold uppercase tracking-wider">Stay Schedule</th>
-                      <th className="px-5 py-3.5 text-xs font-bold uppercase tracking-wider">Status</th>
-                      <th className="px-5 py-3.5 text-xs font-bold uppercase tracking-wider text-right">Actions</th>
+                  <thead className="bg-gradient-to-b from-white/[0.04] to-white/[0.01] border-b border-amber-500/15">
+                    <tr>
+                      <th className="px-5 py-4 text-left text-[13px] font-bold uppercase tracking-[0.5px] text-white/85 whitespace-nowrap relative group/th hover:bg-white/[0.02] transition-colors">
+                        <div className="flex items-center gap-2">
+                          <span className="text-gray-500 group-hover/th:text-amber-400 transition-colors">👤</span> Resident
+                        </div>
+                        <div className="absolute bottom-0 left-0 w-full h-[2px] bg-amber-500 scale-x-0 group-hover/th:scale-x-100 transition-transform origin-left" />
+                      </th>
+                      <th className="px-5 py-4 text-left text-[13px] font-bold uppercase tracking-[0.5px] text-white/85 whitespace-nowrap relative group/th hover:bg-white/[0.02] transition-colors">
+                        <div className="flex items-center gap-2">
+                          <span className="text-gray-500 group-hover/th:text-amber-400 transition-colors">#</span> Student ID
+                        </div>
+                        <div className="absolute bottom-0 left-0 w-full h-[2px] bg-amber-500 scale-x-0 group-hover/th:scale-x-100 transition-transform origin-left" />
+                      </th>
+                      <th className="px-5 py-4 text-left text-[13px] font-bold uppercase tracking-[0.5px] text-white/85 whitespace-nowrap relative group/th hover:bg-white/[0.02] transition-colors">
+                        <div className="flex items-center gap-2">
+                          <span className="text-gray-500 group-hover/th:text-amber-400 transition-colors">🏠</span> Room Allocation
+                        </div>
+                        <div className="absolute bottom-0 left-0 w-full h-[2px] bg-amber-500 scale-x-0 group-hover/th:scale-x-100 transition-transform origin-left" />
+                      </th>
+                      <th className="px-5 py-4 text-left text-[13px] font-bold uppercase tracking-[0.5px] text-white/85 whitespace-nowrap relative group/th hover:bg-white/[0.02] transition-colors">
+                        <div className="flex items-center gap-2">
+                          <span className="text-gray-500 group-hover/th:text-amber-400 transition-colors">📅</span> Stay Schedule
+                        </div>
+                        <div className="absolute bottom-0 left-0 w-full h-[2px] bg-amber-500 scale-x-0 group-hover/th:scale-x-100 transition-transform origin-left" />
+                      </th>
+                      <th className="px-5 py-4 text-center text-[13px] font-bold uppercase tracking-[0.5px] text-white/85 whitespace-nowrap relative group/th hover:bg-white/[0.02] transition-colors">
+                        <div className="flex items-center justify-center gap-2">
+                          <span className="text-gray-500 group-hover/th:text-amber-400 transition-colors">🔰</span> Status
+                        </div>
+                        <div className="absolute bottom-0 left-0 w-full h-[2px] bg-amber-500 scale-x-0 group-hover/th:scale-x-100 transition-transform origin-center" />
+                      </th>
+                      <th className="px-5 py-4 text-right text-[13px] font-bold uppercase tracking-[0.5px] text-white/85 whitespace-nowrap relative group/th hover:bg-white/[0.02] transition-colors">
+                        <div className="flex items-center justify-end gap-2">
+                          <span className="text-gray-500 group-hover/th:text-amber-400 transition-colors">⚙</span> Actions
+                        </div>
+                        <div className="absolute bottom-0 left-0 w-full h-[2px] bg-amber-500 scale-x-0 group-hover/th:scale-x-100 transition-transform origin-right" />
+                      </th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-white/5 text-sm">
