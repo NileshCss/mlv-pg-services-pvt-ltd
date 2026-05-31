@@ -22,6 +22,18 @@ export default function ExistingResidentRegistrationPage(props: { searchParams: 
   const [invitation, setInvitation] = useState<any | null>(null)
   const [errorMsg, setErrorMsg] = useState('')
 
+  // Stay Details (Direct or prefilled)
+  const [fullName, setFullName] = useState('')
+  const [phone, setPhone] = useState('')
+  const [email, setEmail] = useState('')
+  const [buildingId, setBuildingId] = useState('')
+  const [roomId, setRoomId] = useState('')
+  const [floorNumber, setFloorNumber] = useState('')
+  const [joiningDate, setJoiningDate] = useState('')
+
+  const [buildings, setBuildings] = useState<any[]>([])
+  const [rooms, setRooms] = useState<any[]>([])
+
   // Form fields state
   const [aadharNumber, setAadharNumber] = useState('')
   const [dob, setDob] = useState('')
@@ -50,8 +62,18 @@ export default function ExistingResidentRegistrationPage(props: { searchParams: 
   const [success, setSuccess] = useState(false)
 
   useEffect(() => {
+    const fetchBuildings = async () => {
+      try {
+        const { data: bData } = await supabase.from('buildings').select('*').order('name')
+        if (bData) setBuildings(bData)
+      } catch (err) {
+        console.error('Failed to load buildings:', err)
+      }
+    }
+
     if (!token) {
-      setErrorMsg('No invitation token provided. Please use the registration link sent to your Email or WhatsApp.')
+      // Direct registration bypasses token verification
+      fetchBuildings()
       setLoading(false)
       return
     }
@@ -62,6 +84,13 @@ export default function ExistingResidentRegistrationPage(props: { searchParams: 
         const data = await res.json()
         if (!res.ok) throw new Error(data.error || 'Failed to verify invitation')
         setInvitation(data.data)
+        setFullName(data.data.full_name || '')
+        setPhone(data.data.phone || '')
+        setEmail(data.data.email || '')
+        setBuildingId(data.data.building_id || '')
+        setRoomId(data.data.room_id || '')
+        setFloorNumber(data.data.floor_number?.toString() || '')
+        setJoiningDate(data.data.joining_date || '')
       } catch (err: any) {
         setErrorMsg(err.message || 'Invitation not found or invalid token.')
       } finally {
@@ -70,10 +99,43 @@ export default function ExistingResidentRegistrationPage(props: { searchParams: 
     }
 
     checkToken()
-  }, [token])
+  }, [token, supabase])
+
+  // Fetch rooms dynamically when a building is selected in direct form
+  useEffect(() => {
+    if (token || !buildingId) {
+      setRooms([])
+      return
+    }
+
+    const fetchRooms = async () => {
+      try {
+        const { data: rData } = await supabase
+          .from('rooms')
+          .select('*')
+          .eq('building_id', buildingId)
+          .order('room_number')
+        if (rData) setRooms(rData)
+      } catch (err) {
+        console.error('Failed to load rooms:', err)
+      }
+    }
+
+    fetchRooms()
+  }, [buildingId, token, supabase])
 
   const validateForm = () => {
     const errors: any = {}
+
+    if (!token) {
+      if (!fullName.trim()) errors.fullName = 'Full name is required'
+      if (!/^[6-9]\d{9}$/.test(phone)) errors.phone = 'Enter a valid 10-digit mobile number'
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) errors.email = 'Enter a valid email address'
+      if (!buildingId) errors.buildingId = 'PG Building is required'
+      if (!roomId) errors.roomId = 'Room is required'
+      if (!joiningDate) errors.joiningDate = 'Joining date is required'
+    }
+
     if (!/^\d{12}$/.test(aadharNumber)) errors.aadharNumber = 'Aadhaar must be exactly 12 digits'
     if (!dob) errors.dob = 'Date of birth is required'
     if (!permanentAddress.trim()) errors.permanentAddress = 'Permanent address is required'
@@ -115,9 +177,9 @@ export default function ExistingResidentRegistrationPage(props: { searchParams: 
 
     setSubmitting(true)
     try {
-      // 1. Upload photo and ID proof
-      const photoUrl = await uploadFile(photoFile!, `photos/${invitation.email}`)
-      const idProofUrl = await uploadFile(idProofFile!, `id_proofs/${invitation.email}`)
+      // 1. Upload photo and ID proof (using email state)
+      const photoUrl = await uploadFile(photoFile!, `photos/${email}`)
+      const idProofUrl = await uploadFile(idProofFile!, `id_proofs/${email}`)
 
       // 2. Submit to existing resident API
       const profileData = {
@@ -135,13 +197,26 @@ export default function ExistingResidentRegistrationPage(props: { searchParams: 
         password
       }
 
+      const payload = token 
+        ? { token, profileData }
+        : {
+            isDirect: true,
+            directDetails: {
+              fullName,
+              email,
+              phone,
+              buildingId,
+              roomId,
+              floorNumber: floorNumber || null,
+              joiningDate
+            },
+            profileData
+          }
+
       const res = await fetch('/api/applications/invitation/submit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          token,
-          profileData
-        })
+        body: JSON.stringify(payload)
       })
 
       const data = await res.json()
@@ -203,7 +278,7 @@ export default function ExistingResidentRegistrationPage(props: { searchParams: 
             <CheckCircle className="text-green-500 mx-auto mb-4" size={56} />
             <h2 className="text-2xl font-bold text-white mb-3" style={{ fontFamily: 'Playfair Display' }}>Profile Submitted!</h2>
             <p className="text-gray-400 text-sm leading-relaxed mb-6">
-              Thank you, <strong className="text-white">{invitation.full_name}</strong>. Your profile has been submitted for admin approval. 
+              Thank you, <strong className="text-white">{invitation?.full_name || fullName}</strong>. Your profile has been submitted for admin approval. 
               Once the admin approves your registration, we will activate your dashboard access and notify you immediately via Email & WhatsApp with your login credentials.
             </p>
             <Link href="/" className="inline-flex items-center gap-2 text-sm font-semibold px-6 py-2.5 rounded-full text-black transition-all" style={{ background: 'linear-gradient(135deg, #C8840A, #F5A623)' }}>
@@ -220,7 +295,7 @@ export default function ExistingResidentRegistrationPage(props: { searchParams: 
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {/* Left Column: Prefilled / Read-Only Details */}
+              {/* Left Column: Stay Details */}
               <div className="md:col-span-1 space-y-6">
                 <div className="bg-[#0F1629] border border-white/8 rounded-2xl p-5 space-y-4 shadow-xl">
                   <h3 className="text-sm font-bold text-[#C8840A] uppercase tracking-wider flex items-center gap-1.5 pb-2 border-b border-white/5">
@@ -229,45 +304,158 @@ export default function ExistingResidentRegistrationPage(props: { searchParams: 
 
                   <div className="space-y-3.5 text-xs">
                     <div>
-                      <span className="block text-gray-500 mb-0.5">Full Name</span>
-                      <span className="font-semibold text-gray-200 block bg-white/2 px-2.5 py-1.5 rounded-lg border border-white/5">{invitation.full_name}</span>
+                      <span className="block text-gray-500 mb-0.5">Full Name *</span>
+                      {token ? (
+                        <span className="font-semibold text-gray-200 block bg-white/2 px-2.5 py-1.5 rounded-lg border border-white/5">{fullName}</span>
+                      ) : (
+                        <input
+                          type="text"
+                          required
+                          value={fullName}
+                          onChange={e => {
+                            setFullName(e.target.value)
+                            setFormErrors((p: any) => ({ ...p, fullName: '' }))
+                          }}
+                          placeholder="Full Name"
+                          className="w-full px-3 py-1.5 rounded-lg text-xs bg-[#0A0E1A] border border-white/10 text-white outline-none focus:border-amber-500"
+                        />
+                      )}
+                      {formErrors.fullName && <p className="text-red-400 text-[9px] mt-1">{formErrors.fullName}</p>}
                     </div>
 
                     <div>
-                      <span className="block text-gray-500 mb-0.5">Mobile Number</span>
-                      <span className="font-semibold text-gray-200 block bg-white/2 px-2.5 py-1.5 rounded-lg border border-white/5">{invitation.phone}</span>
+                      <span className="block text-gray-500 mb-0.5">Mobile Number *</span>
+                      {token ? (
+                        <span className="font-semibold text-gray-200 block bg-white/2 px-2.5 py-1.5 rounded-lg border border-white/5">{phone}</span>
+                      ) : (
+                        <input
+                          type="tel"
+                          maxLength={10}
+                          required
+                          value={phone}
+                          onChange={e => {
+                            if (/^\d*$/.test(e.target.value)) setPhone(e.target.value)
+                            setFormErrors((p: any) => ({ ...p, phone: '' }))
+                          }}
+                          placeholder="10-digit Mobile"
+                          className="w-full px-3 py-1.5 rounded-lg text-xs bg-[#0A0E1A] border border-white/10 text-white outline-none focus:border-amber-500"
+                        />
+                      )}
+                      {formErrors.phone && <p className="text-red-400 text-[9px] mt-1">{formErrors.phone}</p>}
                     </div>
 
                     <div>
-                      <span className="block text-gray-500 mb-0.5">Email Address</span>
-                      <span className="font-semibold text-gray-200 block bg-white/2 px-2.5 py-1.5 rounded-lg border border-white/5 truncate">{invitation.email}</span>
+                      <span className="block text-gray-500 mb-0.5">Email Address *</span>
+                      {token ? (
+                        <span className="font-semibold text-gray-200 block bg-white/2 px-2.5 py-1.5 rounded-lg border border-white/5 truncate">{email}</span>
+                      ) : (
+                        <input
+                          type="email"
+                          required
+                          value={email}
+                          onChange={e => {
+                            setEmail(e.target.value)
+                            setFormErrors((p: any) => ({ ...p, email: '' }))
+                          }}
+                          placeholder="email@example.com"
+                          className="w-full px-3 py-1.5 rounded-lg text-xs bg-[#0A0E1A] border border-white/10 text-white outline-none focus:border-amber-500"
+                        />
+                      )}
+                      {formErrors.email && <p className="text-red-400 text-[9px] mt-1">{formErrors.email}</p>}
                     </div>
 
                     <div>
-                      <span className="block text-gray-500 mb-0.5">PG Building</span>
-                      <span className="font-semibold text-gray-200 block bg-white/2 px-2.5 py-1.5 rounded-lg border border-white/5">{invitation.buildings?.name || 'Main Building'}</span>
+                      <span className="block text-gray-500 mb-0.5">PG Building *</span>
+                      {token ? (
+                        <span className="font-semibold text-gray-200 block bg-white/2 px-2.5 py-1.5 rounded-lg border border-white/5">{invitation?.buildings?.name || 'Main Building'}</span>
+                      ) : (
+                        <select
+                          required
+                          value={buildingId}
+                          onChange={e => {
+                            setBuildingId(e.target.value)
+                            setRoomId('')
+                            setFormErrors((p: any) => ({ ...p, buildingId: '' }))
+                          }}
+                          className="w-full px-2 py-1.5 rounded-lg text-xs bg-[#0A0E1A] border border-white/10 text-white outline-none focus:border-amber-500"
+                        >
+                          <option value="">-- Building --</option>
+                          {buildings.map(b => (
+                            <option key={b.id} value={b.id}>{b.name}</option>
+                          ))}
+                        </select>
+                      )}
+                      {formErrors.buildingId && <p className="text-red-400 text-[9px] mt-1">{formErrors.buildingId}</p>}
                     </div>
 
                     <div className="grid grid-cols-2 gap-2">
                       <div>
-                        <span className="block text-gray-500 mb-0.5">Floor</span>
-                        <span className="font-semibold text-gray-200 block bg-white/2 px-2.5 py-1.5 rounded-lg border border-white/5">Floor {invitation.floor_number || 1}</span>
+                        <span className="block text-gray-500 mb-0.5">Floor *</span>
+                        {token ? (
+                          <span className="font-semibold text-gray-200 block bg-white/2 px-2.5 py-1.5 rounded-lg border border-white/5">Floor {floorNumber || 1}</span>
+                        ) : (
+                          <input
+                            type="number"
+                            required
+                            value={floorNumber}
+                            onChange={e => {
+                              setFloorNumber(e.target.value)
+                              setFormErrors((p: any) => ({ ...p, floorNumber: '' }))
+                            }}
+                            placeholder="Floor"
+                            className="w-full px-3 py-1.5 rounded-lg text-xs bg-[#0A0E1A] border border-white/10 text-white outline-none focus:border-amber-500"
+                          />
+                        )}
+                        {formErrors.floorNumber && <p className="text-red-400 text-[9px] mt-1">{formErrors.floorNumber}</p>}
                       </div>
                       <div>
-                        <span className="block text-gray-500 mb-0.5">Room</span>
-                        <span className="font-semibold text-gray-200 block bg-white/2 px-2.5 py-1.5 rounded-lg border border-white/5">Room {invitation.rooms?.room_number || '—'}</span>
+                        <span className="block text-gray-500 mb-0.5">Room *</span>
+                        {token ? (
+                          <span className="font-semibold text-gray-200 block bg-white/2 px-2.5 py-1.5 rounded-lg border border-white/5">Room {invitation?.rooms?.room_number || '—'}</span>
+                        ) : (
+                          <select
+                            required
+                            disabled={!buildingId}
+                            value={roomId}
+                            onChange={e => {
+                              setRoomId(e.target.value)
+                              setFormErrors((p: any) => ({ ...p, roomId: '' }))
+                            }}
+                            className="w-full px-2 py-1.5 rounded-lg text-xs bg-[#0A0E1A] border border-white/10 text-white outline-none focus:border-amber-500 disabled:opacity-50"
+                          >
+                            <option value="">-- Room --</option>
+                            {rooms.map(r => (
+                              <option key={r.id} value={r.id}>Room {r.room_number}</option>
+                            ))}
+                          </select>
+                        )}
+                        {formErrors.roomId && <p className="text-red-400 text-[9px] mt-1">{formErrors.roomId}</p>}
                       </div>
                     </div>
 
                     <div>
-                      <span className="block text-gray-500 mb-0.5">Joining Date</span>
-                      <span className="font-semibold text-gray-200 block bg-white/2 px-2.5 py-1.5 rounded-lg border border-white/5">{invitation.joining_date}</span>
+                      <span className="block text-gray-500 mb-0.5">Joining Date *</span>
+                      {token ? (
+                        <span className="font-semibold text-gray-200 block bg-white/2 px-2.5 py-1.5 rounded-lg border border-white/5">{joiningDate}</span>
+                      ) : (
+                        <input
+                          type="date"
+                          required
+                          value={joiningDate}
+                          onChange={e => {
+                            setJoiningDate(e.target.value)
+                            setFormErrors((p: any) => ({ ...p, joiningDate: '' }))
+                          }}
+                          className="w-full px-3 py-1.5 rounded-lg text-xs bg-[#0A0E1A] border border-white/10 text-white outline-none focus:border-amber-500"
+                        />
+                      )}
+                      {formErrors.joiningDate && <p className="text-red-400 text-[9px] mt-1">{formErrors.joiningDate}</p>}
                     </div>
                   </div>
 
                   <div className="pt-2">
                     <p className="text-[10px] text-gray-500 leading-relaxed bg-amber-500/5 border border-amber-500/10 p-2.5 rounded-xl">
-                      🔒 The details above are set by PG administration and are read-only to prevent duplicate registrations.
+                      🔒 {token ? 'The details above are set by PG administration and are read-only to prevent duplicate registrations.' : 'Fill in your stay details matching the room you occupy at MLV PG.'}
                     </p>
                   </div>
                 </div>

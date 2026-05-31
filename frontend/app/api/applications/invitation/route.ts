@@ -59,12 +59,80 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json()
-    const { token, profileData } = body
+    const { token, profileData, isDirect, directDetails } = body
 
-    if (!token || !profileData) {
+    if (!token && !isDirect) {
       return NextResponse.json({ error: 'Missing required parameters' }, { status: 400 })
     }
 
+    if (isDirect) {
+      // 1. Direct registration details verification
+      if (
+        !directDetails ||
+        !directDetails.fullName ||
+        !directDetails.email ||
+        !directDetails.phone ||
+        !directDetails.buildingId ||
+        !directDetails.roomId ||
+        !directDetails.joiningDate
+      ) {
+        return NextResponse.json({ error: 'Missing required resident details' }, { status: 400 })
+      }
+
+      // 2. Prevent duplicate active students using this email or phone
+      const { data: duplicates } = await adminClient
+        .from('students')
+        .select('id')
+        .or(`email.eq.${directDetails.email.trim().toLowerCase()},mobile.eq.${directDetails.phone.trim()}`)
+        .limit(1)
+
+      if (duplicates && duplicates.length > 0) {
+        return NextResponse.json({ error: 'A resident with this email or phone is already active in the system' }, { status: 400 })
+      }
+
+      // 3. Prevent duplicate pending applications
+      const { data: pending } = await adminClient
+        .from('resident_invitations')
+        .select('id')
+        .eq('status', 'profile_submitted')
+        .or(`email.eq.${directDetails.email.trim().toLowerCase()},phone.eq.${directDetails.phone.trim()}`)
+        .limit(1)
+
+      if (pending && pending.length > 0) {
+        return NextResponse.json({ error: 'A registration profile with this email or phone is already pending verification' }, { status: 400 })
+      }
+
+      // 4. Generate random unique token and insert the pending application
+      const newToken = crypto.randomUUID()
+      const { error: insertErr } = await adminClient
+        .from('resident_invitations')
+        .insert({
+          token: newToken,
+          full_name: directDetails.fullName,
+          email: directDetails.email.trim().toLowerCase(),
+          phone: directDetails.phone.trim(),
+          building_id: directDetails.buildingId,
+          room_id: directDetails.roomId,
+          floor_number: directDetails.floorNumber ? parseInt(directDetails.floorNumber) : null,
+          joining_date: directDetails.joiningDate,
+          status: 'profile_submitted',
+          expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // Valid for 30 days
+          profile_data: profileData,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        })
+
+      if (insertErr) throw insertErr
+
+      console.log(`[AUDIT] Direct resident registration submitted: ${directDetails.fullName} (${directDetails.email})`)
+
+      return NextResponse.json({
+        success: true,
+        message: 'Profile submitted successfully! Awaiting admin verification.'
+      }, { status: 200 })
+    }
+
+    // --- Token-based Flow (Backward Compatible) ---
     // 1. Fetch invitation to check validity and state
     const { data: invitation, error: fetchErr } = await adminClient
       .from('resident_invitations')
