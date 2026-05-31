@@ -225,7 +225,7 @@ export default function ExistingResidentRegistrationPage(props: { searchParams: 
             profileData
           }
 
-      const res = await fetch('/api/applications/invitation/submit', {
+      const res = await fetch('/api/applications/invitation', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
