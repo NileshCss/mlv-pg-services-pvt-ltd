@@ -134,7 +134,7 @@ export default function AdminLoginPage() {
               <div>
                 <label className="block text-sm font-medium text-gray-400 mb-2">Email</label>
                 <div className="relative">
-                  <Mail className="absolute left-4 top-3 text-gray-500" size={20} />
+                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" size={20} />
                   <input
                     type="email"
                     value={email}
@@ -150,7 +150,7 @@ export default function AdminLoginPage() {
               <div>
                 <label className="block text-sm font-medium text-gray-400 mb-2">Password</label>
                 <div className="relative">
-                  <Lock className="absolute left-4 top-3 text-gray-500" size={20} />
+                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" size={20} />
                   <input
                     type={showPassword ? 'text' : 'password'}
                     value={password}
@@ -162,7 +162,7 @@ export default function AdminLoginPage() {
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-4 top-3 text-gray-500 hover:text-gray-400"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-400 p-1 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500/50"
                   >
                     {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                   </button>
