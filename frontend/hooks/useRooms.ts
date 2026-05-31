@@ -2,11 +2,11 @@
 
 import { useEffect, useState, useCallback } from 'react'
 import { fetchRooms, fetchBuildings } from '@/lib/services/rooms.service'
-import type { Room, FilterType } from '@/types/room.types'
+import type { Room, Building, FilterType } from '@/types/room.types'
 
-export function useRooms(filter: FilterType = 'all', building: string = 'all') {
+export function useRooms(filter: FilterType = 'all', buildingId: string = 'all') {
   const [rooms, setRooms] = useState<Room[]>([])
-  const [buildings, setBuildings] = useState<string[]>([])
+  const [buildings, setBuildings] = useState<Building[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -15,7 +15,7 @@ export function useRooms(filter: FilterType = 'all', building: string = 'all') {
       setIsLoading(true)
       setError(null)
 
-      const { data, error: err } = await fetchRooms(filter, building)
+      const { data, error: err } = await fetchRooms(filter, buildingId)
 
       if (err) {
         setError('Failed to fetch rooms')
@@ -29,25 +29,33 @@ export function useRooms(filter: FilterType = 'all', building: string = 'all') {
     } finally {
       setIsLoading(false)
     }
-  }, [filter, building])
+  }, [filter, buildingId])
 
-  // Fetch buildings only once on mount
-  useEffect(() => {
-    const fetchBuildingsList = async () => {
-      try {
-        const data = await fetchBuildings()
-        setBuildings(data)
-      } catch (err) {
-        console.error('Failed to fetch buildings:', err)
-        setBuildings([])
-      }
+  const fetchBuildingsList = useCallback(async () => {
+    try {
+      const data = await fetchBuildings()
+      setBuildings(data as Building[])
+    } catch (err) {
+      console.error('Failed to fetch buildings:', err)
+      setBuildings([])
     }
-    fetchBuildingsList()
   }, [])
+
+  // Fetch buildings list on mount
+  useEffect(() => {
+    fetchBuildingsList()
+  }, [fetchBuildingsList])
 
   useEffect(() => {
     refetch()
   }, [refetch])
 
-  return { rooms, buildings, isLoading, error, refetch }
+  return { 
+    rooms, 
+    buildings, 
+    isLoading, 
+    error, 
+    refetch, 
+    refetchBuildings: fetchBuildingsList 
+  }
 }
