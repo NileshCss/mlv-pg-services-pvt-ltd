@@ -286,7 +286,7 @@ export default function ExistingResidentRegistrationPage(props: { searchParams: 
             </Link>
           </motion.div>
         ) : (
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-6 text-left">
             <div className="text-center mb-8">
               <h1 className="text-3xl font-bold text-white flex items-center justify-center gap-2" style={{ fontFamily: 'Playfair Display' }}>
                 <ShieldCheck style={{ color: GOLD }} /> Activate Your Student Dashboard
@@ -294,19 +294,24 @@ export default function ExistingResidentRegistrationPage(props: { searchParams: 
               <p className="text-sm text-gray-500 mt-2">Complete your profile to activate your MLV PG resident account.</p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               {/* Left Column: Stay Details */}
-              <div className="md:col-span-1 space-y-6">
+              <div className="col-span-1 lg:col-span-1 space-y-6">
                 <div className="bg-[#0F1629] border border-white/8 rounded-2xl p-5 space-y-4 shadow-xl">
-                  <h3 className="text-sm font-bold text-[#C8840A] uppercase tracking-wider flex items-center gap-1.5 pb-2 border-b border-white/5">
-                    <Building size={14} /> Assigned Stay Details
+                  <h3 className="text-sm font-bold text-[#f59e0b] uppercase tracking-wider flex items-center gap-1.5 pb-2 border-b border-[#f59e0b]/20">
+                    <Building size={16} className="text-[#f59e0b]" /> Assigned Stay Details
                   </h3>
 
                   <div className="space-y-3.5 text-xs">
                     <div>
-                      <span className="block text-gray-500 mb-0.5">Full Name *</span>
+                      <span className="block text-xs font-semibold text-gray-400 uppercase mb-1">Full Name *</span>
                       {token ? (
-                        <span className="font-semibold text-gray-200 block bg-white/2 px-2.5 py-1.5 rounded-lg border border-white/5">{fullName}</span>
+                        <input
+                          type="text"
+                          disabled
+                          value={fullName}
+                          className="w-full h-12 px-4 rounded-[10px] text-sm bg-white/5 border border-white/10 text-gray-400 cursor-not-allowed"
+                        />
                       ) : (
                         <input
                           type="text"
@@ -317,16 +322,21 @@ export default function ExistingResidentRegistrationPage(props: { searchParams: 
                             setFormErrors((p: any) => ({ ...p, fullName: '' }))
                           }}
                           placeholder="Full Name"
-                          className="w-full px-3 py-1.5 rounded-lg text-xs bg-[#0A0E1A] border border-white/10 text-white outline-none focus:border-amber-500"
+                          className="w-full h-12 px-4 rounded-[10px] text-sm bg-white border border-[#f59e0b]/15 text-black font-medium placeholder-[#6b7280] outline-none focus:border-[#f59e0b] focus:ring-2 focus:ring-[#f59e0b]/15 transition-all"
                         />
                       )}
-                      {formErrors.fullName && <p className="text-red-400 text-[9px] mt-1">{formErrors.fullName}</p>}
+                      {formErrors.fullName && <p className="text-red-400 text-[10px] mt-1">{formErrors.fullName}</p>}
                     </div>
 
                     <div>
-                      <span className="block text-gray-500 mb-0.5">Mobile Number *</span>
+                      <span className="block text-xs font-semibold text-gray-400 uppercase mb-1">Mobile Number *</span>
                       {token ? (
-                        <span className="font-semibold text-gray-200 block bg-white/2 px-2.5 py-1.5 rounded-lg border border-white/5">{phone}</span>
+                        <input
+                          type="tel"
+                          disabled
+                          value={phone}
+                          className="w-full h-12 px-4 rounded-[10px] text-sm bg-white/5 border border-white/10 text-gray-400 cursor-not-allowed"
+                        />
                       ) : (
                         <input
                           type="tel"
@@ -338,16 +348,21 @@ export default function ExistingResidentRegistrationPage(props: { searchParams: 
                             setFormErrors((p: any) => ({ ...p, phone: '' }))
                           }}
                           placeholder="10-digit Mobile"
-                          className="w-full px-3 py-1.5 rounded-lg text-xs bg-[#0A0E1A] border border-white/10 text-white outline-none focus:border-amber-500"
+                          className="w-full h-12 px-4 rounded-[10px] text-sm bg-white border border-[#f59e0b]/15 text-black font-medium placeholder-[#6b7280] outline-none focus:border-[#f59e0b] focus:ring-2 focus:ring-[#f59e0b]/15 transition-all"
                         />
                       )}
-                      {formErrors.phone && <p className="text-red-400 text-[9px] mt-1">{formErrors.phone}</p>}
+                      {formErrors.phone && <p className="text-red-400 text-[10px] mt-1">{formErrors.phone}</p>}
                     </div>
 
                     <div>
-                      <span className="block text-gray-500 mb-0.5">Email Address *</span>
+                      <span className="block text-xs font-semibold text-gray-400 uppercase mb-1">Email Address *</span>
                       {token ? (
-                        <span className="font-semibold text-gray-200 block bg-white/2 px-2.5 py-1.5 rounded-lg border border-white/5 truncate">{email}</span>
+                        <input
+                          type="email"
+                          disabled
+                          value={email}
+                          className="w-full h-12 px-4 rounded-[10px] text-sm bg-white/5 border border-white/10 text-gray-400 cursor-not-allowed"
+                        />
                       ) : (
                         <input
                           type="email"
@@ -358,16 +373,21 @@ export default function ExistingResidentRegistrationPage(props: { searchParams: 
                             setFormErrors((p: any) => ({ ...p, email: '' }))
                           }}
                           placeholder="email@example.com"
-                          className="w-full px-3 py-1.5 rounded-lg text-xs bg-[#0A0E1A] border border-white/10 text-white outline-none focus:border-amber-500"
+                          className="w-full h-12 px-4 rounded-[10px] text-sm bg-white border border-[#f59e0b]/15 text-black font-medium placeholder-[#6b7280] outline-none focus:border-[#f59e0b] focus:ring-2 focus:ring-[#f59e0b]/15 transition-all"
                         />
                       )}
-                      {formErrors.email && <p className="text-red-400 text-[9px] mt-1">{formErrors.email}</p>}
+                      {formErrors.email && <p className="text-red-400 text-[10px] mt-1">{formErrors.email}</p>}
                     </div>
 
                     <div>
-                      <span className="block text-gray-500 mb-0.5">PG Building *</span>
+                      <span className="block text-xs font-semibold text-gray-400 uppercase mb-1">PG Building *</span>
                       {token ? (
-                        <span className="font-semibold text-gray-200 block bg-white/2 px-2.5 py-1.5 rounded-lg border border-white/5">{invitation?.buildings?.name || 'Main Building'}</span>
+                        <input
+                          type="text"
+                          disabled
+                          value={invitation?.buildings?.name || 'Main Building'}
+                          className="w-full h-12 px-4 rounded-[10px] text-sm bg-white/5 border border-white/10 text-gray-400 cursor-not-allowed"
+                        />
                       ) : (
                         <select
                           required
@@ -377,7 +397,7 @@ export default function ExistingResidentRegistrationPage(props: { searchParams: 
                             setRoomId('')
                             setFormErrors((p: any) => ({ ...p, buildingId: '' }))
                           }}
-                          className="w-full px-2 py-1.5 rounded-lg text-xs bg-[#0A0E1A] border border-white/10 text-white outline-none focus:border-amber-500"
+                          className="w-full h-12 px-4 rounded-[10px] text-sm bg-white border border-[#f59e0b]/15 text-black font-medium outline-none focus:border-[#f59e0b] focus:ring-2 focus:ring-[#f59e0b]/15 transition-all"
                         >
                           <option value="">-- Building --</option>
                           {buildings.map(b => (
@@ -385,14 +405,19 @@ export default function ExistingResidentRegistrationPage(props: { searchParams: 
                           ))}
                         </select>
                       )}
-                      {formErrors.buildingId && <p className="text-red-400 text-[9px] mt-1">{formErrors.buildingId}</p>}
+                      {formErrors.buildingId && <p className="text-red-400 text-[10px] mt-1">{formErrors.buildingId}</p>}
                     </div>
 
                     <div className="grid grid-cols-2 gap-2">
                       <div>
-                        <span className="block text-gray-500 mb-0.5">Floor *</span>
+                        <span className="block text-xs font-semibold text-gray-400 uppercase mb-1">Floor *</span>
                         {token ? (
-                          <span className="font-semibold text-gray-200 block bg-white/2 px-2.5 py-1.5 rounded-lg border border-white/5">Floor {floorNumber || 1}</span>
+                          <input
+                            type="text"
+                            disabled
+                            value={`Floor ${floorNumber || 1}`}
+                            className="w-full h-12 px-4 rounded-[10px] text-sm bg-white/5 border border-white/10 text-gray-400 cursor-not-allowed"
+                          />
                         ) : (
                           <input
                             type="number"
@@ -403,15 +428,20 @@ export default function ExistingResidentRegistrationPage(props: { searchParams: 
                               setFormErrors((p: any) => ({ ...p, floorNumber: '' }))
                             }}
                             placeholder="Floor"
-                            className="w-full px-3 py-1.5 rounded-lg text-xs bg-[#0A0E1A] border border-white/10 text-white outline-none focus:border-amber-500"
+                            className="w-full h-12 px-4 rounded-[10px] text-sm bg-white border border-[#f59e0b]/15 text-black font-medium placeholder-[#6b7280] outline-none focus:border-[#f59e0b] focus:ring-2 focus:ring-[#f59e0b]/15 transition-all"
                           />
                         )}
-                        {formErrors.floorNumber && <p className="text-red-400 text-[9px] mt-1">{formErrors.floorNumber}</p>}
+                        {formErrors.floorNumber && <p className="text-red-400 text-[10px] mt-1">{formErrors.floorNumber}</p>}
                       </div>
                       <div>
-                        <span className="block text-gray-500 mb-0.5">Room *</span>
+                        <span className="block text-xs font-semibold text-gray-400 uppercase mb-1">Room *</span>
                         {token ? (
-                          <span className="font-semibold text-gray-200 block bg-white/2 px-2.5 py-1.5 rounded-lg border border-white/5">Room {invitation?.rooms?.room_number || '—'}</span>
+                          <input
+                            type="text"
+                            disabled
+                            value={`Room ${invitation?.rooms?.room_number || '—'}`}
+                            className="w-full h-12 px-4 rounded-[10px] text-sm bg-white/5 border border-white/10 text-gray-400 cursor-not-allowed"
+                          />
                         ) : (
                           <select
                             required
@@ -421,7 +451,7 @@ export default function ExistingResidentRegistrationPage(props: { searchParams: 
                               setRoomId(e.target.value)
                               setFormErrors((p: any) => ({ ...p, roomId: '' }))
                             }}
-                            className="w-full px-2 py-1.5 rounded-lg text-xs bg-[#0A0E1A] border border-white/10 text-white outline-none focus:border-amber-500 disabled:opacity-50"
+                            className="w-full h-12 px-4 rounded-[10px] text-sm bg-white border border-[#f59e0b]/15 text-black font-medium outline-none focus:border-[#f59e0b] focus:ring-2 focus:ring-[#f59e0b]/15 transition-all disabled:opacity-50"
                           >
                             <option value="">-- Room --</option>
                             {rooms.map(r => (
@@ -429,14 +459,19 @@ export default function ExistingResidentRegistrationPage(props: { searchParams: 
                             ))}
                           </select>
                         )}
-                        {formErrors.roomId && <p className="text-red-400 text-[9px] mt-1">{formErrors.roomId}</p>}
+                        {formErrors.roomId && <p className="text-red-400 text-[10px] mt-1">{formErrors.roomId}</p>}
                       </div>
                     </div>
 
                     <div>
-                      <span className="block text-gray-500 mb-0.5">Joining Date *</span>
+                      <span className="block text-xs font-semibold text-gray-400 uppercase mb-1">Joining Date *</span>
                       {token ? (
-                        <span className="font-semibold text-gray-200 block bg-white/2 px-2.5 py-1.5 rounded-lg border border-white/5">{joiningDate}</span>
+                        <input
+                          type="text"
+                          disabled
+                          value={joiningDate}
+                          className="w-full h-12 px-4 rounded-[10px] text-sm bg-white/5 border border-white/10 text-gray-400 cursor-not-allowed"
+                        />
                       ) : (
                         <input
                           type="date"
@@ -446,10 +481,10 @@ export default function ExistingResidentRegistrationPage(props: { searchParams: 
                             setJoiningDate(e.target.value)
                             setFormErrors((p: any) => ({ ...p, joiningDate: '' }))
                           }}
-                          className="w-full px-3 py-1.5 rounded-lg text-xs bg-[#0A0E1A] border border-white/10 text-white outline-none focus:border-amber-500"
+                          className="w-full h-12 px-4 rounded-[10px] text-sm bg-white border border-[#f59e0b]/15 text-black font-medium outline-none focus:border-[#f59e0b] focus:ring-2 focus:ring-[#f59e0b]/15 transition-all"
                         />
                       )}
-                      {formErrors.joiningDate && <p className="text-red-400 text-[9px] mt-1">{formErrors.joiningDate}</p>}
+                      {formErrors.joiningDate && <p className="text-red-400 text-[10px] mt-1">{formErrors.joiningDate}</p>}
                     </div>
                   </div>
 
@@ -462,13 +497,13 @@ export default function ExistingResidentRegistrationPage(props: { searchParams: 
               </div>
 
               {/* Right Column: Editable Details Form */}
-              <div className="md:col-span-2 space-y-6">
+              <div className="col-span-1 lg:col-span-2 space-y-6">
                 <div className="bg-[#0F1629] border border-white/8 rounded-2xl p-6 sm:p-8 space-y-6 shadow-xl">
                   
                   {/* Personal & College */}
                   <div>
-                    <h3 className="text-sm font-bold text-white mb-4 pb-2 border-b border-white/5 flex items-center gap-1.5">
-                      <User size={16} style={{ color: GOLD }} /> 1. Personal & College/Company Details
+                    <h3 className="text-base font-bold text-[#f59e0b] mb-4 pb-2 border-b border-[#f59e0b]/20 flex items-center gap-2">
+                      <User size={18} className="text-[#f59e0b]" /> 1. Personal & College/Company Details
                     </h3>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -484,7 +519,7 @@ export default function ExistingResidentRegistrationPage(props: { searchParams: 
                             setFormErrors((p: any) => ({ ...p, aadharNumber: '' }))
                           }}
                           placeholder="12-digit Aadhaar Number"
-                          className="w-full px-3 py-2.5 rounded-xl text-sm bg-white/3 border border-white/5 text-white outline-none focus:border-[#C8840A]"
+                          className="w-full h-12 px-4 rounded-[10px] text-sm bg-white border border-[#f59e0b]/15 text-black font-medium placeholder-[#6b7280] outline-none focus:border-[#f59e0b] focus:ring-2 focus:ring-[#f59e0b]/15 transition-all"
                         />
                         {formErrors.aadharNumber && <p className="text-red-400 text-[10px] mt-1">{formErrors.aadharNumber}</p>}
                       </div>
@@ -499,7 +534,7 @@ export default function ExistingResidentRegistrationPage(props: { searchParams: 
                             setDob(e.target.value)
                             setFormErrors((p: any) => ({ ...p, dob: '' }))
                           }}
-                          className="w-full px-3 py-2.5 rounded-xl text-sm bg-white/3 border border-white/5 text-white outline-none focus:border-[#C8840A]"
+                          className="w-full h-12 px-4 rounded-[10px] text-sm bg-white border border-[#f59e0b]/15 text-black font-medium outline-none focus:border-[#f59e0b] focus:ring-2 focus:ring-[#f59e0b]/15 transition-all"
                         />
                         {formErrors.dob && <p className="text-red-400 text-[10px] mt-1">{formErrors.dob}</p>}
                       </div>
@@ -515,7 +550,7 @@ export default function ExistingResidentRegistrationPage(props: { searchParams: 
                             setFormErrors((p: any) => ({ ...p, collegeName: '' }))
                           }}
                           placeholder="Acharya Institute of Tech / Infosys"
-                          className="w-full px-3 py-2.5 rounded-xl text-sm bg-white/3 border border-white/5 text-white outline-none focus:border-[#C8840A]"
+                          className="w-full h-12 px-4 rounded-[10px] text-sm bg-white border border-[#f59e0b]/15 text-black font-medium placeholder-[#6b7280] outline-none focus:border-[#f59e0b] focus:ring-2 focus:ring-[#f59e0b]/15 transition-all"
                         />
                         {formErrors.collegeName && <p className="text-red-400 text-[10px] mt-1">{formErrors.collegeName}</p>}
                       </div>
@@ -531,7 +566,7 @@ export default function ExistingResidentRegistrationPage(props: { searchParams: 
                             setFormErrors((p: any) => ({ ...p, course: '' }))
                           }}
                           placeholder="B.Tech CSE / Software Engineer"
-                          className="w-full px-3 py-2.5 rounded-xl text-sm bg-white/3 border border-white/5 text-white outline-none focus:border-[#C8840A]"
+                          className="w-full h-12 px-4 rounded-[10px] text-sm bg-white border border-[#f59e0b]/15 text-black font-medium placeholder-[#6b7280] outline-none focus:border-[#f59e0b] focus:ring-2 focus:ring-[#f59e0b]/15 transition-all"
                         />
                         {formErrors.course && <p className="text-red-400 text-[10px] mt-1">{formErrors.course}</p>}
                       </div>
@@ -540,8 +575,8 @@ export default function ExistingResidentRegistrationPage(props: { searchParams: 
 
                   {/* Permanent Address */}
                   <div>
-                    <h3 className="text-sm font-bold text-white mb-4 pb-2 border-b border-white/5 flex items-center gap-1.5">
-                      <Home size={16} style={{ color: GOLD }} /> 2. Permanent Address
+                    <h3 className="text-base font-bold text-[#f59e0b] mb-4 pb-2 border-b border-[#f59e0b]/20 flex items-center gap-2">
+                      <Home size={18} className="text-[#f59e0b]" /> 2. Permanent Address
                     </h3>
 
                     <div className="space-y-4">
@@ -556,7 +591,8 @@ export default function ExistingResidentRegistrationPage(props: { searchParams: 
                             setFormErrors((p: any) => ({ ...p, permanentAddress: '' }))
                           }}
                           placeholder="House No, Street, Landmark..."
-                          className="w-full px-3 py-2.5 rounded-xl text-sm bg-white/3 border border-white/5 text-white outline-none focus:border-[#C8840A] resize-none"
+                          className="w-full p-4 rounded-[10px] text-sm bg-white border border-[#f59e0b]/15 text-black font-medium placeholder-[#6b7280] outline-none focus:border-[#f59e0b] focus:ring-2 focus:ring-[#f59e0b]/15 transition-all resize-none"
+                          style={{ minHeight: '80px' }}
                         />
                         {formErrors.permanentAddress && <p className="text-red-400 text-[10px] mt-1">{formErrors.permanentAddress}</p>}
                       </div>
@@ -572,7 +608,7 @@ export default function ExistingResidentRegistrationPage(props: { searchParams: 
                               setCity(e.target.value)
                               setFormErrors((p: any) => ({ ...p, city: '' }))
                             }}
-                            className="w-full px-3 py-2.5 rounded-xl text-sm bg-white/3 border border-white/5 text-white outline-none focus:border-[#C8840A]"
+                            className="w-full h-12 px-4 rounded-[10px] text-sm bg-white border border-[#f59e0b]/15 text-black font-medium outline-none focus:border-[#f59e0b] focus:ring-2 focus:ring-[#f59e0b]/15 transition-all"
                           />
                           {formErrors.city && <p className="text-red-400 text-[10px] mt-1">{formErrors.city}</p>}
                         </div>
@@ -587,7 +623,7 @@ export default function ExistingResidentRegistrationPage(props: { searchParams: 
                               setStateName(e.target.value)
                               setFormErrors((p: any) => ({ ...p, stateName: '' }))
                             }}
-                            className="w-full px-3 py-2.5 rounded-xl text-sm bg-white/3 border border-white/5 text-white outline-none focus:border-[#C8840A]"
+                            className="w-full h-12 px-4 rounded-[10px] text-sm bg-white border border-[#f59e0b]/15 text-black font-medium outline-none focus:border-[#f59e0b] focus:ring-2 focus:ring-[#f59e0b]/15 transition-all"
                           />
                           {formErrors.stateName && <p className="text-red-400 text-[10px] mt-1">{formErrors.stateName}</p>}
                         </div>
@@ -603,7 +639,7 @@ export default function ExistingResidentRegistrationPage(props: { searchParams: 
                               if (/^\d*$/.test(e.target.value)) setPincode(e.target.value)
                               setFormErrors((p: any) => ({ ...p, pincode: '' }))
                             }}
-                            className="w-full px-3 py-2.5 rounded-xl text-sm bg-white/3 border border-white/5 text-white outline-none focus:border-[#C8840A]"
+                            className="w-full h-12 px-4 rounded-[10px] text-sm bg-white border border-[#f59e0b]/15 text-black font-medium outline-none focus:border-[#f59e0b] focus:ring-2 focus:ring-[#f59e0b]/15 transition-all"
                           />
                           {formErrors.pincode && <p className="text-red-400 text-[10px] mt-1">{formErrors.pincode}</p>}
                         </div>
@@ -613,8 +649,8 @@ export default function ExistingResidentRegistrationPage(props: { searchParams: 
 
                   {/* Emergency Contact */}
                   <div>
-                    <h3 className="text-sm font-bold text-white mb-4 pb-2 border-b border-white/5 flex items-center gap-1.5">
-                      <Phone size={16} style={{ color: GOLD }} /> 3. Emergency Contact Details
+                    <h3 className="text-base font-bold text-[#f59e0b] mb-4 pb-2 border-b border-[#f59e0b]/20 flex items-center gap-2">
+                      <Phone size={18} className="text-[#f59e0b]" /> 3. Emergency Contact Details
                     </h3>
 
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -629,7 +665,7 @@ export default function ExistingResidentRegistrationPage(props: { searchParams: 
                             setFormErrors((p: any) => ({ ...p, emergencyName: '' }))
                           }}
                           placeholder="Parent / Guardian Name"
-                          className="w-full px-3 py-2.5 rounded-xl text-sm bg-white/3 border border-white/5 text-white outline-none focus:border-[#C8840A]"
+                          className="w-full h-12 px-4 rounded-[10px] text-sm bg-white border border-[#f59e0b]/15 text-black font-medium placeholder-[#6b7280] outline-none focus:border-[#f59e0b] focus:ring-2 focus:ring-[#f59e0b]/15 transition-all"
                         />
                         {formErrors.emergencyName && <p className="text-red-400 text-[10px] mt-1">{formErrors.emergencyName}</p>}
                       </div>
@@ -646,7 +682,7 @@ export default function ExistingResidentRegistrationPage(props: { searchParams: 
                             setFormErrors((p: any) => ({ ...p, emergencyPhone: '' }))
                           }}
                           placeholder="Emergency Mobile"
-                          className="w-full px-3 py-2.5 rounded-xl text-sm bg-white/3 border border-white/5 text-white outline-none focus:border-[#C8840A]"
+                          className="w-full h-12 px-4 rounded-[10px] text-sm bg-white border border-[#f59e0b]/15 text-black font-medium placeholder-[#6b7280] outline-none focus:border-[#f59e0b] focus:ring-2 focus:ring-[#f59e0b]/15 transition-all"
                         />
                         {formErrors.emergencyPhone && <p className="text-red-400 text-[10px] mt-1">{formErrors.emergencyPhone}</p>}
                       </div>
@@ -662,7 +698,7 @@ export default function ExistingResidentRegistrationPage(props: { searchParams: 
                             setFormErrors((p: any) => ({ ...p, emergencyRelationship: '' }))
                           }}
                           placeholder="Father / Mother / Guardian"
-                          className="w-full px-3 py-2.5 rounded-xl text-sm bg-white/3 border border-white/5 text-white outline-none focus:border-[#C8840A]"
+                          className="w-full h-12 px-4 rounded-[10px] text-sm bg-white border border-[#f59e0b]/15 text-black font-medium placeholder-[#6b7280] outline-none focus:border-[#f59e0b] focus:ring-2 focus:ring-[#f59e0b]/15 transition-all"
                         />
                         {formErrors.emergencyRelationship && <p className="text-red-400 text-[10px] mt-1">{formErrors.emergencyRelationship}</p>}
                       </div>
@@ -671,8 +707,8 @@ export default function ExistingResidentRegistrationPage(props: { searchParams: 
 
                   {/* Document Uploads */}
                   <div>
-                    <h3 className="text-sm font-bold text-white mb-4 pb-2 border-b border-white/5 flex items-center gap-1.5">
-                      <FileText size={16} style={{ color: GOLD }} /> 4. Verification Document Vault
+                    <h3 className="text-base font-bold text-[#f59e0b] mb-4 pb-2 border-b border-[#f59e0b]/20 flex items-center gap-2">
+                      <FileText size={18} className="text-[#f59e0b]" /> 4. Verification Document Vault
                     </h3>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -681,8 +717,12 @@ export default function ExistingResidentRegistrationPage(props: { searchParams: 
                         <label className="block text-xs font-semibold text-gray-400 uppercase mb-2">Profile Passport Photo *</label>
                         <div
                           onClick={() => document.getElementById('photo-input')?.click()}
-                          className="border-2 border-dashed border-white/10 hover:border-amber-500/40 rounded-xl p-4 text-center cursor-pointer transition-colors"
-                          style={{ background: photoFile ? 'rgba(201,168,76,0.05)' : 'rgba(255,255,255,0.01)', borderColor: photoFile ? GOLD : 'rgba(255,255,255,0.1)' }}
+                          className="rounded-xl p-6 text-center cursor-pointer transition-all flex flex-col items-center justify-center gap-2 hover:bg-[#f59e0b]/5 border-2 border-dashed"
+                          style={{
+                            minHeight: '120px',
+                            borderColor: photoFile ? '#f59e0b' : 'rgba(245, 158, 11, 0.3)',
+                            backgroundColor: photoFile ? 'rgba(245, 158, 11, 0.05)' : 'transparent',
+                          }}
                         >
                           <input
                             id="photo-input"
@@ -695,11 +735,18 @@ export default function ExistingResidentRegistrationPage(props: { searchParams: 
                             }}
                           />
                           {photoFile ? (
-                            <p className="text-xs text-amber-500 font-semibold truncate">✓ {photoFile.name}</p>
+                            <div className="flex flex-col items-center gap-1.5">
+                              <div className="w-9 h-9 rounded-full bg-green-500/10 border border-green-500/20 flex items-center justify-center text-green-400">
+                                <CheckCircle size={18} />
+                              </div>
+                              <p className="text-xs text-amber-500 font-semibold truncate max-w-[150px]">{photoFile.name}</p>
+                              <p className="text-[10px] text-gray-500">Click to replace photo</p>
+                            </div>
                           ) : (
-                            <div className="text-gray-500">
-                              <Upload size={16} className="mx-auto mb-1.5 text-gray-600" />
-                              <span className="text-xs">Click to upload Passport Photo</span>
+                            <div className="text-gray-500 flex flex-col items-center gap-1">
+                              <Upload size={20} className="text-[#f59e0b]/80 mb-0.5" />
+                              <span className="text-xs font-semibold text-gray-300">Upload Passport Photo</span>
+                              <span className="text-[9px] text-gray-500">JPEG, PNG up to 5MB</span>
                             </div>
                           )}
                         </div>
@@ -711,8 +758,12 @@ export default function ExistingResidentRegistrationPage(props: { searchParams: 
                         <label className="block text-xs font-semibold text-gray-400 uppercase mb-2">Aadhaar Card / ID Proof (PDF/JPG) *</label>
                         <div
                           onClick={() => document.getElementById('id-input')?.click()}
-                          className="border-2 border-dashed border-white/10 hover:border-amber-500/40 rounded-xl p-4 text-center cursor-pointer transition-colors"
-                          style={{ background: idProofFile ? 'rgba(201,168,76,0.05)' : 'rgba(255,255,255,0.01)', borderColor: idProofFile ? GOLD : 'rgba(255,255,255,0.1)' }}
+                          className="rounded-xl p-6 text-center cursor-pointer transition-all flex flex-col items-center justify-center gap-2 hover:bg-[#f59e0b]/5 border-2 border-dashed"
+                          style={{
+                            minHeight: '120px',
+                            borderColor: idProofFile ? '#f59e0b' : 'rgba(245, 158, 11, 0.3)',
+                            backgroundColor: idProofFile ? 'rgba(245, 158, 11, 0.05)' : 'transparent',
+                          }}
                         >
                           <input
                             id="id-input"
@@ -725,11 +776,18 @@ export default function ExistingResidentRegistrationPage(props: { searchParams: 
                             }}
                           />
                           {idProofFile ? (
-                            <p className="text-xs text-amber-500 font-semibold truncate">✓ {idProofFile.name}</p>
+                            <div className="flex flex-col items-center gap-1.5">
+                              <div className="w-9 h-9 rounded-full bg-green-500/10 border border-green-500/20 flex items-center justify-center text-green-400">
+                                <CheckCircle size={18} />
+                              </div>
+                              <p className="text-xs text-amber-500 font-semibold truncate max-w-[150px]">{idProofFile.name}</p>
+                              <p className="text-[10px] text-gray-500">Click to replace proof</p>
+                            </div>
                           ) : (
-                            <div className="text-gray-500">
-                              <Upload size={16} className="mx-auto mb-1.5 text-gray-600" />
-                              <span className="text-xs">Click to upload Aadhaar Proof</span>
+                            <div className="text-gray-500 flex flex-col items-center gap-1">
+                              <Upload size={20} className="text-[#f59e0b]/80 mb-0.5" />
+                              <span className="text-xs font-semibold text-gray-300">Upload Aadhaar Proof</span>
+                              <span className="text-[9px] text-gray-500">PDF, JPG up to 5MB</span>
                             </div>
                           )}
                         </div>
@@ -740,8 +798,8 @@ export default function ExistingResidentRegistrationPage(props: { searchParams: 
 
                   {/* Password creation */}
                   <div>
-                    <h3 className="text-sm font-bold text-white mb-4 pb-2 border-b border-white/5 flex items-center gap-1.5">
-                      <Lock size={16} style={{ color: GOLD }} /> 5. Set Portal Login Password
+                    <h3 className="text-base font-bold text-[#f59e0b] mb-4 pb-2 border-b border-[#f59e0b]/20 flex items-center gap-2">
+                      <Lock size={18} className="text-[#f59e0b]" /> 5. Set Portal Login Password
                     </h3>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -757,14 +815,14 @@ export default function ExistingResidentRegistrationPage(props: { searchParams: 
                               setFormErrors((p: any) => ({ ...p, password: '' }))
                             }}
                             placeholder="Minimum 6 characters"
-                            className="w-full pl-3 pr-10 py-2.5 rounded-xl text-sm bg-white/3 border border-white/5 text-white outline-none focus:border-[#C8840A]"
+                            className="w-full h-12 pl-4 pr-10 rounded-[10px] text-sm bg-white border border-[#f59e0b]/15 text-black font-medium placeholder-[#6b7280] outline-none focus:border-[#f59e0b] focus:ring-2 focus:ring-[#f59e0b]/15 transition-all"
                           />
                           <button
                             type="button"
                             onClick={() => setShowPw(!showPw)}
-                            className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white"
+                            className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-500 hover:text-black transition-colors"
                           >
-                            {showPw ? <EyeOff size={15} /> : <Eye size={15} />}
+                            {showPw ? <EyeOff size={16} /> : <Eye size={16} />}
                           </button>
                         </div>
                         {formErrors.password && <p className="text-red-400 text-[10px] mt-1">{formErrors.password}</p>}
@@ -782,14 +840,14 @@ export default function ExistingResidentRegistrationPage(props: { searchParams: 
                               setFormErrors((p: any) => ({ ...p, confirmPassword: '' }))
                             }}
                             placeholder="Re-type your password"
-                            className="w-full pl-3 pr-10 py-2.5 rounded-xl text-sm bg-white/3 border border-white/5 text-white outline-none focus:border-[#C8840A]"
+                            className="w-full h-12 pl-4 pr-10 rounded-[10px] text-sm bg-white border border-[#f59e0b]/15 text-black font-medium placeholder-[#6b7280] outline-none focus:border-[#f59e0b] focus:ring-2 focus:ring-[#f59e0b]/15 transition-all"
                           />
                           <button
                             type="button"
                             onClick={() => setShowConfirmPw(!showConfirmPw)}
-                            className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white"
+                            className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-500 hover:text-black transition-colors"
                           >
-                            {showConfirmPw ? <EyeOff size={15} /> : <Eye size={15} />}
+                            {showConfirmPw ? <EyeOff size={16} /> : <Eye size={16} />}
                           </button>
                         </div>
                         {formErrors.confirmPassword && <p className="text-red-400 text-[10px] mt-1">{formErrors.confirmPassword}</p>}
@@ -799,7 +857,7 @@ export default function ExistingResidentRegistrationPage(props: { searchParams: 
 
                   {/* Confirmation checkbox */}
                   <div className="pt-4 border-t border-white/5 space-y-4">
-                    <label className="flex items-start gap-2.5 cursor-pointer">
+                    <label className="flex items-start gap-3 cursor-pointer text-left">
                       <input
                         type="checkbox"
                         checked={confirmChecked}
@@ -807,10 +865,18 @@ export default function ExistingResidentRegistrationPage(props: { searchParams: 
                           setConfirmChecked(e.target.checked)
                           setFormErrors((p: any) => ({ ...p, confirmChecked: '' }))
                         }}
-                        className="mt-0.5 rounded border-white/10 bg-white/3 text-[#C8840A] outline-none"
+                        className="rounded border border-[#f59e0b]/15 text-[#f59e0b] outline-none"
+                        style={{
+                          width: '18px',
+                          height: '18px',
+                          minWidth: '18px',
+                          minHeight: '18px',
+                          marginTop: '2px',
+                          accentColor: '#f59e0b'
+                        }}
                       />
                       <span className="text-xs text-gray-400 select-none leading-relaxed">
-                        I confirm that I am an existing resident at MLV PG Services staying in the allocated room. I verify that all the information provided above is correct, accurate and matching my official government records.
+                        I confirm that I am an existing resident of MLV PG and all information provided is accurate and matches official records.
                       </span>
                     </label>
                     {formErrors.confirmChecked && <p className="text-red-400 text-[10px]">{formErrors.confirmChecked}</p>}
@@ -818,17 +884,17 @@ export default function ExistingResidentRegistrationPage(props: { searchParams: 
                     <button
                       type="submit"
                       disabled={submitting}
-                      className="w-full py-3.5 rounded-xl text-black font-bold text-sm flex items-center justify-center gap-2 transition-all hover:shadow-[0_4px_16px_rgba(245,166,35,0.3)] disabled:opacity-60"
-                      style={{ background: 'linear-gradient(135deg, #C8840A, #F5A623)' }}
+                      className="w-full h-[52px] rounded-xl text-black font-bold text-sm flex items-center justify-center gap-2 transition-all duration-200 hover:translate-y-[-2px] hover:shadow-[0_4px_20px_rgba(245,158,11,0.4)] disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:transform-none"
+                      style={{ background: 'linear-gradient(90deg, #f59e0b, #d97706)' }}
                     >
                       {submitting ? (
                         <>
-                          <Loader2 size={16} className="animate-spin" />
+                          <Loader2 size={18} className="animate-spin" />
                           Submitting Registration Profile…
                         </>
                       ) : (
                         <>
-                          <CheckCircle size={16} />
+                          <CheckCircle size={18} />
                           Submit Registration Profile
                         </>
                       )}
