@@ -4,7 +4,8 @@ import React, { useEffect, useState, useMemo } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import { 
   FolderOpen, Search, Eye, Download, CheckCircle, Clock, Loader2, 
-  Trash2, X, User, Layers, Info, AlertTriangle, RefreshCw
+  Trash2, X, User, AlertTriangle, RefreshCw, Check, AlertCircle, 
+  Building2, DoorOpen, Calendar, ChevronRight
 } from 'lucide-react'
 import { DashboardLayout } from '@/components/admin/layout/DashboardLayout'
 import { createClient } from '@/lib/supabase/client'
@@ -16,57 +17,55 @@ const GOLD = '#F59E0B'
 
 export default function AdminDocumentsPage() {
   const supabase = createClient()
-  const [documents, setDocuments] = useState<any[]>([])
+  const [students, setStudents] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
   
   // Custom Filters
   const [statusFilter, setStatusFilter] = useState<'all' | 'pending' | 'verified' | 'rejected'>('all')
-  const [docTypeFilter, setDocTypeFilter] = useState<string>('all')
   
-  // Sorting, Pagination
+  // Pagination & Sorting
   const [currentPage, setCurrentPage] = useState(1)
   const [rowsPerPage, setRowsPerPage] = useState<number>(25)
-  const [sortField, setSortField] = useState<string>('uploaded_at')
-  const [sortAsc, setSortAsc] = useState(false)
-  
+
   // Drawer and Dialog States
   const [selectedStudent, setSelectedStudent] = useState<any>(null)
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
-  const [rejectingDocId, setRejectingDocId] = useState<string | null>(null)
+  const [rejectingStudentId, setRejectingStudentId] = useState<string | null>(null)
   const [rejectionInput, setRejectionInput] = useState('')
 
   const loadData = async () => {
     setLoading(true)
     try {
+      // Query students as the primary source, joining their uploaded documents and room info
       const { data, error } = await supabase
-        .from('documents')
+        .from('students')
         .select(`
           *,
-          students (
+          rooms (
             id,
-            full_name,
-            student_id,
-            mobile,
-            email,
-            joining_date,
-            agreement_end_date,
-            profile_photo_url,
-            room_id,
-            rooms (
-              id,
-              room_number,
-              building_name
-            )
+            room_number,
+            building_name
+          ),
+          documents (
+            id,
+            doc_type,
+            file_url,
+            file_name,
+            status,
+            verified,
+            rejection_reason,
+            uploaded_at
           )
         `)
-        .order('uploaded_at', { ascending: false })
+        .eq('is_active', true)
+        .order('full_name')
 
       if (error) throw error
-      setDocuments(data || [])
+      setStudents(data || [])
     } catch (err) {
-      console.error('Error fetching documents details:', err)
-      toast.error('Failed to load documents vault log')
+      console.error('Error fetching students and documents:', err)
+      toast.error('Failed to load documents vault')
     } finally {
       setLoading(false)
     }
@@ -76,32 +75,64 @@ export default function AdminDocumentsPage() {
     loadData()
   }, [supabase])
 
-  const handleVerify = async (docId: string, status: boolean) => {
+  // Helper function to calculate a student's verification status
+  const getStudentStatus = (student: any): 'verified' | 'pending' | 'rejected' => {
+    const docs = student.documents || []
+    if (docs.length === 0) return 'pending' // pending upload / review
+    if (docs.some((d: any) => d.status === 'rejected')) return 'rejected'
+    if (docs.some((d: any) => d.status === 'pending')) return 'pending'
+    if (docs.every((d: any) => d.status === 'verified')) return 'verified'
+    return 'pending'
+  }
+
+  // Single resident Actions
+  const handleVerifyAll = async (studentId: string) => {
     try {
       const { data: { session } } = await supabase.auth.getSession()
       
       const { error } = await supabase
         .from('documents')
         .update({
-          status: status ? 'verified' : 'pending',
-          verified: status,
-          verified_at: status ? new Date().toISOString() : null,
-          verified_by: status && session?.user ? session.user.id : null,
+          status: 'verified',
+          verified: true,
+          verified_at: new Date().toISOString(),
+          verified_by: session?.user?.id || null,
           rejection_reason: null
         })
-        .eq('id', docId)
+        .eq('student_id', studentId)
 
       if (error) throw error
-      toast.success(status ? 'Document verified successfully!' : 'Verification revoked')
+      toast.success('All resident documents verified successfully!')
       loadData()
     } catch (err: any) {
-      toast.error(err.message || 'Action failed')
+      toast.error(err.message || 'Verification failed')
     }
   }
 
-  const handleSingleRejectSubmit = async (e: React.FormEvent) => {
+  const handleRevokeAll = async (studentId: string) => {
+    try {
+      const { error } = await supabase
+        .from('documents')
+        .update({
+          status: 'pending',
+          verified: false,
+          verified_at: null,
+          verified_by: null,
+          rejection_reason: null
+        })
+        .eq('student_id', studentId)
+
+      if (error) throw error
+      toast.success('Verification status revoked successfully')
+      loadData()
+    } catch (err: any) {
+      toast.error(err.message || 'Revocation failed')
+    }
+  }
+
+  const handleRejectAllSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!rejectingDocId || !rejectionInput.trim()) return
+    if (!rejectingStudentId || !rejectionInput.trim()) return
 
     try {
       const { error } = await supabase
@@ -111,142 +142,94 @@ export default function AdminDocumentsPage() {
           verified: false,
           rejection_reason: rejectionInput.trim()
         })
-        .eq('id', rejectingDocId)
+        .eq('student_id', rejectingStudentId)
 
       if (error) throw error
-      toast.success('Document marked as Rejected')
-      setRejectingDocId(null)
+      toast.success('Resident documents rejected.')
+      setRejectingStudentId(null)
       setRejectionInput('')
       loadData()
     } catch (err: any) {
-      toast.error(err.message || 'Failed to reject document')
+      toast.error(err.message || 'Action failed')
     }
   }
 
-  const handleDelete = async (docId: string, fileUrl: string) => {
-    if (!confirm('Are you sure you want to permanently delete this document?')) return
-
-    try {
-      const pathParts = fileUrl.split('/student-documents/')
-      if (pathParts.length > 1) {
-        const storagePath = decodeURIComponent(pathParts[1])
-        await supabase.storage.from('student-documents').remove([storagePath])
-      }
-
-      const { error } = await supabase
-        .from('documents')
-        .delete()
-        .eq('id', docId)
-
-      if (error) throw error
-      toast.success('Document deleted successfully')
-      loadData()
-    } catch (err: any) {
-      toast.error(err.message || 'Failed to delete document')
+  const handleDownloadAll = (student: any) => {
+    const docs = student.documents || []
+    if (docs.length === 0) {
+      toast.error('No documents uploaded yet to download!')
+      return
     }
+    docs.forEach((d: any) => {
+      if (d.file_url) window.open(d.file_url, '_blank')
+    })
+    toast.success(`Downloading ${docs.length} documents...`)
   }
 
-  // Filter & Search logic
-  const filteredDocs = useMemo(() => {
-    return documents.filter(doc => {
-      const student = doc.students || {}
+  // Filter, Search, and Pagination Logic
+  const filteredStudents = useMemo(() => {
+    return students.filter(student => {
       const room = student.rooms || {}
       
       const studentName = student.full_name?.toLowerCase() || ''
       const studentId = student.student_id?.toLowerCase() || ''
       const building = room.building_name?.toLowerCase() || ''
       const roomNo = room.room_number?.toLowerCase() || ''
-      const docType = doc.doc_type?.toLowerCase() || ''
       const term = searchQuery.toLowerCase()
 
       const matchesSearch = 
         studentName.includes(term) || 
         studentId.includes(term) || 
         building.includes(term) || 
-        roomNo.includes(term) || 
-        docType.includes(term)
+        roomNo.includes(term)
 
+      const calcStatus = getStudentStatus(student)
       const matchesStatus = 
         statusFilter === 'all' || 
-        (statusFilter === 'verified' && doc.status === 'verified') || 
-        (statusFilter === 'pending' && doc.status === 'pending') || 
-        (statusFilter === 'rejected' && doc.status === 'rejected')
+        (statusFilter === calcStatus)
 
-      const matchesDocType = 
-        docTypeFilter === 'all' || 
-        doc.doc_type === docTypeFilter
-
-      return matchesSearch && matchesStatus && matchesDocType
-    }).sort((a, b) => {
-      let fieldA = a[sortField]
-      let fieldB = b[sortField]
-
-      if (sortField === 'student_name') {
-        fieldA = a.students?.full_name || ''
-        fieldB = b.students?.full_name || ''
-      }
-
-      if (fieldA < fieldB) return sortAsc ? -1 : 1
-      if (fieldA > fieldB) return sortAsc ? 1 : -1
-      return 0
+      return matchesSearch && matchesStatus
     })
-  }, [documents, searchQuery, statusFilter, docTypeFilter, sortField, sortAsc])
+  }, [students, searchQuery, statusFilter])
 
-  // Flat Slice for current page
-  const paginatedDocs = useMemo(() => {
+  const paginatedStudents = useMemo(() => {
     const start = (currentPage - 1) * rowsPerPage
-    return filteredDocs.slice(start, start + rowsPerPage)
-  }, [filteredDocs, currentPage, rowsPerPage])
+    return filteredStudents.slice(start, start + rowsPerPage)
+  }, [filteredStudents, currentPage, rowsPerPage])
 
-  // Statistics summaries (Compact heights)
+  // Statistics counters (Student-centric!)
   const stats = useMemo(() => {
-    const total = documents.length
-    const pending = documents.filter(d => d.status === 'pending').length
-    const verified = documents.filter(d => d.status === 'verified').length
-    const rejected = documents.filter(d => d.status === 'rejected').length
+    const total = students.length
+    const pending = students.filter(s => getStudentStatus(s) === 'pending').length
+    const verified = students.filter(s => getStudentStatus(s) === 'verified').length
+    const rejected = students.filter(s => getStudentStatus(s) === 'rejected').length
     return { total, pending, verified, rejected }
-  }, [documents])
-
-  const DOC_LABELS: Record<string, string> = {
-    aadhar: 'Aadhaar Card',
-    college_id: 'College ID Card',
-    photo: 'Passport Photo',
-    agreement: 'Rental Contract',
-    renewal_slip: 'Renewal Slip',
-    receipt: 'Payment Receipt',
-    other: 'Supporting File'
-  }
+  }, [students])
 
   const tabOptions = [
-    { id: 'all', label: 'All' },
-    { id: 'pending', label: 'Pending' },
+    { id: 'all', label: 'All Students' },
+    { id: 'pending', label: 'Pending Verification' },
     { id: 'verified', label: 'Verified' },
     { id: 'rejected', label: 'Rejected' }
   ]
 
-  const handleSort = (field: string) => {
-    if (sortField === field) {
-      setSortAsc(!sortAsc)
-    } else {
-      setSortField(field)
-      setSortAsc(true)
-    }
-  }
-
-  const getOtherStudentDocs = (studentId: string) => {
-    return documents.filter(d => d.student_id === studentId)
-  }
+  const DOC_TYPES = [
+    { key: 'aadhar', label: 'Aadhaar Card' },
+    { key: 'college_id', label: 'College ID' },
+    { key: 'photo', label: 'Passport Photo' },
+    { key: 'agreement', label: 'Address Proof' }
+  ]
 
   return (
     <DashboardLayout>
       <MobileContainer className="min-h-screen bg-[#0A0E1A] text-gray-100 pb-8 pt-4">
-        <div className="space-y-4 max-w-7xl mx-auto">
+        <div className="space-y-4 max-w-5xl mx-auto">
           
-          {/* Header (Reduced height, tight padding) */}
-          <div className="flex items-center justify-between pl-12 sm:pl-0 border-b border-white/5 pb-3">
+          {/* Header Layout (Single line, left aligned, reduced height by 30%) */}
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pl-12 sm:pl-0 border-b border-white/5 pb-3">
             <div>
               <h1 className="text-xl sm:text-2xl font-bold text-white flex items-center gap-2 font-serif tracking-tight">
-                <FolderOpen style={{ color: GOLD }} size={20} /> Student Documents
+                📁 Student Documents
               </h1>
               <p className="text-[11px] text-gray-500 mt-0.5">
                 Manage and verify resident documents.
@@ -254,7 +237,7 @@ export default function AdminDocumentsPage() {
             </div>
             <button
               onClick={loadData}
-              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-white/10 hover:bg-white/5 text-gray-400 hover:text-white transition-all text-[11px] font-semibold"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-white/10 hover:bg-white/5 text-gray-400 hover:text-white transition-all text-[11px] font-semibold self-stretch sm:self-auto justify-center"
             >
               <RefreshCw size={12} className={loading ? 'animate-spin' : ''} />
               Refresh
@@ -263,25 +246,25 @@ export default function AdminDocumentsPage() {
 
           {/* Statistics Section (80px high compact cards) */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-            <div className="bg-[#0F1629]/75 border border-white/5 rounded-xl px-3.5 py-2.5 flex flex-col justify-center h-[80px] shadow-sm relative overflow-hidden">
-              <span className="text-[9px] uppercase font-bold text-gray-500 tracking-wider">Total Documents</span>
+            <div className="bg-[#0F1629]/75 border border-white/5 rounded-xl px-3.5 py-2.5 flex flex-col justify-center h-[80px] shadow-sm">
+              <span className="text-[9px] uppercase font-bold text-gray-500 tracking-wider">Total Students</span>
               <span className="text-xl font-bold text-white mt-0.5 font-mono">{stats.total}</span>
             </div>
-            <div className="bg-[#0F1629]/75 border border-white/5 rounded-xl px-3.5 py-2.5 flex flex-col justify-center h-[80px] shadow-sm relative overflow-hidden">
-              <span className="text-[9px] uppercase font-bold text-amber-500 tracking-wider">Pending</span>
+            <div className="bg-[#0F1629]/75 border border-white/5 rounded-xl px-3.5 py-2.5 flex flex-col justify-center h-[80px] shadow-sm">
+              <span className="text-[9px] uppercase font-bold text-amber-500 tracking-wider">Pending Verification</span>
               <span className="text-xl font-bold text-[#F59E0B] mt-0.5 font-mono">{stats.pending}</span>
             </div>
-            <div className="bg-[#0F1629]/75 border border-white/5 rounded-xl px-3.5 py-2.5 flex flex-col justify-center h-[80px] shadow-sm relative overflow-hidden">
-              <span className="text-[9px] uppercase font-bold text-green-500 tracking-wider">Verified</span>
+            <div className="bg-[#0F1629]/75 border border-white/5 rounded-xl px-3.5 py-2.5 flex flex-col justify-center h-[80px] shadow-sm">
+              <span className="text-[9px] uppercase font-bold text-green-500 tracking-wider">Verified Students</span>
               <span className="text-xl font-bold text-green-400 mt-0.5 font-mono">{stats.verified}</span>
             </div>
-            <div className="bg-[#0F1629]/75 border border-white/5 rounded-xl px-3.5 py-2.5 flex flex-col justify-center h-[80px] shadow-sm relative overflow-hidden">
-              <span className="text-[9px] uppercase font-bold text-red-500 tracking-wider">Rejected</span>
+            <div className="bg-[#0F1629]/75 border border-white/5 rounded-xl px-3.5 py-2.5 flex flex-col justify-center h-[80px] shadow-sm">
+              <span className="text-[9px] uppercase font-bold text-red-500 tracking-wider">Rejected Students</span>
               <span className="text-xl font-bold text-red-400 mt-0.5 font-mono">{stats.rejected}</span>
             </div>
           </div>
 
-          {/* Segmented Scrollable Tabs (38px High) */}
+          {/* Scrollable Segmented Tabs */}
           <div className="w-full flex items-center justify-start h-[38px] border-b border-white/5 pb-1">
             <ResponsiveTabs
               options={tabOptions}
@@ -294,15 +277,14 @@ export default function AdminDocumentsPage() {
             />
           </div>
 
-          {/* Compact Unified Filters Block (Search | Type | Rows) */}
+          {/* Search & Compact Filters */}
           <div className="bg-[#0F1629]/30 border border-white/5 rounded-xl p-2.5 shadow-sm">
-            <div className="flex flex-col md:flex-row gap-2 justify-between items-stretch md:items-center">
-              {/* Search */}
-              <div className="relative flex-1 max-w-full md:max-w-md">
+            <div className="flex flex-col sm:flex-row gap-2 justify-between items-center">
+              <div className="relative w-full">
                 <Search size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-500" />
                 <input
                   type="text"
-                  placeholder="Search student, room, type..."
+                  placeholder="Search resident, student ID, room, building..."
                   value={searchQuery}
                   onChange={(e) => {
                     setSearchQuery(e.target.value)
@@ -311,283 +293,218 @@ export default function AdminDocumentsPage() {
                   className="w-full pl-7 pr-3 py-1.5 rounded-lg text-[11px] border border-white/5 bg-[#0A0E1A] text-white outline-none focus:border-amber-500/40"
                 />
               </div>
-
-              {/* Type and Rows Controls */}
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5 text-[11px] text-gray-500 flex-shrink-0">
+                <span>Show:</span>
                 <select
-                  value={docTypeFilter}
+                  value={rowsPerPage}
                   onChange={(e) => {
-                    setDocTypeFilter(e.target.value)
+                    setRowsPerPage(Number(e.target.value))
                     setCurrentPage(1)
                   }}
-                  className="px-2.5 py-1.5 rounded-lg text-[11px] border border-white/5 bg-[#0A0E1A] text-white outline-none focus:border-amber-500/40"
+                  className="px-1.5 py-1 rounded-lg border border-white/5 bg-[#0A0E1A] text-white outline-none"
                 >
-                  <option value="all">All Document Types</option>
-                  {Object.entries(DOC_LABELS).map(([k, v]) => (
-                    <option key={k} value={k}>{v}</option>
-                  ))}
+                  <option value={10}>10</option>
+                  <option value={25}>25</option>
+                  <option value={50}>50</option>
+                  <option value={100}>100</option>
                 </select>
-
-                <div className="flex items-center gap-1.5 text-[11px] text-gray-500">
-                  <span>Show:</span>
-                  <select
-                    value={rowsPerPage}
-                    onChange={(e) => {
-                      setRowsPerPage(Number(e.target.value))
-                      setCurrentPage(1)
-                    }}
-                    className="px-1.5 py-1.5 rounded-lg border border-white/5 bg-[#0A0E1A] text-white text-[11px] outline-none"
-                  >
-                    <option value={10}>10</option>
-                    <option value={25}>25</option>
-                    <option value={50}>50</option>
-                    <option value={100}>100</option>
-                  </select>
-                </div>
               </div>
             </div>
           </div>
 
-          {/* Loader or Empty State or Document List */}
+          {/* Loader or Empty state or Student Cards Grid */}
           {loading ? (
             <div className="flex items-center justify-center p-12 bg-[#0F1629]/20 border border-white/5 rounded-xl">
               <Loader2 className="animate-spin text-amber-500" size={20} />
             </div>
-          ) : filteredDocs.length === 0 ? (
-            /* Compact Empty State card */
+          ) : filteredStudents.length === 0 ? (
             <div className="text-center py-8 bg-[#0F1629]/50 border border-white/5 rounded-xl p-4 max-w-sm mx-auto shadow-sm">
               <FolderOpen size={28} className="mx-auto mb-2 text-gray-600" />
-              <p className="font-semibold text-gray-300 text-xs">No Documents Found</p>
+              <p className="font-semibold text-gray-300 text-xs">No Students Found</p>
               <p className="text-[10px] text-gray-500 mt-0.5">Documents uploaded by residents will appear here.</p>
               <button 
                 onClick={loadData}
-                className="mt-3.5 px-3 py-1.5 rounded bg-white/5 hover:bg-white/10 text-white border border-white/10 text-[10px] font-bold transition-all"
+                className="mt-3 px-3 py-1 rounded bg-white/5 hover:bg-white/10 text-white border border-white/10 text-[10px] font-bold"
               >
                 Refresh
               </button>
             </div>
           ) : (
-            <div className="space-y-3">
-              {/* DESKTOP VIEW (>=768px): Clean ERP Table */}
-              <div className="hidden md:block bg-[#0F1629] border border-white/5 rounded-xl overflow-hidden shadow-sm">
-                <table className="w-full table-auto text-left border-collapse text-xs">
-                  <thead>
-                    <tr className="bg-white/5 border-b border-white/5 text-gray-400">
-                      {['Student', 'Building', 'Room', 'Document', 'Status', 'Uploaded Date', 'Actions'].map((h, i) => (
-                        <th 
-                          key={i} 
-                          onClick={() => h === 'Student' && handleSort('student_name')}
-                          className={`px-4 py-2 font-semibold uppercase tracking-wider text-[10px] select-none ${h === 'Student' ? 'cursor-pointer hover:bg-white/[0.03]' : ''} ${h === 'Actions' ? 'text-right' : ''}`}
-                        >
-                          {h} {h === 'Student' && sortField === 'student_name' && (sortAsc ? '▲' : '▼')}
-                        </th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-white/5">
-                    {paginatedDocs.map((doc) => {
-                      const student = doc.students || {}
-                      const room = student.rooms || {}
-                      const statStr = doc.status || 'pending'
-                      
-                      let badge = 'bg-yellow-500/10 text-yellow-400 border border-yellow-500/20'
-                      if (statStr === 'verified') badge = 'bg-green-500/10 text-green-400 border border-green-500/20'
-                      else if (statStr === 'rejected') badge = 'bg-red-500/10 text-red-400 border border-red-500/20'
-
-                      return (
-                        <tr key={doc.id} className="hover:bg-white/[0.01] transition-colors">
-                          {/* Student */}
-                          <td className="px-4 py-2 whitespace-nowrap">
-                            <button
-                              onClick={() => {
-                                setSelectedStudent(student)
-                                setIsDrawerOpen(true)
-                              }}
-                              className="text-left font-bold text-amber-500 hover:underline outline-none"
-                            >
-                              {student.full_name || '—'}
-                            </button>
-                            <p className="text-[10px] text-gray-500 font-mono mt-0.5">{student.student_id || '—'}</p>
-                          </td>
-
-                          {/* Building */}
-                          <td className="px-4 py-2 whitespace-nowrap text-gray-300">
-                            {room.building_name || 'Unassigned'}
-                          </td>
-
-                          {/* Room */}
-                          <td className="px-4 py-2 whitespace-nowrap text-gray-300">
-                            {room.room_number ? `Room ${room.room_number}` : '—'}
-                          </td>
-
-                          {/* Document */}
-                          <td className="px-4 py-2">
-                            <span className="font-semibold text-gray-200 block">{DOC_LABELS[doc.doc_type] || doc.doc_type}</span>
-                            <span className="text-[10px] text-gray-500 truncate max-w-[160px] block mt-0.5">{doc.file_name}</span>
-                          </td>
-
-                          {/* Status */}
-                          <td className="px-4 py-2 whitespace-nowrap">
-                            <span className={`inline-flex items-center gap-1 text-[9px] font-bold px-2 py-0.5 rounded-full ${badge}`}>
-                              {statStr.toUpperCase()}
-                            </span>
-                          </td>
-
-                          {/* Upload Date */}
-                          <td className="px-4 py-2 whitespace-nowrap text-gray-400">
-                            {doc.uploaded_at?.split('T')[0]}
-                          </td>
-
-                          {/* Actions */}
-                          <td className="px-4 py-2 whitespace-nowrap text-right">
-                            <div className="flex justify-end items-center gap-1.5">
-                              <a href={doc.file_url} target="_blank" rel="noreferrer" className="p-1 rounded hover:bg-white/5 text-gray-400 hover:text-white" title="View">
-                                <Eye size={12} />
-                              </a>
-                              <a href={doc.file_url} download={doc.file_name || 'document'} className="p-1 rounded hover:bg-white/5 text-gray-400 hover:text-white" title="Download">
-                                <Download size={12} />
-                              </a>
-
-                              {statStr !== 'verified' ? (
-                                <button
-                                  onClick={() => handleVerify(doc.id, true)}
-                                  className="px-2 py-0.5 rounded bg-green-500/10 text-green-400 hover:bg-green-500/20 border border-green-500/20 font-bold text-[10px]"
-                                >
-                                  Verify
-                                </button>
-                              ) : (
-                                <button
-                                  onClick={() => handleVerify(doc.id, false)}
-                                  className="px-2 py-0.5 rounded border border-white/10 hover:bg-white/5 text-gray-400 font-semibold text-[10px]"
-                                >
-                                  Revoke
-                                </button>
-                              )}
-
-                              {statStr !== 'rejected' && (
-                                <button
-                                  onClick={() => setRejectingDocId(doc.id)}
-                                  className="px-2 py-0.5 rounded bg-red-500/10 text-red-400 hover:bg-red-500/20 border border-red-500/20 font-bold text-[10px]"
-                                >
-                                  Reject
-                                </button>
-                              )}
-
-                              <button
-                                onClick={() => handleDelete(doc.id, doc.file_url)}
-                                className="p-1 rounded hover:bg-red-500/10 text-gray-500 hover:text-red-400"
-                                title="Delete"
-                              >
-                                <Trash2 size={12} />
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      )
-                    })}
-                  </tbody>
-                </table>
-              </div>
-
-              {/* MOBILE VIEW (<768px): Compact ERP List Cards (No scroll table) */}
-              <div className="md:hidden space-y-2.5">
-                {paginatedDocs.map((doc) => {
-                  const student = doc.students || {}
+            <div className="space-y-4">
+              {/* Responsive Cards Stack (No Tables, No duplicates, One card per Student) */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {paginatedStudents.map((student) => {
                   const room = student.rooms || {}
-                  const statStr = doc.status || 'pending'
+                  const docs = student.documents || []
+                  const calcStatus = getStudentStatus(student)
                   
                   let badge = 'bg-yellow-500/10 text-yellow-400 border border-yellow-500/20'
-                  if (statStr === 'verified') badge = 'bg-green-500/10 text-green-400 border border-green-500/20'
-                  else if (statStr === 'rejected') badge = 'bg-red-500/10 text-red-400 border border-red-500/20'
+                  let badgeLabel = 'Pending Review'
+                  if (calcStatus === 'verified') {
+                    badge = 'bg-green-500/10 text-green-400 border border-green-500/20'
+                    badgeLabel = 'Verified'
+                  } else if (calcStatus === 'rejected') {
+                    badge = 'bg-red-500/10 text-red-400 border border-red-500/20'
+                    badgeLabel = 'Rejected'
+                  }
 
                   return (
                     <div 
-                      key={doc.id}
-                      className="bg-[#0F1629] border border-white/5 rounded-xl p-3.5 space-y-2.5 shadow-sm"
+                      key={student.id}
+                      className="bg-[#0F1629] border border-white/5 rounded-[16px] p-4 flex flex-col justify-between gap-4 shadow-sm hover:shadow-md transition-all duration-200"
                     >
-                      {/* Name & ID Header */}
-                      <div className="flex justify-between items-start gap-2">
-                        <div>
+                      {/* 1. Header Section: Name, ID, Overall Status */}
+                      <div className="flex justify-between items-start gap-3">
+                        <div className="min-w-0">
                           <button
                             onClick={() => {
                               setSelectedStudent(student)
                               setIsDrawerOpen(true)
                             }}
-                            className="text-left font-bold text-amber-500 hover:underline outline-none text-sm"
+                            className="text-left font-bold text-white hover:text-amber-500 hover:underline outline-none text-base truncate block"
                           >
                             {student.full_name || '—'}
                           </button>
                           <p className="text-[10px] text-gray-500 font-mono mt-0.5">{student.student_id || '—'}</p>
                         </div>
-                        <span className={`inline-flex items-center text-[9px] font-bold px-2 py-0.5 rounded-full ${badge}`}>
-                          {statStr.toUpperCase()}
+                        <span className={`inline-flex items-center text-[9px] font-bold px-2 py-0.5 rounded-full flex-shrink-0 ${badge}`}>
+                          {badgeLabel.toUpperCase()}
                         </span>
                       </div>
 
-                      {/* Location details */}
+                      {/* 2. Allocation Info */}
                       <div className="grid grid-cols-2 gap-2 text-xs border-t border-white/5 pt-2 text-gray-400">
                         <div>
-                          <span className="text-gray-600 block text-[9px] uppercase font-bold">Allocation</span>
-                          <span className="text-gray-300 font-medium truncate block mt-0.5">
-                            {room.building_name || 'Unassigned'} / {room.room_number ? `Rm ${room.room_number}` : '—'}
+                          <span className="text-gray-600 block text-[9px] uppercase font-bold tracking-wider">Placement</span>
+                          <span className="text-gray-300 font-medium truncate block mt-0.5 flex items-center gap-1">
+                            <Building2 size={10} className="text-gray-500" />
+                            {room.building_name || 'Unassigned'} / {room.room_number ? `Room ${room.room_number}` : '—'}
                           </span>
                         </div>
                         <div>
-                          <span className="text-gray-600 block text-[9px] uppercase font-bold">Document Type</span>
-                          <span className="text-gray-200 font-semibold truncate block mt-0.5">
-                            {DOC_LABELS[doc.doc_type] || doc.doc_type}
+                          <span className="text-gray-600 block text-[9px] uppercase font-bold tracking-wider">Registration Date</span>
+                          <span className="text-gray-300 block mt-0.5 font-mono flex items-center gap-1">
+                            <Calendar size={10} className="text-gray-500" />
+                            {student.joining_date || '—'}
                           </span>
                         </div>
                       </div>
 
-                      {/* Footer dates & actions */}
-                      <div className="flex justify-between items-center pt-2.5 border-t border-white/5 gap-2">
-                        <span className="text-[10px] text-gray-500">{doc.uploaded_at?.split('T')[0]}</span>
+                      {/* 3. Documents Checklist Section */}
+                      <div className="border-t border-white/5 pt-2.5 space-y-2">
+                        <span className="text-gray-600 block text-[9px] uppercase font-bold tracking-wider">Documents Checklist</span>
+                        <div className="grid grid-cols-2 gap-2">
+                          {DOC_TYPES.map((type) => {
+                            const matchingDoc = docs.find((d: any) => d.doc_type === type.key)
+                            let docStatus: 'verified' | 'pending' | 'rejected' | 'missing' = 'missing'
+                            
+                            if (matchingDoc) {
+                              docStatus = matchingDoc.status || 'pending'
+                            }
+
+                            let docColor = 'text-gray-600'
+                            let DocIcon = Clock
+                            if (docStatus === 'verified') {
+                              docColor = 'text-green-500'
+                              DocIcon = Check
+                            } else if (docStatus === 'rejected') {
+                              docColor = 'text-red-500'
+                              DocIcon = X
+                            } else if (docStatus === 'pending') {
+                              docColor = 'text-amber-500'
+                              DocIcon = Clock
+                            } else {
+                              docColor = 'text-gray-600'
+                              DocIcon = AlertCircle
+                            }
+
+                            return (
+                              <div key={type.key} className="flex items-center justify-between p-1.5 rounded-lg bg-[#0A0E1A]/40 border border-white/5">
+                                <span className="text-[10px] text-gray-300 font-semibold truncate max-w-[100px]">{type.label}</span>
+                                <div className="flex items-center gap-1">
+                                  {matchingDoc?.file_url ? (
+                                    <a 
+                                      href={matchingDoc.file_url} 
+                                      target="_blank" 
+                                      rel="noreferrer"
+                                      className="p-0.5 rounded hover:bg-white/5 text-gray-500 hover:text-white"
+                                      title={`View ${type.label}`}
+                                    >
+                                      <Eye size={10} />
+                                    </a>
+                                  ) : null}
+                                  <DocIcon size={11} className={`${docColor} flex-shrink-0`} />
+                                </div>
+                              </div>
+                            )
+                          })}
+                        </div>
+                      </div>
+
+                      {/* 4. Actions Row */}
+                      <div className="flex flex-wrap items-center justify-between gap-2 pt-3 border-t border-white/5">
+                        <div className="flex gap-1.5">
+                          <button
+                            onClick={() => {
+                              setSelectedStudent(student)
+                              setIsDrawerOpen(true)
+                            }}
+                            className="p-1.5 rounded-lg border border-white/10 hover:bg-white/5 text-gray-400 hover:text-white transition-all text-[10px] flex items-center gap-1 font-bold"
+                            title="View Student Profile"
+                          >
+                            <User size={11} /> Profile
+                          </button>
+                          <button
+                            onClick={() => handleDownloadAll(student)}
+                            disabled={docs.length === 0}
+                            className="p-1.5 rounded-lg border border-white/10 hover:bg-white/5 text-gray-400 hover:text-white transition-all text-[10px] flex items-center gap-1 font-bold disabled:opacity-30"
+                            title="Download All Files"
+                          >
+                            <Download size={11} /> Files
+                          </button>
+                        </div>
+
                         <div className="flex items-center gap-1.5">
-                          <a href={doc.file_url} target="_blank" rel="noreferrer" className="p-1.5 rounded hover:bg-white/5 text-gray-400 hover:text-white" title="View">
-                            <Eye size={13} />
-                          </a>
-                          <a href={doc.file_url} download={doc.file_name || 'document'} className="p-1.5 rounded hover:bg-white/5 text-gray-400 hover:text-white" title="Download">
-                            <Download size={13} />
-                          </a>
-                          
-                          {statStr !== 'verified' ? (
+                          {calcStatus !== 'verified' ? (
                             <button
-                              onClick={() => handleVerify(doc.id, true)}
-                              className="px-2 py-1 rounded bg-green-500/10 text-green-400 border border-green-500/20 text-[10px] font-bold"
+                              onClick={() => handleVerifyAll(student.id)}
+                              disabled={docs.length === 0}
+                              className="px-2.5 py-1.5 rounded-lg bg-green-500/10 hover:bg-green-500/20 text-green-400 border border-green-500/20 text-[10px] font-bold disabled:opacity-30 transition-colors"
                             >
-                              Verify
+                              Verify All
                             </button>
                           ) : (
                             <button
-                              onClick={() => handleVerify(doc.id, false)}
-                              className="px-2 py-1 rounded border border-white/10 text-gray-400 text-[10px] font-semibold"
+                              onClick={() => handleRevokeAll(student.id)}
+                              className="px-2.5 py-1.5 rounded-lg border border-white/10 hover:bg-white/5 text-gray-400 text-[10px] font-semibold transition-colors"
                             >
                               Revoke
                             </button>
                           )}
 
-                          {statStr !== 'rejected' && (
+                          {calcStatus !== 'rejected' && (
                             <button
-                              onClick={() => setRejectingDocId(doc.id)}
-                              className="px-2 py-1 rounded bg-red-500/10 text-red-400 border border-red-500/20 text-[10px] font-bold"
+                              onClick={() => setRejectingStudentId(student.id)}
+                              disabled={docs.length === 0}
+                              className="px-2.5 py-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 text-[10px] font-bold disabled:opacity-30 transition-colors"
                             >
                               Reject
                             </button>
                           )}
                         </div>
                       </div>
+
                     </div>
                   )
                 })}
               </div>
 
-              {/* Compact ERP Pagination controls */}
-              <div className="flex items-center justify-between text-xs text-gray-500 mt-3 bg-[#0F1629]/40 border border-white/5 rounded-xl p-2.5 shadow-sm">
+              {/* Compact Pagination */}
+              <div className="flex items-center justify-between text-xs text-gray-500 mt-2 bg-[#0F1629]/40 border border-white/5 rounded-xl p-2.5 shadow-sm">
                 <div>
                   Showing <span className="font-semibold text-gray-300">{(currentPage - 1) * rowsPerPage + 1}</span>-
-                  <span className="font-semibold text-gray-300">{Math.min(currentPage * rowsPerPage, filteredDocs.length)}</span> of{' '}
-                  <span className="font-semibold text-gray-300">{filteredDocs.length}</span>
+                  <span className="font-semibold text-gray-300">{Math.min(currentPage * rowsPerPage, filteredStudents.length)}</span> of{' '}
+                  <span className="font-semibold text-gray-300">{filteredStudents.length}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <button
@@ -599,8 +516,8 @@ export default function AdminDocumentsPage() {
                   </button>
                   <span className="px-2 py-1 font-bold text-amber-500 font-mono">{currentPage}</span>
                   <button
-                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, Math.ceil(filteredDocs.length / rowsPerPage)))}
-                    disabled={currentPage === Math.ceil(filteredDocs.length / rowsPerPage) || filteredDocs.length === 0}
+                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, Math.ceil(filteredStudents.length / rowsPerPage)))}
+                    disabled={currentPage === Math.ceil(filteredStudents.length / rowsPerPage) || filteredStudents.length === 0}
                     className="px-2.5 py-1 rounded border border-white/5 bg-[#0A0E1A] hover:bg-white/5 text-gray-300 disabled:opacity-30 disabled:hover:bg-[#0A0E1A] transition-all font-semibold"
                   >
                     Next →
@@ -678,9 +595,9 @@ export default function AdminDocumentsPage() {
                 </div>
 
                 <div className="space-y-1">
-                  <span className="text-[9px] uppercase font-bold text-gray-500 tracking-wider">All Documents</span>
+                  <span className="text-[9px] uppercase font-bold text-gray-500 tracking-wider">All Uploaded Files</span>
                   <div className="space-y-1.5">
-                    {getOtherStudentDocs(selectedStudent.id).map(otherDoc => {
+                    {(selectedStudent.documents || []).map((otherDoc: any) => {
                       const stat = otherDoc.status || 'pending'
                       let stClass = 'bg-yellow-500/10 text-yellow-400 border border-yellow-500/20'
                       if (stat === 'verified') stClass = 'bg-green-500/10 text-green-400 border border-green-500/20'
@@ -689,8 +606,8 @@ export default function AdminDocumentsPage() {
                       return (
                         <div key={otherDoc.id} className="bg-[#0A0E1A]/80 border border-white/5 rounded-lg p-2 flex items-center justify-between gap-2">
                           <div className="min-w-0">
-                            <p className="font-bold text-white truncate">{DOC_LABELS[otherDoc.doc_type] || otherDoc.doc_type}</p>
-                            <p className="text-[9px] text-gray-500 truncate max-w-[160px]">{otherDoc.file_name}</p>
+                            <p className="font-bold text-white truncate">{otherDoc.file_name || otherDoc.doc_type}</p>
+                            <p className="text-[9px] text-gray-500 mt-0.5">Uploaded on {otherDoc.uploaded_at?.split('T')[0]}</p>
                           </div>
                           <div className="flex items-center gap-1.5 flex-shrink-0">
                             <span className={`text-[8px] font-bold px-1.5 py-0.5 rounded-full ${stClass}`}>
@@ -703,6 +620,9 @@ export default function AdminDocumentsPage() {
                         </div>
                       )
                     })}
+                    {(selectedStudent.documents || []).length === 0 && (
+                      <p className="text-xs text-gray-500 text-center py-2">No files uploaded yet.</p>
+                    )}
                   </div>
                 </div>
               </div>
@@ -713,14 +633,14 @@ export default function AdminDocumentsPage() {
 
       {/* Modal for entering Rejection Reason */}
       <AnimatePresence>
-        {rejectingDocId && (
+        {rejectingStudentId && (
           <>
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => {
-                setRejectingDocId(null)
+                setRejectingStudentId(null)
                 setRejectionInput('')
               }}
               className="fixed inset-0 bg-black/85 z-50 backdrop-blur-sm flex items-center justify-center p-4"
@@ -733,11 +653,11 @@ export default function AdminDocumentsPage() {
             >
               <div className="flex items-center justify-between pb-2.5 border-b border-white/5 mb-3.5">
                 <h3 className="text-xs font-bold text-white font-serif flex items-center gap-1.5">
-                  <AlertTriangle size={14} className="text-red-500" /> Reject Document
+                  <AlertTriangle size={14} className="text-red-500" /> Reject Documents
                 </h3>
                 <button
                   onClick={() => {
-                    setRejectingDocId(null)
+                    setRejectingStudentId(null)
                     setRejectionInput('')
                   }}
                   className="p-1 rounded hover:bg-white/5 text-gray-400 hover:text-white"
@@ -746,11 +666,11 @@ export default function AdminDocumentsPage() {
                 </button>
               </div>
 
-              <form onSubmit={handleSingleRejectSubmit} className="space-y-3">
+              <form onSubmit={handleRejectAllSubmit} className="space-y-3">
                 <div>
                   <textarea
                     required
-                    placeholder="Enter the rejection comment..."
+                    placeholder="Enter the rejection comment for this resident's documents..."
                     value={rejectionInput}
                     onChange={(e) => setRejectionInput(e.target.value)}
                     rows={3}
@@ -762,7 +682,7 @@ export default function AdminDocumentsPage() {
                   <button
                     type="button"
                     onClick={() => {
-                      setRejectingDocId(null)
+                      setRejectingStudentId(null)
                       setRejectionInput('')
                     }}
                     className="flex-1 py-2 text-xs font-semibold rounded-xl border border-white/10 hover:bg-white/5 text-gray-300"
