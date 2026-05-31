@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'motion/react'
 import {
   Search, Eye, Trash2, MessageCircle, Download,
   ChevronLeft, ChevronRight, X, RefreshCw,
+  Hash, User, Phone, Wallet, Bed, Calendar, Shield, Settings
 } from 'lucide-react'
 import { DashboardLayout } from '@/components/admin/layout/DashboardLayout'
 import { createClient } from '@/lib/supabase/client'
@@ -323,9 +324,9 @@ export default function RegistrationsPage() {
         >
           <div className="overflow-x-auto">
             <table className="w-full min-w-[700px] table-auto">
-              <thead>
-                <tr className="border-b border-amber-500/10">
-                  <th className="px-6 py-3 text-left w-[40px]">
+              <thead className="bg-gradient-to-b from-white/[0.04] to-white/[0.01] border-b border-amber-500/15 backdrop-blur-md">
+                <tr>
+                  <th className="px-6 py-5 text-left w-[40px] transition-colors hover:bg-white/[0.02]">
                     <input
                       type="checkbox"
                       checked={selectedRows.size === paginatedData.length && paginatedData.length > 0}
@@ -350,14 +351,78 @@ export default function RegistrationsPage() {
                       }} 
                     />
                   </th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-400">App ID</th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-400">Name</th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-400">Phone</th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-400">Deposit</th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-400">Room Pref</th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-400">Check-in</th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-400">Status</th>
-                  <th className="px-6 py-3 text-right text-sm font-semibold text-gray-400">Actions</th>
+                  
+                  {/* APP ID */}
+                  <th className="px-6 py-5 text-left text-[14px] font-bold tracking-[0.5px] text-white/85 uppercase whitespace-nowrap group/th cursor-pointer transition-all hover:text-white relative hover:bg-white/[0.02]">
+                    <div className="flex items-center gap-2">
+                      <Hash size={15} className="text-gray-500 group-hover/th:text-amber-400 transition-colors" />
+                      App ID
+                    </div>
+                    <div className="absolute bottom-0 left-0 w-full h-[2px] bg-amber-500 scale-x-0 group-hover/th:scale-x-100 transition-transform origin-left" />
+                  </th>
+
+                  {/* NAME */}
+                  <th className="px-6 py-5 text-left text-[14px] font-bold tracking-[0.5px] text-white/85 uppercase whitespace-nowrap group/th cursor-pointer transition-all hover:text-white relative hover:bg-white/[0.02]">
+                    <div className="flex items-center gap-2">
+                      <User size={15} className="text-gray-500 group-hover/th:text-amber-400 transition-colors" />
+                      Name
+                    </div>
+                    <div className="absolute bottom-0 left-0 w-full h-[2px] bg-amber-500 scale-x-0 group-hover/th:scale-x-100 transition-transform origin-left" />
+                  </th>
+
+                  {/* PHONE (Centered) */}
+                  <th className="px-6 py-5 text-center text-[14px] font-bold tracking-[0.5px] text-white/85 uppercase whitespace-nowrap group/th cursor-pointer transition-all hover:text-white relative hover:bg-white/[0.02]">
+                    <div className="flex items-center justify-center gap-2">
+                      <Phone size={15} className="text-gray-500 group-hover/th:text-amber-400 transition-colors" />
+                      Phone
+                    </div>
+                    <div className="absolute bottom-0 left-0 w-full h-[2px] bg-amber-500 scale-x-0 group-hover/th:scale-x-100 transition-transform origin-center" />
+                  </th>
+
+                  {/* DEPOSIT (Centered) */}
+                  <th className="px-6 py-5 text-center text-[14px] font-bold tracking-[0.5px] text-white/85 uppercase whitespace-nowrap group/th cursor-pointer transition-all hover:text-white relative hover:bg-white/[0.02]">
+                    <div className="flex items-center justify-center gap-2">
+                      <Wallet size={15} className="text-gray-500 group-hover/th:text-amber-400 transition-colors" />
+                      Deposit
+                    </div>
+                    <div className="absolute bottom-0 left-0 w-full h-[2px] bg-amber-500 scale-x-0 group-hover/th:scale-x-100 transition-transform origin-center" />
+                  </th>
+
+                  {/* ROOM PREFERENCE (Left) */}
+                  <th className="px-6 py-5 text-left text-[14px] font-bold tracking-[0.5px] text-white/85 uppercase whitespace-nowrap group/th cursor-pointer transition-all hover:text-white relative hover:bg-white/[0.02]">
+                    <div className="flex items-center gap-2">
+                      <Bed size={15} className="text-gray-500 group-hover/th:text-amber-400 transition-colors" />
+                      Room Preference
+                    </div>
+                    <div className="absolute bottom-0 left-0 w-full h-[2px] bg-amber-500 scale-x-0 group-hover/th:scale-x-100 transition-transform origin-left" />
+                  </th>
+
+                  {/* CHECK-IN DATE (Left) */}
+                  <th className="px-6 py-5 text-left text-[14px] font-bold tracking-[0.5px] text-white/85 uppercase whitespace-nowrap group/th cursor-pointer transition-all hover:text-white relative hover:bg-white/[0.02]">
+                    <div className="flex items-center gap-2">
+                      <Calendar size={15} className="text-gray-500 group-hover/th:text-amber-400 transition-colors" />
+                      Check-In Date
+                    </div>
+                    <div className="absolute bottom-0 left-0 w-full h-[2px] bg-amber-500 scale-x-0 group-hover/th:scale-x-100 transition-transform origin-left" />
+                  </th>
+
+                  {/* STATUS (Centered) */}
+                  <th className="px-6 py-5 text-center text-[14px] font-bold tracking-[0.5px] text-white/85 uppercase whitespace-nowrap group/th cursor-pointer transition-all hover:text-white relative hover:bg-white/[0.02]">
+                    <div className="flex items-center justify-center gap-2">
+                      <Shield size={15} className="text-gray-500 group-hover/th:text-amber-400 transition-colors" />
+                      Status
+                    </div>
+                    <div className="absolute bottom-0 left-0 w-full h-[2px] bg-amber-500 scale-x-0 group-hover/th:scale-x-100 transition-transform origin-center" />
+                  </th>
+
+                  {/* ACTIONS (Right) */}
+                  <th className="px-6 py-5 text-right text-[14px] font-bold tracking-[0.5px] text-white/85 uppercase whitespace-nowrap group/th cursor-pointer transition-all hover:text-white relative hover:bg-white/[0.02]">
+                    <div className="flex items-center justify-end gap-2">
+                      <Settings size={15} className="text-gray-500 group-hover/th:text-amber-400 transition-colors" />
+                      Actions
+                    </div>
+                    <div className="absolute bottom-0 left-0 w-full h-[2px] bg-amber-500 scale-x-0 group-hover/th:scale-x-100 transition-transform origin-right" />
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -437,8 +502,8 @@ export default function RegistrationsPage() {
                         <p className="text-sm text-white font-medium">{reg.full_name}</p>
                         {reg.email && <p className="text-xs text-gray-500 mt-0.5">{reg.email}</p>}
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-400 font-mono">{reg.phone}</td>
-                      <td className="px-6 py-4">
+                      <td className="px-6 py-4 text-center text-sm text-gray-400 font-mono">{reg.phone}</td>
+                      <td className="px-6 py-4 text-center">
                         <span className={`px-2 py-1 rounded text-xs font-medium ${
                           reg.deposit_status === 'paid' ? 'bg-green-500/20 text-green-400' :
                           reg.deposit_status === 'waived' ? 'bg-gray-500/20 text-gray-400' :
@@ -455,7 +520,7 @@ export default function RegistrationsPage() {
                             })
                           : '—'}
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="px-6 py-4 text-center">
                         <select
                           value={reg.status}
                           onChange={e => handleStatusChange(reg.id, e.target.value)}
