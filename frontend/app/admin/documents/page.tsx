@@ -222,50 +222,58 @@ export default function AdminDocumentsPage() {
 
   return (
     <DashboardLayout>
-      <MobileContainer className="min-h-screen bg-[#0A0E1A] text-gray-100 pb-8 pt-4">
-        <div className="space-y-4 max-w-5xl mx-auto">
-          
-          {/* Header Layout (Single line, left aligned, reduced height by 30%) */}
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pl-12 sm:pl-0 border-b border-white/5 pb-3">
-            <div>
-              <h1 className="text-xl sm:text-2xl font-bold text-white flex items-center gap-2 font-serif tracking-tight">
+      <MobileContainer className="min-h-screen bg-[#0A0E1A] text-gray-100 pb-8 pt-1">
+        <div className="space-y-2.5 max-w-5xl mx-auto">
+
+          {/* Header */}
+          <div className="pt-1 pb-2">
+            <div className="flex items-center justify-between gap-3 pl-10 sm:pl-0">
+              <h1 className="text-[24px] sm:text-[28px] font-bold text-white flex items-center gap-2 tracking-tight whitespace-nowrap">
                 📁 Student Documents
               </h1>
-              <p className="text-[11px] text-gray-500 mt-0.5">
-                Manage and verify resident documents.
-              </p>
+              <button
+                onClick={loadData}
+                className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-white/10 hover:bg-white/5 hover:border-amber-500/30 text-gray-400 hover:text-white transition-all text-[12px] font-semibold flex-shrink-0"
+              >
+                <RefreshCw size={13} className={loading ? 'animate-spin' : ''} />
+                Refresh
+              </button>
             </div>
+            <p className="text-[12px] text-gray-500 mt-0.5 pl-10 sm:pl-0">
+              Manage and verify resident documents.
+            </p>
+            {/* Mobile-only refresh button */}
             <button
               onClick={loadData}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-white/10 hover:bg-white/5 text-gray-400 hover:text-white transition-all text-[11px] font-semibold self-stretch sm:self-auto justify-center"
+              className="sm:hidden flex items-center gap-1.5 mt-1.5 ml-10 px-3 py-1.5 rounded-lg border border-white/10 hover:bg-white/5 text-gray-400 hover:text-white transition-all text-[12px] font-semibold"
             >
-              <RefreshCw size={12} className={loading ? 'animate-spin' : ''} />
+              <RefreshCw size={13} className={loading ? 'animate-spin' : ''} />
               Refresh
             </button>
           </div>
 
-          {/* Statistics Section (80px high compact cards) */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-            <div className="bg-[#0F1629]/75 border border-white/5 rounded-xl px-3.5 py-2.5 flex flex-col justify-center h-[80px] shadow-sm">
+          {/* Statistics Section (compact cards) */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
+            <div className="bg-[#0F1629]/75 border border-white/5 rounded-xl px-3 py-2 flex flex-col justify-center h-[64px] shadow-sm">
               <span className="text-[9px] uppercase font-bold text-gray-500 tracking-wider">Total Students</span>
-              <span className="text-xl font-bold text-white mt-0.5 font-mono">{stats.total}</span>
+              <span className="text-base font-bold text-white mt-0.5">{stats.total}</span>
             </div>
-            <div className="bg-[#0F1629]/75 border border-white/5 rounded-xl px-3.5 py-2.5 flex flex-col justify-center h-[80px] shadow-sm">
-              <span className="text-[9px] uppercase font-bold text-amber-500 tracking-wider">Pending Verification</span>
-              <span className="text-xl font-bold text-[#F59E0B] mt-0.5 font-mono">{stats.pending}</span>
+            <div className="bg-[#0F1629]/75 border border-white/5 rounded-xl px-3 py-2 flex flex-col justify-center h-[64px] shadow-sm">
+              <span className="text-[9px] uppercase font-bold text-amber-500 tracking-wider">Pending</span>
+              <span className="text-base font-bold text-[#F59E0B] mt-0.5">{stats.pending}</span>
             </div>
-            <div className="bg-[#0F1629]/75 border border-white/5 rounded-xl px-3.5 py-2.5 flex flex-col justify-center h-[80px] shadow-sm">
-              <span className="text-[9px] uppercase font-bold text-green-500 tracking-wider">Verified Students</span>
-              <span className="text-xl font-bold text-green-400 mt-0.5 font-mono">{stats.verified}</span>
+            <div className="bg-[#0F1629]/75 border border-white/5 rounded-xl px-3 py-2 flex flex-col justify-center h-[64px] shadow-sm">
+              <span className="text-[9px] uppercase font-bold text-green-500 tracking-wider">Verified</span>
+              <span className="text-base font-bold text-green-400 mt-0.5">{stats.verified}</span>
             </div>
-            <div className="bg-[#0F1629]/75 border border-white/5 rounded-xl px-3.5 py-2.5 flex flex-col justify-center h-[80px] shadow-sm">
-              <span className="text-[9px] uppercase font-bold text-red-500 tracking-wider">Rejected Students</span>
-              <span className="text-xl font-bold text-red-400 mt-0.5 font-mono">{stats.rejected}</span>
+            <div className="bg-[#0F1629]/75 border border-white/5 rounded-xl px-3 py-2 flex flex-col justify-center h-[64px] shadow-sm">
+              <span className="text-[9px] uppercase font-bold text-red-500 tracking-wider">Rejected</span>
+              <span className="text-base font-bold text-red-400 mt-0.5">{stats.rejected}</span>
             </div>
           </div>
 
           {/* Scrollable Segmented Tabs */}
-          <div className="w-full flex items-center justify-start h-[38px] border-b border-white/5 pb-1">
+          <div className="w-full flex items-center justify-start h-[34px] border-b border-white/5">
             <ResponsiveTabs
               options={tabOptions}
               activeId={statusFilter}
@@ -273,42 +281,41 @@ export default function AdminDocumentsPage() {
                 setStatusFilter(id)
                 setCurrentPage(1)
               }}
-              className="!h-[34px] !p-0.5"
+              className="!h-[30px] !p-0.5"
             />
           </div>
 
-          {/* Search & Compact Filters */}
-          <div className="bg-[#0F1629]/30 border border-white/5 rounded-xl p-2.5 shadow-sm">
-            <div className="flex flex-col sm:flex-row gap-2 justify-between items-center">
-              <div className="relative w-full">
-                <Search size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-500" />
-                <input
-                  type="text"
-                  placeholder="Search resident, student ID, room, building..."
-                  value={searchQuery}
-                  onChange={(e) => {
-                    setSearchQuery(e.target.value)
-                    setCurrentPage(1)
-                  }}
-                  className="w-full pl-7 pr-3 py-1.5 rounded-lg text-[11px] border border-white/5 bg-[#0A0E1A] text-white outline-none focus:border-amber-500/40"
-                />
-              </div>
-              <div className="flex items-center gap-1.5 text-[11px] text-gray-500 flex-shrink-0">
-                <span>Show:</span>
-                <select
-                  value={rowsPerPage}
-                  onChange={(e) => {
-                    setRowsPerPage(Number(e.target.value))
-                    setCurrentPage(1)
-                  }}
-                  className="px-1.5 py-1 rounded-lg border border-white/5 bg-[#0A0E1A] text-white outline-none"
-                >
-                  <option value={10}>10</option>
-                  <option value={25}>25</option>
-                  <option value={50}>50</option>
-                  <option value={100}>100</option>
-                </select>
-              </div>
+          {/* Search & Rows-per-page */}
+          <div className="flex items-center gap-2">
+            <div className="relative flex-1">
+              <Search size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-500" />
+              <input
+                type="text"
+                placeholder="Search resident, student ID, room, building..."
+                value={searchQuery}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value)
+                  setCurrentPage(1)
+                }}
+                className="w-full pl-8 pr-3 h-[34px] rounded-[10px] text-[13px] border border-white/10 bg-[#0A0E1A] text-white outline-none focus:border-amber-500/50 transition-colors placeholder:text-gray-600"
+              />
+            </div>
+            <div className="flex items-center gap-1.5 flex-shrink-0">
+              <span className="text-[12px] text-gray-500 font-medium hidden sm:inline">Show:</span>
+              <select
+                value={rowsPerPage}
+                onChange={(e) => {
+                  setRowsPerPage(Number(e.target.value))
+                  setCurrentPage(1)
+                }}
+                className="w-[70px] h-[34px] rounded-[10px] border border-white/10 bg-[#0A0E1A] text-white text-[14px] font-medium outline-none focus:border-amber-500/50 px-2.5 cursor-pointer appearance-none transition-colors"
+                style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 8px center' }}
+              >
+                <option value={10}>10</option>
+                <option value={25}>25</option>
+                <option value={50}>50</option>
+                <option value={100}>100</option>
+              </select>
             </div>
           </div>
 
@@ -330,9 +337,9 @@ export default function AdminDocumentsPage() {
               </button>
             </div>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-2.5">
               {/* Responsive Cards Stack (No Tables, No duplicates, One card per Student) */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
                 {paginatedStudents.map((student) => {
                   const room = student.rooms || {}
                   const docs = student.documents || []
@@ -500,27 +507,29 @@ export default function AdminDocumentsPage() {
               </div>
 
               {/* Compact Pagination */}
-              <div className="flex items-center justify-between text-xs text-gray-500 mt-2 bg-[#0F1629]/40 border border-white/5 rounded-xl p-2.5 shadow-sm">
-                <div>
-                  Showing <span className="font-semibold text-gray-300">{(currentPage - 1) * rowsPerPage + 1}</span>-
-                  <span className="font-semibold text-gray-300">{Math.min(currentPage * rowsPerPage, filteredStudents.length)}</span> of{' '}
-                  <span className="font-semibold text-gray-300">{filteredStudents.length}</span>
-                </div>
-                <div className="flex items-center gap-2">
+              <div className="flex items-center justify-between text-[12px] text-gray-500 bg-[#0F1629]/40 border border-white/5 rounded-[10px] px-3 py-1.5">
+                <span className="tabular-nums">
+                  <span className="text-gray-300 font-medium">{(currentPage - 1) * rowsPerPage + 1}</span>
+                  <span className="mx-0.5">–</span>
+                  <span className="text-gray-300 font-medium">{Math.min(currentPage * rowsPerPage, filteredStudents.length)}</span>
+                  <span className="mx-1">of</span>
+                  <span className="text-gray-300 font-medium">{filteredStudents.length}</span>
+                </span>
+                <div className="flex items-center gap-1">
                   <button
                     onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                     disabled={currentPage === 1}
-                    className="px-2.5 py-1 rounded border border-white/5 bg-[#0A0E1A] hover:bg-white/5 text-gray-300 disabled:opacity-30 disabled:hover:bg-[#0A0E1A] transition-all font-semibold"
+                    className="px-2 py-0.5 rounded-md border border-white/5 bg-[#0A0E1A] hover:bg-white/5 hover:border-amber-500/30 text-gray-400 hover:text-white disabled:opacity-25 disabled:hover:bg-[#0A0E1A] disabled:hover:border-white/5 disabled:hover:text-gray-400 transition-all text-[11px] font-semibold"
                   >
-                    ← Previous
+                    ‹ Prev
                   </button>
-                  <span className="px-2 py-1 font-bold text-amber-500 font-mono">{currentPage}</span>
+                  <span className="w-6 text-center text-[12px] font-bold text-amber-500">{currentPage}</span>
                   <button
                     onClick={() => setCurrentPage(prev => Math.min(prev + 1, Math.ceil(filteredStudents.length / rowsPerPage)))}
                     disabled={currentPage === Math.ceil(filteredStudents.length / rowsPerPage) || filteredStudents.length === 0}
-                    className="px-2.5 py-1 rounded border border-white/5 bg-[#0A0E1A] hover:bg-white/5 text-gray-300 disabled:opacity-30 disabled:hover:bg-[#0A0E1A] transition-all font-semibold"
+                    className="px-2 py-0.5 rounded-md border border-white/5 bg-[#0A0E1A] hover:bg-white/5 hover:border-amber-500/30 text-gray-400 hover:text-white disabled:opacity-25 disabled:hover:bg-[#0A0E1A] disabled:hover:border-white/5 disabled:hover:text-gray-400 transition-all text-[11px] font-semibold"
                   >
-                    Next →
+                    Next ›
                   </button>
                 </div>
               </div>
