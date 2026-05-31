@@ -17,7 +17,7 @@ const GOLD_BORDER = 'rgba(200,132,10,0.2)'
 
 export default function AdminStudentsPage() {
   const supabase = createClient()
-  const [activeTab, setActiveTab] = useState<'residents' | 'applicants' | 'invitations' | 'archived'>('residents')
+  const [activeTab, setActiveTab] = useState<'residents' | 'applicants' | 'pending_approvals' | 'verification' | 'rejected' | 'invitations' | 'archived'>('residents')
   const [loading, setLoading] = useState(true)
   
   // Data lists
@@ -342,162 +342,167 @@ export default function AdminStudentsPage() {
     rejectedInvites: invitations.filter(i => i.status === 'rejected').length
   }
 
+  const filteredPendingApprovals = invitations.filter(i => {
+    return i.status === 'profile_submitted' &&
+      (i.full_name?.toLowerCase().includes(term) || i.email?.toLowerCase().includes(term))
+  })
+
+  const filteredVerification = invitations.filter(i => {
+    return i.status === 'invited' &&
+      (i.full_name?.toLowerCase().includes(term) || i.email?.toLowerCase().includes(term))
+  })
+
+  const filteredRejected = [
+    ...applicants.filter(a => a.status === 'rejected' &&
+      (a.full_name?.toLowerCase().includes(term) || a.email?.toLowerCase().includes(term))),
+    ...invitations.filter(i => i.status === 'rejected' &&
+      (i.full_name?.toLowerCase().includes(term) || i.email?.toLowerCase().includes(term)))
+  ]
+
   return (
     <DashboardLayout>
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="min-h-screen bg-[#0A0E1A] p-6 lg:p-8 text-gray-100"
+        className="min-h-screen bg-[#0A0E1A] p-4 sm:p-6 lg:p-8 text-gray-100"
       >
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
           <div>
-            <h1 className="text-4xl font-bold text-white flex items-center gap-3" style={{ fontFamily: 'Playfair Display' }}>
-              <GraduationCap style={{ color: GOLD }} /> Students & Admission
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white flex items-center gap-3" style={{ fontFamily: 'Playfair Display' }}>
+              <GraduationCap style={{ color: GOLD }} size={28} /> Students & Admission
             </h1>
-            <p className="text-sm text-gray-500 mt-1">Review registrations, allocate beds, and manage residents</p>
+            <p className="text-xs text-gray-500 mt-1">Review registrations, allocate beds, and manage residents</p>
           </div>
-
-          <div className="flex gap-3">
-            <button
-              onClick={() => setInviteModalOpen(true)}
-              className="py-2.5 px-5 text-xs font-bold rounded-xl text-black transition-all flex items-center gap-1.5 hover:shadow-[0_2px_8px_rgba(245,166,35,0.25)]"
-              style={{ background: 'linear-gradient(135deg, #C8840A, #F5A623)' }}
-            >
-              <Plus size={14} /> Invite Existing Student
-            </button>
-          </div>
+          <button
+            onClick={() => setInviteModalOpen(true)}
+            className="self-start sm:self-auto py-2.5 px-5 text-xs font-bold rounded-xl text-black transition-all flex items-center gap-1.5 hover:shadow-[0_2px_8px_rgba(245,166,35,0.25)] whitespace-nowrap"
+            style={{ background: 'linear-gradient(135deg, #C8840A, #F5A623)' }}
+          >
+            <Plus size={14} /> Invite Existing Student
+          </button>
         </div>
 
-        {/* Dynamic statistics ribbon */}
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
+        {/* Statistics ribbon — 2 cols mobile → 3 tablet → 5 desktop */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mb-6">
           {[
-            { label: 'Active Residents', val: stats.activeResidents, border: 'border-green-500/10', text: 'text-green-400' },
-            { label: 'Pending Registrations', val: stats.pendingRegistrations, border: 'border-blue-500/10', text: 'text-blue-400' },
-            { label: 'Invited Residents', val: stats.invitedResidents, border: 'border-amber-500/10', text: 'text-amber-400' },
-            { label: 'Pending Approvals', val: stats.pendingSubmissions, border: 'border-purple-500/10', text: 'text-purple-400' },
-            { label: 'Rejected Invites', val: stats.rejectedInvites, border: 'border-red-500/10', text: 'text-red-400' },
+            { label: 'Active Residents', val: stats.activeResidents, border: 'border-green-500/20', text: 'text-green-400', bg: 'rgba(34,197,94,0.04)' },
+            { label: 'Pending Registrations', val: stats.pendingRegistrations, border: 'border-blue-500/20', text: 'text-blue-400', bg: 'rgba(59,130,246,0.04)' },
+            { label: 'Pending Approvals', val: stats.pendingSubmissions, border: 'border-purple-500/20', text: 'text-purple-400', bg: 'rgba(168,85,247,0.04)' },
+            { label: 'Awaiting Verification', val: stats.invitedResidents, border: 'border-amber-500/20', text: 'text-amber-400', bg: 'rgba(245,158,11,0.04)' },
+            { label: 'Rejected', val: stats.rejectedInvites, border: 'border-red-500/20', text: 'text-red-400', bg: 'rgba(239,68,68,0.04)' },
           ].map((s, idx) => (
-            <div key={idx} className={`bg-[#0F1629] border ${s.border} rounded-xl p-3.5 flex flex-col justify-center`}>
-              <span className="text-[10px] uppercase font-semibold text-gray-500 tracking-wider">{s.label}</span>
-              <span className={`text-xl font-bold mt-1 ${s.text}`}>{s.val}</span>
+            <div key={idx}
+              className={`border ${s.border} rounded-xl p-3 flex flex-col justify-between`}
+              style={{ background: s.bg }}
+            >
+              <span className="text-[10px] uppercase font-semibold text-gray-500 tracking-wider leading-tight">{s.label}</span>
+              <span className={`text-2xl font-bold mt-2 ${s.text}`}>{s.val}</span>
             </div>
           ))}
         </div>
 
-        {/* Tab Selectors */}
-        <div className="flex border-b border-white/10 mb-6 gap-6 overflow-x-auto whitespace-nowrap scrollbar-none">
+        {/* Tab Selectors — horizontal scroll on mobile, no overlap */}
+        <div className="admin-tab-bar mb-0">
           {[
-            { id: 'residents', label: 'Active Students', count: filteredResidents.length },
-            { id: 'applicants', label: 'Pending Registrations', count: filteredApplicants.length },
-            { id: 'invitations', label: 'Existing Resident Invitations', count: filteredInvitations.length },
-            { id: 'archived', label: 'Archived Students', count: filteredArchived.length },
+            { id: 'residents',         label: 'Active Students',          labelMobile: 'Active',        count: filteredResidents.length },
+            { id: 'applicants',        label: 'Pending Registrations',    labelMobile: 'Pending',       count: filteredApplicants.length },
+            { id: 'pending_approvals', label: 'Pending Approvals',        labelMobile: 'Approvals',     count: filteredPendingApprovals.length },
+            { id: 'verification',      label: 'Resident Verification',    labelMobile: 'Verification',  count: filteredVerification.length },
+            { id: 'rejected',          label: 'Rejected Applications',    labelMobile: 'Rejected',      count: filteredRejected.length },
+            { id: 'invitations',       label: 'All Invitations',          labelMobile: 'Invitations',   count: filteredInvitations.length },
+            { id: 'archived',          label: 'Archived Students',        labelMobile: 'Archived',      count: filteredArchived.length },
           ].map(t => (
             <button
               key={t.id}
               onClick={() => { setActiveTab(t.id as any); setSearchQuery(''); }}
-              className="pb-3 text-sm font-semibold transition-all relative flex items-center gap-1.5"
-              style={{ color: activeTab === t.id ? GOLD : '#9CA3AF' }}
+              className={activeTab === t.id ? 'active' : ''}
             >
-              {t.label} ({t.count})
-              {activeTab === t.id && (
-                <motion.div layoutId="adminTabUnderline" className="absolute bottom-0 left-0 right-0 h-0.5" style={{ background: GOLD }} />
-              )}
+              <span className="hidden sm:inline">{t.label}</span>
+              <span className="inline sm:hidden">{t.labelMobile}</span>
+              <span className="ml-1 opacity-60">({t.count})</span>
             </button>
           ))}
         </div>
 
-        {/* Search input */}
-        <div className="mb-6 max-w-md relative">
-          <Search size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500" />
+        {/* Search input — full width on mobile */}
+        <div className="mb-5 w-full relative mt-4">
+          <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500" />
           <input
             type="text"
             placeholder={
-              activeTab === 'residents' ? 'Search active residents…' : 
-              activeTab === 'applicants' ? 'Search pending registrations…' : 
-              activeTab === 'invitations' ? 'Search resident invitations…' : 
+              activeTab === 'residents' ? 'Search active residents…' :
+              activeTab === 'applicants' ? 'Search pending registrations…' :
+              activeTab === 'pending_approvals' ? 'Search pending approvals…' :
+              activeTab === 'verification' ? 'Search verification queue…' :
+              activeTab === 'rejected' ? 'Search rejected applications…' :
+              activeTab === 'invitations' ? 'Search resident invitations…' :
               'Search archived students…'
             }
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 rounded-xl text-sm border border-white/8 bg-[#0F1629] text-white outline-none focus:border-[#C8840A] transition-all"
+            className="w-full sm:max-w-md pl-10 pr-4 py-2.5 rounded-xl text-sm border border-white/8 bg-[#0F1629] text-white outline-none focus:border-[#C8840A] transition-all"
           />
         </div>
 
         {/* Content Lists */}
         {loading ? (
-          <div className="flex flex-col items-center justify-center p-12 bg-[#0F1629] rounded-2xl border border-white/5">
+          <div className="flex flex-col items-center justify-center p-10 bg-[#0F1629] rounded-2xl border border-white/5">
             <Loader2 className="animate-spin text-amber-500 mb-3" size={24} />
             <p className="text-sm text-gray-400">Loading portal details…</p>
           </div>
+
         ) : activeTab === 'applicants' ? (
-          /* APPLICANTS GRID */
           filteredApplicants.length === 0 ? (
-            <div className="text-center py-12 bg-[#0F1629] rounded-2xl border border-white/5 p-6">
-              <Users size={38} className="mx-auto mb-3 text-gray-600" />
-              <p className="font-semibold text-gray-300">No applicants pending</p>
-              <p className="text-sm text-gray-500 mt-1">New registrations from the public page will show up here.</p>
+            <div className="admin-empty-compact">
+              <Users size={26} className="text-gray-600" />
+              <p className="text-sm font-semibold text-gray-300">No pending registrations</p>
+              <p className="text-xs text-gray-500">New registrations from the public page appear here</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {filteredApplicants.map((app) => (
                 <motion.div
                   key={app.id}
                   initial={{ opacity: 0, scale: 0.97 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  className="bg-[#0F1629] border border-white/8 rounded-2xl p-5 flex flex-col justify-between"
+                  className="bg-[#0F1629] border border-white/8 rounded-2xl p-4 flex flex-col justify-between"
                 >
                   <div>
                     <div className="flex justify-between items-start mb-3 gap-2">
                       <div>
-                        <h4 className="font-bold text-white text-base">{app.full_name}</h4>
+                        <h4 className="font-bold text-white text-sm">{app.full_name}</h4>
                         <span className="text-xs text-gray-500">{app.gender} · {app.food_preference}</span>
                       </div>
-                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full"
-                        style={{ 
-                          background: 'rgba(59,130,246,0.1)',
-                          color: '#3B82F6'
-                        }}>
-                        New
-                      </span>
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-400 whitespace-nowrap">New</span>
                     </div>
-
-                    <div className="space-y-2 py-3 border-t border-b border-white/5 text-xs text-gray-400">
-                      <div className="flex items-center gap-2"><Phone size={12} className="text-gray-500" /> {app.phone}</div>
-                      <div className="flex items-center gap-2"><Mail size={12} className="text-gray-500" /> {app.email}</div>
-                      <div className="flex items-center gap-2"><BookOpen size={12} className="text-gray-500" /> {app.college_name}</div>
-                      <div className="flex items-center gap-2"><Home size={12} className="text-gray-500" /> Pref: {app.room_preference}</div>
+                    <div className="space-y-1.5 py-3 border-t border-b border-white/5 text-xs text-gray-400">
+                      <div className="flex items-center gap-2"><Phone size={11} className="text-gray-500 flex-shrink-0" /> {app.phone}</div>
+                      <div className="flex items-center gap-2"><Mail size={11} className="text-gray-500 flex-shrink-0" /> <span className="truncate">{app.email}</span></div>
+                      <div className="flex items-center gap-2"><BookOpen size={11} className="text-gray-500 flex-shrink-0" /> <span className="truncate">{app.college_name}</span></div>
+                      <div className="flex items-center gap-2"><Home size={11} className="text-gray-500 flex-shrink-0" /> Pref: {app.room_preference}</div>
                     </div>
                   </div>
-
-                  <div className="flex items-center gap-2 pt-4">
-                    <button
-                      onClick={() => { setSelectedApplicant(app); setDocPanelOpen(true); }}
-                      className="flex-1 py-2 text-xs font-bold rounded-xl border border-white/10 hover:bg-white/5 text-gray-300 transition-all flex items-center justify-center gap-1"
-                    >
+                  <div className="flex items-center gap-2 pt-3">
+                    <button onClick={() => { setSelectedApplicant(app); setDocPanelOpen(true); }}
+                      className="flex-1 py-2 text-xs font-bold rounded-xl border border-white/10 hover:bg-white/5 text-gray-300 transition-all flex items-center justify-center gap-1">
                       <Eye size={12} /> View Docs
                     </button>
                     <button
                       onClick={() => {
-                        setSelectedApplicant(app);
-                        setOnboardModalOpen(true);
+                        setSelectedApplicant(app); setOnboardModalOpen(true);
                         const joinDate = app.check_in_date || new Date().toISOString().split('T')[0]
                         setJoiningDate(joinDate)
-                        const end = new Date(joinDate)
-                        end.setMonth(end.getMonth() + 11)
+                        const end = new Date(joinDate); end.setMonth(end.getMonth() + 11)
                         setAgreementEndDate(end.toISOString().split('T')[0])
                       }}
-                      className="flex-1 py-2 text-xs font-bold rounded-xl text-black transition-all flex items-center justify-center gap-1 hover:shadow-[0_2px_8px_rgba(245,166,35,0.25)]"
-                      style={{ background: 'linear-gradient(135deg, #C8840A, #F5A623)' }}
-                    >
+                      className="flex-1 py-2 text-xs font-bold rounded-xl text-black transition-all flex items-center justify-center gap-1"
+                      style={{ background: 'linear-gradient(135deg, #C8840A, #F5A623)' }}>
                       Onboard <ArrowRight size={12} />
                     </button>
-                    <button
-                      onClick={() => handleRejectApplicant(app.id)}
-                      className="p-2 rounded-xl border border-red-500/20 text-red-400 hover:bg-red-500/10 transition-colors"
-                      title="Reject Applicant"
-                    >
+                    <button onClick={() => handleRejectApplicant(app.id)}
+                      className="p-2 rounded-xl border border-red-500/20 text-red-400 hover:bg-red-500/10 transition-colors" title="Reject">
                       <Trash2 size={13} />
                     </button>
                   </div>
@@ -505,220 +510,315 @@ export default function AdminStudentsPage() {
               ))}
             </div>
           )
-        ) : activeTab === 'residents' ? (
-          /* ACTIVE STUDENTS TABLE */
-          filteredResidents.length === 0 ? (
-            <div className="text-center py-12 bg-[#0F1629] rounded-2xl border border-white/5 p-6">
-              <Users size={38} className="mx-auto mb-3 text-gray-600" />
-              <p className="font-semibold text-gray-300">No active students found</p>
-            </div>
-          ) : (
-            <div className="bg-[#0F1629] border border-white/5 rounded-2xl overflow-hidden">
-              <div className="overflow-x-auto">
-                <table className="w-full min-w-[800px] table-auto text-left border-collapse">
-                  <thead className="bg-gradient-to-b from-white/[0.04] to-white/[0.01] border-b border-amber-500/15">
-                    <tr>
-                      <th className="px-5 py-4 text-left text-[13px] font-bold uppercase tracking-[0.5px] text-white/85">👤 Student</th>
-                      <th className="px-5 py-4 text-left text-[13px] font-bold uppercase tracking-[0.5px] text-white/85"># ID</th>
-                      <th className="px-5 py-4 text-left text-[13px] font-bold uppercase tracking-[0.5px] text-white/85">🏠 Room Allocation</th>
-                      <th className="px-5 py-4 text-left text-[13px] font-bold uppercase tracking-[0.5px] text-white/85">📅 Stay Schedule</th>
-                      <th className="px-5 py-4 text-center text-[13px] font-bold uppercase tracking-[0.5px] text-white/85">🔰 Status</th>
-                      <th className="px-5 py-4 text-right text-[13px] font-bold uppercase tracking-[0.5px] text-white/85">⚙ Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-white/5 text-sm">
-                    {filteredResidents.map((res) => (
-                      <tr key={res.id} className="hover:bg-white/2 transition-colors">
-                        <td className="px-5 py-3.5">
-                          <div className="flex items-center gap-3">
-                            <div className="w-9 h-9 rounded-full bg-amber-500/10 border border-amber-500/20 flex items-center justify-center font-bold text-amber-500">
-                              {res.full_name?.charAt(0).toUpperCase()}
-                            </div>
-                            <div>
-                              <p className="font-bold text-white">{res.full_name}</p>
-                              <p className="text-xs text-gray-500">{res.college_name} · {res.mobile}</p>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="px-5 py-3.5 font-mono text-xs text-amber-500 whitespace-nowrap">{res.student_id || '—'}</td>
-                        <td className="px-5 py-3.5 whitespace-nowrap">
-                          {res.rooms ? (
-                            <div>
-                              <p className="font-semibold text-gray-200">Room {res.rooms.room_number}</p>
-                              <p className="text-xs text-gray-500">Bed {res.beds?.bed_number || '—'} · {res.rooms.type}</p>
-                            </div>
-                          ) : res.notes ? (
-                            <div>
-                              <p className="font-semibold text-gray-200">{res.notes.split('|')[1]?.replace('Room:', '').trim() || 'Manual'}</p>
-                              <p className="text-xs text-amber-600">{res.notes.split('|')[0]?.replace('Building:', '').trim() || '—'} · Manual Entry</p>
-                            </div>
-                          ) : (
-                            <span className="text-gray-500">Unassigned</span>
-                          )}
-                        </td>
 
-                        <td className="px-5 py-3.5 text-xs text-gray-400 whitespace-nowrap">
-                          <div>Join: {res.joining_date}</div>
-                          <div className="mt-0.5">End: {res.agreement_end_date}</div>
-                        </td>
-                        <td className="px-5 py-3.5 text-center whitespace-nowrap">
-                          <span className="inline-flex items-center text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-green-500/10 text-green-400 border border-green-500/20">
-                            Active
-                          </span>
-                        </td>
-                        <td className="px-5 py-3.5 text-right whitespace-nowrap">
-                          <button
-                            onClick={() => handleDeactivateResident(res.id, res.bed_id)}
-                            className="px-3 py-1.5 bg-red-500/10 hover:bg-red-500/20 border border-red-500/25 rounded-lg text-xs font-bold text-red-400 transition-colors"
-                          >
-                            Checkout
-                          </button>
-                        </td>
+        ) : activeTab === 'residents' ? (
+          filteredResidents.length === 0 ? (
+            <div className="admin-empty-compact">
+              <Users size={26} className="text-gray-600" />
+              <p className="text-sm font-semibold text-gray-300">No active students found</p>
+              <button onClick={() => setInviteModalOpen(true)}
+                className="mt-1 px-4 py-1.5 text-xs font-bold rounded-lg text-black"
+                style={{ background: 'linear-gradient(135deg, #C8840A, #F5A623)' }}>
+                + Invite Existing Student
+              </button>
+            </div>
+          ) : (
+            <>
+              {/* Desktop table */}
+              <div className="admin-table-wrapper bg-[#0F1629] border border-white/5 rounded-2xl overflow-hidden">
+                <div className="overflow-x-auto">
+                  <table className="w-full min-w-[760px] table-auto text-left border-collapse">
+                    <thead className="bg-gradient-to-b from-white/[0.04] to-white/[0.01] border-b border-amber-500/15">
+                      <tr>
+                        <th className="px-5 py-3.5 text-left text-[11px] font-bold uppercase tracking-wider text-white/70">Student</th>
+                        <th className="px-5 py-3.5 text-left text-[11px] font-bold uppercase tracking-wider text-white/70">ID</th>
+                        <th className="px-5 py-3.5 text-left text-[11px] font-bold uppercase tracking-wider text-white/70">Room</th>
+                        <th className="px-5 py-3.5 text-left text-[11px] font-bold uppercase tracking-wider text-white/70">Stay Period</th>
+                        <th className="px-5 py-3.5 text-center text-[11px] font-bold uppercase tracking-wider text-white/70">Status</th>
+                        <th className="px-5 py-3.5 text-right text-[11px] font-bold uppercase tracking-wider text-white/70">Actions</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody className="divide-y divide-white/5 text-sm">
+                      {filteredResidents.map((res) => (
+                        <tr key={res.id} className="hover:bg-white/[0.02] transition-colors">
+                          <td className="px-5 py-3.5">
+                            <div className="flex items-center gap-3">
+                              <div className="w-8 h-8 rounded-full bg-amber-500/10 border border-amber-500/20 flex items-center justify-center font-bold text-amber-500 text-sm flex-shrink-0">
+                                {res.full_name?.charAt(0).toUpperCase()}
+                              </div>
+                              <div>
+                                <p className="font-semibold text-white text-sm">{res.full_name}</p>
+                                <p className="text-[11px] text-gray-500">{res.mobile}</p>
+                              </div>
+                            </div>
+                          </td>
+                          <td className="px-5 py-3.5 font-mono text-xs text-amber-500 whitespace-nowrap">{res.student_id || '—'}</td>
+                          <td className="px-5 py-3.5 whitespace-nowrap">
+                            {res.rooms ? (
+                              <div>
+                                <p className="text-sm font-semibold text-gray-200">Room {res.rooms.room_number}</p>
+                                <p className="text-[11px] text-gray-500">Bed {res.beds?.bed_number || '—'} · {res.rooms.type}</p>
+                              </div>
+                            ) : <span className="text-gray-500 text-xs">Unassigned</span>}
+                          </td>
+                          <td className="px-5 py-3.5 text-xs text-gray-400 whitespace-nowrap">
+                            <div>Join: {res.joining_date}</div>
+                            <div className="mt-0.5">End: {res.agreement_end_date}</div>
+                          </td>
+                          <td className="px-5 py-3.5 text-center">
+                            <span className="inline-flex items-center text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-green-500/10 text-green-400 border border-green-500/20">Active</span>
+                          </td>
+                          <td className="px-5 py-3.5 text-right">
+                            <button onClick={() => handleDeactivateResident(res.id, res.bed_id)}
+                              className="px-3 py-1.5 bg-red-500/10 hover:bg-red-500/20 border border-red-500/25 rounded-lg text-xs font-bold text-red-400 transition-colors">
+                              Checkout
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
+              {/* Mobile cards */}
+              <div className="admin-mobile-card space-y-3">
+                {filteredResidents.map((res) => (
+                  <div key={res.id} className="bg-[#0F1629] border border-white/8 rounded-2xl p-4">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="w-10 h-10 rounded-full bg-amber-500/10 border border-amber-500/20 flex items-center justify-center font-bold text-amber-500 flex-shrink-0">
+                        {res.full_name?.charAt(0).toUpperCase()}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-bold text-white text-sm truncate">{res.full_name}</p>
+                        <p className="text-xs text-gray-500 font-mono">{res.student_id || '—'}</p>
+                      </div>
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-green-500/10 text-green-400 border border-green-500/20 flex-shrink-0">Active</span>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2 text-xs text-gray-400 mb-3">
+                      <div><span className="text-gray-600">Room:</span> {res.rooms ? `Room ${res.rooms.room_number}` : 'Unassigned'}</div>
+                      <div><span className="text-gray-600">Bed:</span> {res.beds?.bed_number || '—'}</div>
+                      <div><span className="text-gray-600">Join:</span> {res.joining_date}</div>
+                      <div><span className="text-gray-600">End:</span> {res.agreement_end_date}</div>
+                    </div>
+                    <button onClick={() => handleDeactivateResident(res.id, res.bed_id)}
+                      className="w-full py-2 bg-red-500/10 hover:bg-red-500/20 border border-red-500/25 rounded-xl text-xs font-bold text-red-400 transition-colors">
+                      Checkout Resident
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </>
+          )
+
+        ) : activeTab === 'pending_approvals' ? (
+          filteredPendingApprovals.length === 0 ? (
+            <div className="admin-empty-compact">
+              <UserCheck size={26} className="text-gray-600" />
+              <p className="text-sm font-semibold text-gray-300">No pending approvals</p>
+              <p className="text-xs text-gray-500">Submitted profiles awaiting admin review appear here</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {filteredPendingApprovals.map((invite) => (
+                <div key={invite.id} className="bg-[#0F1629] border border-purple-500/20 rounded-2xl p-4">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-9 h-9 rounded-full bg-purple-500/10 border border-purple-500/20 flex items-center justify-center font-bold text-purple-400">
+                      {invite.full_name?.charAt(0).toUpperCase()}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-bold text-white text-sm truncate">{invite.full_name}</p>
+                      <p className="text-xs text-gray-500 truncate">{invite.email}</p>
+                    </div>
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-purple-500/10 text-purple-400 border border-purple-500/20 whitespace-nowrap animate-pulse">Review</span>
+                  </div>
+                  <div className="text-xs text-gray-500 mb-3">Room {invite.rooms?.room_number || '—'} · {invite.buildings?.name || 'Building'} · Joining {invite.joining_date}</div>
+                  <div className="flex gap-2">
+                    <button onClick={() => { setSelectedInvitation(invite); setReviewPanelOpen(true); }}
+                      className="flex-1 py-2 text-xs font-bold rounded-xl bg-[#C8840A]/10 border border-[#C8840A]/25 text-[#C8840A] flex items-center justify-center gap-1">
+                      <Eye size={12} /> Review
+                    </button>
+                    <button onClick={() => { setSelectedInvitation(invite); handleInvitationAction('approve'); }}
+                      className="flex-1 py-2 text-xs font-bold rounded-xl bg-green-500/10 border border-green-500/25 text-green-400 flex items-center justify-center gap-1">
+                      <CheckCircle size={12} /> Approve
+                    </button>
+                  </div>
+                </div>
+              ))}
             </div>
           )
+
+        ) : activeTab === 'verification' ? (
+          filteredVerification.length === 0 ? (
+            <div className="admin-empty-compact">
+              <UserCheck size={26} className="text-gray-600" />
+              <p className="text-sm font-semibold text-gray-300">No pending verifications</p>
+              <p className="text-xs text-gray-500">Invited residents who haven't submitted forms yet</p>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {filteredVerification.map((invite) => (
+                <div key={invite.id} className="bg-[#0F1629] border border-amber-500/15 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center gap-3">
+                  <div className="flex items-center gap-3 flex-1 min-w-0">
+                    <div className="w-9 h-9 rounded-full bg-amber-500/10 border border-amber-500/20 flex items-center justify-center font-bold text-amber-400 flex-shrink-0">
+                      {invite.full_name?.charAt(0).toUpperCase()}
+                    </div>
+                    <div className="min-w-0">
+                      <p className="font-bold text-white text-sm truncate">{invite.full_name}</p>
+                      <p className="text-xs text-gray-500">{invite.phone} · {invite.email}</p>
+                    </div>
+                  </div>
+                  <div className="text-xs text-gray-500">
+                    Invited · Expires: {new Date(invite.expires_at).toLocaleDateString()}
+                  </div>
+                  <button onClick={() => {
+                    const origin = window.location.origin
+                    navigator.clipboard.writeText(`${origin}/existing-resident-registration?token=${invite.token}`)
+                    toast.success('Registration link copied!')
+                  }} className="py-2 px-3 text-xs font-bold rounded-xl border border-white/10 hover:bg-white/5 text-gray-300 whitespace-nowrap">
+                    Copy Link
+                  </button>
+                </div>
+              ))}
+            </div>
+          )
+
+        ) : activeTab === 'rejected' ? (
+          filteredRejected.length === 0 ? (
+            <div className="admin-empty-compact">
+              <XCircle size={26} className="text-gray-600" />
+              <p className="text-sm font-semibold text-gray-300">No rejected applications</p>
+            </div>
+          ) : (
+            <div className="space-y-2">
+              {filteredRejected.map((item: any, idx) => (
+                <div key={item.id || idx} className="bg-[#0F1629] border border-red-500/10 rounded-xl p-4 flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-400 font-bold text-sm flex-shrink-0">
+                    {(item.full_name || '?').charAt(0).toUpperCase()}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-semibold text-white text-sm truncate">{item.full_name}</p>
+                    <p className="text-xs text-gray-500 truncate">{item.email} · {item.phone}</p>
+                  </div>
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-red-500/10 text-red-400 border border-red-500/20 flex-shrink-0">Rejected</span>
+                </div>
+              ))}
+            </div>
+          )
+
         ) : activeTab === 'archived' ? (
-          /* ARCHIVED STUDENTS TABLE */
           filteredArchived.length === 0 ? (
-            <div className="text-center py-12 bg-[#0F1629] rounded-2xl border border-white/5 p-6">
-              <Users size={38} className="mx-auto mb-3 text-gray-600" />
-              <p className="font-semibold text-gray-300">No archived (checked-out) residents found</p>
+            <div className="admin-empty-compact">
+              <Users size={26} className="text-gray-600" />
+              <p className="text-sm font-semibold text-gray-300">No archived residents</p>
             </div>
           ) : (
-            <div className="bg-[#0F1629] border border-white/5 rounded-2xl overflow-hidden">
-              <div className="overflow-x-auto">
-                <table className="w-full min-w-[800px] table-auto text-left border-collapse">
-                  <thead className="bg-gradient-to-b from-white/[0.04] to-white/[0.01] border-b border-amber-500/15">
-                    <tr>
-                      <th className="px-5 py-4 text-left text-[13px] font-bold uppercase tracking-[0.5px] text-white/85">👤 Student</th>
-                      <th className="px-5 py-4 text-left text-[13px] font-bold uppercase tracking-[0.5px] text-white/85"># ID</th>
-                      <th className="px-5 py-4 text-left text-[13px] font-bold uppercase tracking-[0.5px] text-white/85">🏠 Historical Room</th>
-                      <th className="px-5 py-4 text-left text-[13px] font-bold uppercase tracking-[0.5px] text-white/85">📅 Stay Schedule</th>
-                      <th className="px-5 py-4 text-center text-[13px] font-bold uppercase tracking-[0.5px] text-white/85">🔰 Status</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-white/5 text-sm">
-                    {filteredArchived.map((res) => (
-                      <tr key={res.id} className="hover:bg-white/2 transition-colors opacity-75">
-                        <td className="px-5 py-3.5">
-                          <div className="flex items-center gap-3">
-                            <div className="w-9 h-9 rounded-full bg-white/5 border border-white/10 flex items-center justify-center font-bold text-gray-400">
-                              {res.full_name?.charAt(0).toUpperCase()}
-                            </div>
-                            <div>
-                              <p className="font-bold text-gray-300">{res.full_name}</p>
-                              <p className="text-xs text-gray-500">{res.college_name} · {res.mobile}</p>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="px-5 py-3.5 font-mono text-xs text-gray-500 whitespace-nowrap">{res.student_id || '—'}</td>
-                        <td className="px-5 py-3.5 whitespace-nowrap text-gray-400">Room {res.rooms?.room_number || '—'}</td>
-                        <td className="px-5 py-3.5 text-xs text-gray-500 whitespace-nowrap">
-                          <div>Join: {res.joining_date}</div>
-                          <div>End: {res.agreement_end_date}</div>
-                        </td>
-                        <td className="px-5 py-3.5 text-center whitespace-nowrap">
-                          <span className="inline-flex items-center text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-gray-500/10 text-gray-400 border border-gray-500/10">
-                            Checked Out
-                          </span>
-                        </td>
+            <>
+              <div className="admin-table-wrapper bg-[#0F1629] border border-white/5 rounded-2xl overflow-hidden">
+                <div className="overflow-x-auto">
+                  <table className="w-full min-w-[640px] table-auto text-left border-collapse">
+                    <thead className="bg-gradient-to-b from-white/[0.04] to-white/[0.01] border-b border-white/10">
+                      <tr>
+                        {['Student','ID','Room','Stay Period','Status'].map(h => (
+                          <th key={h} className="px-5 py-3.5 text-left text-[11px] font-bold uppercase tracking-wider text-white/50">{h}</th>
+                        ))}
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody className="divide-y divide-white/5 text-sm opacity-75">
+                      {filteredArchived.map((res) => (
+                        <tr key={res.id} className="hover:bg-white/[0.02]">
+                          <td className="px-5 py-3.5">
+                            <div className="flex items-center gap-3">
+                              <div className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center font-bold text-gray-400 text-sm flex-shrink-0">
+                                {res.full_name?.charAt(0).toUpperCase()}
+                              </div>
+                              <p className="font-semibold text-gray-300 text-sm">{res.full_name}</p>
+                            </div>
+                          </td>
+                          <td className="px-5 py-3.5 font-mono text-xs text-gray-500">{res.student_id || '—'}</td>
+                          <td className="px-5 py-3.5 text-xs text-gray-400">Room {res.rooms?.room_number || '—'}</td>
+                          <td className="px-5 py-3.5 text-xs text-gray-500">{res.joining_date} → {res.agreement_end_date}</td>
+                          <td className="px-5 py-3.5">
+                            <span className="inline-flex text-[10px] font-bold px-2 py-0.5 rounded-full bg-gray-500/10 text-gray-400 border border-white/10">Checked Out</span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
-            </div>
+              <div className="admin-mobile-card space-y-2">
+                {filteredArchived.map((res) => (
+                  <div key={res.id} className="bg-[#0F1629] border border-white/5 rounded-xl p-3 flex items-center gap-3 opacity-75">
+                    <div className="w-9 h-9 rounded-full bg-white/5 border border-white/10 flex items-center justify-center font-bold text-gray-400 flex-shrink-0">
+                      {res.full_name?.charAt(0).toUpperCase()}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-semibold text-gray-300 text-sm truncate">{res.full_name}</p>
+                      <p className="text-xs text-gray-500">{res.student_id || '—'} · Room {res.rooms?.room_number || '—'}</p>
+                    </div>
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-gray-500/10 text-gray-400 border border-white/10 flex-shrink-0">Checked Out</span>
+                  </div>
+                ))}
+              </div>
+            </>
           )
+
         ) : (
-          /* EXISTING RESIDENT INVITATIONS TABLE */
+          /* ALL INVITATIONS */
           filteredInvitations.length === 0 ? (
-            <div className="text-center py-12 bg-[#0F1629] rounded-2xl border border-white/5 p-6">
-              <Send size={38} className="mx-auto mb-3 text-gray-600" />
-              <p className="font-semibold text-gray-300">No resident invitations found</p>
-              <p className="text-sm text-gray-500 mt-1">Generate a dashboard invitation to existing residents using the button at the top-right.</p>
+            <div className="admin-empty-compact">
+              <Send size={26} className="text-gray-600" />
+              <p className="text-sm font-semibold text-gray-300">No invitations found</p>
+              <p className="text-xs text-gray-500">Generate invitations using the button above</p>
             </div>
           ) : (
             <div className="bg-[#0F1629] border border-white/5 rounded-2xl overflow-hidden">
               <div className="overflow-x-auto">
-                <table className="w-full min-w-[800px] table-auto text-left border-collapse">
+                <table className="w-full min-w-[700px] table-auto text-left border-collapse">
                   <thead className="bg-gradient-to-b from-white/[0.04] to-white/[0.01] border-b border-amber-500/15">
                     <tr>
-                      <th className="px-5 py-4 text-left text-[13px] font-bold uppercase tracking-[0.5px] text-white/85">👤 Invitee Details</th>
-                      <th className="px-5 py-4 text-left text-[13px] font-bold uppercase tracking-[0.5px] text-white/85">🏠 Room Allocation</th>
-                      <th className="px-5 py-4 text-left text-[13px] font-bold uppercase tracking-[0.5px] text-white/85">📅 Invitation Dates</th>
-                      <th className="px-5 py-4 text-center text-[13px] font-bold uppercase tracking-[0.5px] text-white/85">🔰 Status</th>
-                      <th className="px-5 py-4 text-right text-[13px] font-bold uppercase tracking-[0.5px] text-white/85">⚙ Actions</th>
+                      {['Invitee','Room Allocation','Dates','Status','Actions'].map(h => (
+                        <th key={h} className={`px-5 py-3.5 text-[11px] font-bold uppercase tracking-wider text-white/70 ${h === 'Actions' ? 'text-right' : h === 'Status' ? 'text-center' : 'text-left'}`}>{h}</th>
+                      ))}
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-white/5 text-sm">
                     {filteredInvitations.map((invite) => (
-                      <tr key={invite.id} className="hover:bg-white/2 transition-colors">
+                      <tr key={invite.id} className="hover:bg-white/[0.02] transition-colors">
                         <td className="px-5 py-3.5">
-                          <div>
-                            <p className="font-bold text-white">{invite.full_name}</p>
-                            <p className="text-xs text-gray-500 flex items-center gap-1.5 mt-0.5">
-                              <Phone size={10} /> {invite.phone} · <Mail size={10} /> {invite.email}
-                            </p>
-                          </div>
+                          <p className="font-bold text-white text-sm">{invite.full_name}</p>
+                          <p className="text-xs text-gray-500">{invite.phone}</p>
                         </td>
                         <td className="px-5 py-3.5 whitespace-nowrap">
-                          <p className="font-semibold text-gray-200">{invite.buildings?.name || invite.profile_data?.manualBuildingName || 'Other Building'}</p>
-                          <p className="text-xs text-gray-500">Room {invite.rooms?.room_number || invite.profile_data?.manualRoomNumber || '—'} · Floor {invite.floor_number || 1}</p>
+                          <p className="text-sm font-semibold text-gray-200">{invite.buildings?.name || 'Other Building'}</p>
+                          <p className="text-xs text-gray-500">Room {invite.rooms?.room_number || '—'} · Floor {invite.floor_number || 1}</p>
                         </td>
                         <td className="px-5 py-3.5 text-xs text-gray-400 whitespace-nowrap">
-                          <div>Join Date: {invite.joining_date}</div>
-                          <div className="mt-0.5 text-gray-500">Expires: {new Date(invite.expires_at).toLocaleDateString()}</div>
+                          <div>Join: {invite.joining_date}</div>
+                          <div className="text-gray-500">Exp: {new Date(invite.expires_at).toLocaleDateString()}</div>
                         </td>
-                        <td className="px-5 py-3.5 text-center whitespace-nowrap">
-                          <span className={`inline-flex items-center text-[10px] font-bold px-2.5 py-0.5 rounded-full ${
+                        <td className="px-5 py-3.5 text-center">
+                          <span className={`inline-flex text-[10px] font-bold px-2.5 py-0.5 rounded-full ${
                             invite.status === 'active' ? 'bg-green-500/10 text-green-400 border border-green-500/20' :
-                            invite.status === 'profile_submitted' ? 'bg-purple-500/10 text-purple-400 border border-purple-500/20 animate-pulse' :
+                            invite.status === 'profile_submitted' ? 'bg-purple-500/10 text-purple-400 border border-purple-500/20' :
                             invite.status === 'rejected' ? 'bg-red-500/10 text-red-400 border border-red-500/20' :
                             'bg-amber-500/10 text-amber-400 border border-amber-500/20'
                           }`}>
-                            {invite.status === 'invited' ? 'Invited' :
-                             invite.status === 'profile_submitted' ? 'Submitted' :
-                             invite.status === 'active' ? 'Active' :
-                             invite.status}
+                            {invite.status === 'invited' ? 'Invited' : invite.status === 'profile_submitted' ? 'Submitted' : invite.status === 'active' ? 'Active' : invite.status}
                           </span>
                         </td>
-                        <td className="px-5 py-3.5 text-right whitespace-nowrap">
-                          <div className="flex justify-end gap-2">
-                            {invite.status === 'profile_submitted' ? (
-                              <>
-                                <button
-                                  onClick={() => { setSelectedInvitation(invite); setReviewPanelOpen(true); }}
-                                  className="px-2.5 py-1.5 bg-[#C8840A]/10 hover:bg-[#C8840A]/20 border border-[#C8840A]/25 rounded-lg text-xs font-bold text-[#C8840A] transition-colors flex items-center gap-1"
-                                >
-                                  <Eye size={12} /> Review Profile
-                                </button>
-                                <button
-                                  onClick={() => { setSelectedInvitation(invite); handleInvitationAction('approve'); }}
-                                  className="px-2.5 py-1.5 bg-green-500/10 hover:bg-green-500/20 border border-green-500/25 rounded-lg text-xs font-bold text-green-400 transition-colors flex items-center gap-1"
-                                >
-                                  <CheckCircle size={12} /> Quick Approve
-                                </button>
-                              </>
-                            ) : invite.status === 'invited' ? (
-                              <button
-                                onClick={() => {
-                                  const origin = window.location.origin
-                                  const registrationLink = `${origin}/existing-resident-registration?token=${invite.token}`
-                                  navigator.clipboard.writeText(registrationLink)
-                                  toast.success('Registration link copied to clipboard!')
-                                }}
-                                className="px-2.5 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-xs font-semibold text-gray-300 transition-colors"
-                              >
-                                Copy Invite Link
-                              </button>
-                            ) : (
-                              <span className="text-xs text-gray-600">—</span>
-                            )}
-                          </div>
+                        <td className="px-5 py-3.5 text-right">
+                          {invite.status === 'profile_submitted' ? (
+                            <button onClick={() => { setSelectedInvitation(invite); setReviewPanelOpen(true); }}
+                              className="px-2.5 py-1.5 bg-[#C8840A]/10 hover:bg-[#C8840A]/20 border border-[#C8840A]/25 rounded-lg text-xs font-bold text-[#C8840A]">
+                              Review
+                            </button>
+                          ) : invite.status === 'invited' ? (
+                            <button onClick={() => {
+                              navigator.clipboard.writeText(`${window.location.origin}/existing-resident-registration?token=${invite.token}`)
+                              toast.success('Link copied!')
+                            }} className="px-2.5 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-xs text-gray-300">Copy Link</button>
+                          ) : <span className="text-xs text-gray-600">—</span>}
                         </td>
                       </tr>
                     ))}
