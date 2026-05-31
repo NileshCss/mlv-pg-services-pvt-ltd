@@ -312,6 +312,30 @@ const PreRegistrationForm: React.FC<PreRegistrationFormProps> = ({ open, onOpenC
               </a>
             </div>
 
+            {/* Existing Resident Registration CTA */}
+            <div
+              className="mt-4 rounded-xl p-3 sm:p-4 text-center"
+              style={{ background: 'rgba(200,132,10,0.06)', border: '1px solid rgba(200,132,10,0.15)' }}
+            >
+              <h4 className="text-xs font-bold mb-1" style={{ color: '#c9a84c' }}>
+                Already Staying at MLV PG?
+              </h4>
+              <p className="text-[11px] text-gray-400 mb-2">
+                Existing residents can complete their profile and activate their student dashboard.
+              </p>
+              <a
+                href="/existing-resident-registration"
+                className="inline-flex items-center gap-1.5 text-xs font-bold py-2 px-4 rounded-full transition-all hover:bg-amber-500/20"
+                style={{
+                  background: 'rgba(200,132,10,0.1)',
+                  color: '#c9a84c',
+                  border: '1px solid rgba(200,132,10,0.25)',
+                }}
+              >
+                Existing Resident Registration →
+              </a>
+            </div>
+
             {/* Info note */}
             <p className="text-center text-[10px] sm:text-xs text-gray-500 mt-2 sm:mt-4 w-full">
               ⚡ Your info is secure &amp; used only for admission purposes
