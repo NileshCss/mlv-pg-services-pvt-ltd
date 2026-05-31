@@ -943,7 +943,7 @@ export default function AdminStudentsPage() {
                   className="bg-[#0F1629] border border-white/10 rounded-2xl w-full max-w-xl p-6 overflow-hidden shadow-2xl text-gray-200 pointer-events-auto"
                 >
                   <div className="flex items-center justify-between pb-4 border-b border-white/5 mb-5">
-                    <h3 className="text-lg font-bold" style={{ fontFamily: 'Playfair Display' }}>Invite Existing Resident</h3>
+                    <h3 className="text-lg font-bold text-white" style={{ fontFamily: 'Playfair Display' }}>Invite Existing Resident</h3>
                     <button onClick={() => !inviting && setInviteModalOpen(false)} className="text-gray-400 hover:text-white" disabled={inviting}>✕</button>
                   </div>
 
@@ -957,7 +957,7 @@ export default function AdminStudentsPage() {
                           value={inviteName}
                           onChange={e => setInviteName(e.target.value)}
                           placeholder="Full Name"
-                          className="w-full px-3 py-2.5 rounded-xl text-sm bg-white/3 border border-white/5 text-white outline-none focus:border-amber-500"
+                          className="w-full px-3 py-2.5 rounded-xl text-sm bg-[#0A0E1A] border border-white/10 text-white outline-none focus:border-amber-500"
                         />
                       </div>
                       <div>
@@ -971,7 +971,7 @@ export default function AdminStudentsPage() {
                             if (/^\d*$/.test(e.target.value)) setInvitePhone(e.target.value)
                           }}
                           placeholder="10-digit mobile number"
-                          className="w-full px-3 py-2.5 rounded-xl text-sm bg-white/3 border border-white/5 text-white outline-none focus:border-amber-500"
+                          className="w-full px-3 py-2.5 rounded-xl text-sm bg-[#0A0E1A] border border-white/10 text-white outline-none focus:border-amber-500"
                         />
                       </div>
                     </div>
@@ -984,7 +984,7 @@ export default function AdminStudentsPage() {
                         value={inviteEmail}
                         onChange={e => setInviteEmail(e.target.value)}
                         placeholder="john@example.com"
-                        className="w-full px-3 py-2.5 rounded-xl text-sm bg-white/3 border border-white/5 text-white outline-none focus:border-amber-500"
+                        className="w-full px-3 py-2.5 rounded-xl text-sm bg-[#0A0E1A] border border-white/10 text-white outline-none focus:border-amber-500"
                       />
                     </div>
 
@@ -1014,7 +1014,7 @@ export default function AdminStudentsPage() {
                           required
                           value={inviteFloor}
                           onChange={e => setInviteFloor(e.target.value)}
-                          className="w-full px-3 py-2.5 rounded-xl text-sm bg-white/3 border border-white/5 text-white outline-none focus:border-amber-500"
+                          className="w-full px-3 py-2.5 rounded-xl text-sm bg-[#0A0E1A] border border-white/10 text-white outline-none focus:border-amber-500"
                         />
                       </div>
 
@@ -1042,7 +1042,7 @@ export default function AdminStudentsPage() {
                         required
                         value={inviteJoinDate}
                         onChange={e => setInviteJoinDate(e.target.value)}
-                        className="w-full px-3 py-2.5 rounded-xl text-sm bg-white/3 border border-white/5 text-white outline-none focus:border-amber-500"
+                        className="w-full px-3 py-2.5 rounded-xl text-sm bg-[#0A0E1A] border border-white/10 text-white outline-none focus:border-amber-500"
                       />
                     </div>
 
